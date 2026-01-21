@@ -2,6 +2,14 @@ const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
 const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
 const SHEET_NAME = "Collectors";
 const DEFAULT_PASSWORD = "Letmein123#";
+const SESSION_TIME = 5 * 60 * 1000; // 5 minutes
+
+// clear fields on back/refresh
+window.onload = () => {
+  document.getElementById("username").value = "";
+  document.getElementById("password").value = "";
+  sessionStorage.clear();
+};
 
 document.getElementById("loginBtn").onclick = async function () {
   const username = document.getElementById("username").value.trim();
@@ -10,7 +18,7 @@ document.getElementById("loginBtn").onclick = async function () {
 
   errorEl.textContent = "";
 
-  if (!username || !password || password !== DEFAULT_PASSWORD) {
+  if (!username || password !== DEFAULT_PASSWORD) {
     errorEl.textContent = "incorrect username or password";
     return;
   }
@@ -20,16 +28,17 @@ document.getElementById("loginBtn").onclick = async function () {
   try {
     const res = await fetch(url);
     const data = await res.json();
-
-    // remove header row
-    const ids = data.values.slice(1).map(row => row[0].toString().trim());
+    const ids = data.values.slice(1).map(r => r[0].toString().trim());
 
     if (ids.includes(username)) {
+      const expiry = Date.now() + SESSION_TIME;
+      sessionStorage.setItem("auth", "true");
+      sessionStorage.setItem("expiry", expiry);
       window.location.href = "https://kbk-ops.github.io/OrganizationFund/collectordashb";
     } else {
       errorEl.textContent = "incorrect username or password";
     }
-  } catch (err) {
+  } catch {
     errorEl.textContent = "incorrect username or password";
   }
 };
