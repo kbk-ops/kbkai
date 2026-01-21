@@ -23,9 +23,9 @@ body {
 }
 
 .logo {
-  width: 100%;
+  width: 120%;
   max-width: 280px;
-  margin-bottom: 30px;
+  margin-bottom: 60px;
 }
 
 .buttons {
@@ -40,13 +40,13 @@ body {
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  background: #2563eb;
+  background: #54d106;
   color: white;
   transition: 0.2s;
 }
 
 .portal-btn:hover {
-  background: #1d4ed8;
+  background: #1e7802;
 }
 
 .hint {
