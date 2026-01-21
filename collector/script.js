@@ -36,11 +36,11 @@ async function saveContribution() {
 
 document.getElementById("memberID").addEventListener("change", async function() {
   const id = this.value;
-  const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Members!A:C?key=${API_KEY}`);
+  const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Members!A:D?key=${API_KEY}`);
   const data = await resp.json();
   const found = data.values?.find(r => r[0] === id);
   if (found) {
-    document.getElementById("fullName").value = found[1];
-    document.getElementById("brgy").value = found[2];
+    document.getElementById("fullName").value = found[2];
+    document.getElementById("brgy").value = found[3];
   }
 });
