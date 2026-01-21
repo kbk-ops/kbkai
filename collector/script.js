@@ -1,46 +1,38 @@
 const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
 const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
+const SHEET_NAME = "Collector";
+const DEFAULT_PASSWORD = "Letmein123#";
 
-async function verifyCollector() {
-  const id = document.getElementById("collectorID").value;
-  const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Collectors!A:B?key=${API_KEY}`);
-  const data = await resp.json();
-  const found = data.values?.find(r => r[0] === id);
+document.getElementById("loginBtn").onclick = async function () {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const errorEl = document.getElementById("error");
 
-  if (!found) {
-    alert("You are not Authorize to collect monthly Dues");
+  errorEl.textContent = "";
+
+  if (!username || !password) {
+    errorEl.textContent = "incorrect username or password";
     return;
   }
 
-  document.getElementById("dashboard").hidden = false;
-}
-
-async function saveContribution() {
-  const memberID = document.getElementById("memberID").value;
-  const fullName = document.getElementById("fullName").value;
-  const brgy = document.getElementById("brgy").value;
-  const month = document.getElementById("month").value;
-  const amount = document.getElementById("amount").value;
-
-  const values = [
-    [new Date().toLocaleDateString(), memberID, fullName, brgy, month, amount]
-  ];
-
-  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Contributions!A:F:append?valueInputOption=USER_ENTERED&key=${API_KEY}`, {
-    method: "POST",
-    body: JSON.stringify({ values }),
-  });
-
-  alert("Saved!");
-}
-
-document.getElementById("memberID").addEventListener("change", async function() {
-  const id = this.value;
-  const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Members!A:C?key=${API_KEY}`);
-  const data = await resp.json();
-  const found = data.values?.find(r => r[0] === id);
-  if (found) {
-    document.getElementById("fullName").value = found[2];
-    document.getElementById("brgy").value = found[3];
+  if (password !== DEFAULT_PASSWORD) {
+    errorEl.textContent = "incorrect username or password";
+    return;
   }
-});
+
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const rows = data.values.flat();
+
+    if (rows.includes(username)) {
+      window.location.href = "https://kbk-ops.github.io/OrganizationFund/collectordashb";
+    } else {
+      errorEl.textContent = "incorrect username or password";
+    }
+  } catch (err) {
+    errorEl.textContent = "incorrect username or password";
+  }
+};
