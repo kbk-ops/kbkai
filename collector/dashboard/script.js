@@ -56,20 +56,25 @@ async function loadMember() {
 }
 
 // Submit data to Contribution sheet
-async function submitData() {
-  if (!confirm("Do you want to submit?")) return;
+async function submitData(){
+  if(!idNumber.value.trim() || !fullName.value.trim()){
+    alert("ID Number is Empty");
+    return;
+  }
 
-  const payload = {
-    id: idNumber.value,
-    name: fullName.value,
-    brgy: brgy.value,
-    year: year.value,
-    month: month.value,
-    amount: amount.value,
-    collector: collectorID
+  if(!confirm("Do you want to submit?")) return;
+
+  const payload={
+    id:idNumber.value,
+    name:fullName.value,
+    brgy:brgy.value,
+    year:year.value,
+    month:month.value,
+    amount:amount.value,
+    collector:collectorID
   };
 
-  await fetch(WEBAPP_URL, { method: "POST", body: JSON.stringify(payload) });
+  await fetch(WEBAPP_URL,{method:"POST",body:JSON.stringify(payload)});
   location.reload();
 }
 
