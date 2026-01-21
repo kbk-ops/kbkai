@@ -2,7 +2,7 @@ const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
 const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
 
 async function verifyCollector() {
-  const id = document.getElementById("Collectors").value;
+  const id = document.getElementById("collectorID").value;
   const resp = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Collectors!A:B?key=${API_KEY}`);
   const data = await resp.json();
   const found = data.values?.find(r => r[0] === id);
