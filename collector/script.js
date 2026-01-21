@@ -11,8 +11,9 @@ async function verifyCollector() {
     alert("You are not Authorize to collect monthly Dues");
     return;
   }
-
-  document.getElementById("dashboard").hidden = false;
+  document.getElementById("login").hidden = true;
+  document.getElementById("form").hidden = false;
+  startScanner();
 }
 
 async function saveContribution() {
