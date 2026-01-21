@@ -1,1 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<h2>Collector Login</h2>
+
+<input id="Collectors" placeholder="Enter ID">
+<button onclick="verifyCollector()">Login</button>
+
+<div id="dashboard" hidden>
+  <input id="memberID" placeholder="Scan/Enter Member ID">
+  <input id="fullName" readonly placeholder="Full Name">
+  <input id="brgy" readonly placeholder="Brgy No">
+  <select id="month">
+    <option>January</option>
+    <option>February</option>
+    <!-- add all -->
+  </select>
+  <input id="amount" placeholder="Amount">
+  <button onclick="saveContribution()">Submit</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
