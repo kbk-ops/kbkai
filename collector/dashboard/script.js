@@ -80,7 +80,7 @@ async function submitData(){
   await fetch(WEBAPP_URL,{method:"POST",body:JSON.stringify(payload)});
   location.reload();
 }
-if(!Alert("Monthly Dues Payment Recorded")) return;
+if(!confirm("Monthly Dues Payment Recorded")) return;
 
 // Reload page
 function reloadPage() {
