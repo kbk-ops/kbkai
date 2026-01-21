@@ -1,1 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<h2>Member Login</h2>
+
+<input id="Members" placeholder="Enter ID">
+<button onclick="showDashboard()">Login</button>
+
+<div id="dashboard" hidden>
+  <h1 id="greeting"></h1>
+  <select id="year">
+    <option value="ALLY">All</option>
+    <option value="ALLY">2026</option>
+  </select>
+  <select id="month">
+    <option value="ALLM">All</option>
+    <option>January</option>
+    <option>February</option>
+    <option>March</option>
+    <option>April</option>
+    <option>May</option>
+    <option>June</option>
+    <option>July</option>
+    <option>August</option>
+    <option>September</option>
+    <option>October</option>
+    <option>November</option>
+    <option>December</option>
+  </select>
+  <div id="dues"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
