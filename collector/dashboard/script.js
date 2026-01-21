@@ -63,6 +63,7 @@ async function submitData(){
   if(!idNumber.value.trim() || !fullName.value.trim()){
     errorEl.textContent = "ID Number is Empty";
     return;
+    location.reload();
   }
 
   if(!confirm("Do you want to submit?")) return;
@@ -79,7 +80,6 @@ async function submitData(){
 
   await fetch(WEBAPP_URL,{method:"POST",body:JSON.stringify(payload)});
   location.reload();
-  function reloadPage()
 }
 
 // Reload page
