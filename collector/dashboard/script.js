@@ -79,14 +79,15 @@ async function submitData(){
 
   await fetch(WEBAPP_URL,{method:"POST",body:JSON.stringify(payload)});
   location.reload();
+  function reloadPage()
 }
 
 // Reload page
 function reloadPage() {
-  if (confirm("Are you sure?")) location.reload();
+  if (confirm("Do you want to reload this page?")) location.reload();
 }
 
 // Exit page
 function exitPage() {
-  if (confirm("Are you sure?")) window.close();
+  if (confirm("Are you sure you want  to exit?")) window.close();
 }
