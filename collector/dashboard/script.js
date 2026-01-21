@@ -62,7 +62,10 @@ async function submitData(){
 
   if(!idNumber.value.trim() || !fullName.value.trim()){
     errorEl.textContent = "ID Number is Empty";
-    location.reload();
+    setTimeout(() => {
+      location.reload();
+    }, 3000);
+    return;
   }
 
   if(!confirm("Do you want to submit?")) return;
