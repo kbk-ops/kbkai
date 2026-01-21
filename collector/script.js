@@ -34,6 +34,7 @@ document.getElementById("loginBtn").onclick = async function () {
       const expiry = Date.now() + SESSION_TIME;
       sessionStorage.setItem("auth", "true");
       sessionStorage.setItem("expiry", expiry);
+      sessionStorage.setItem("collectorID", username);
       window.location.href = "https://kbk-ops.github.io/OrganizationFund/collector/dashboard";
     } else {
       errorEl.textContent = "incorrect username or password";
