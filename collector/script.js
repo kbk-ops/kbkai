@@ -10,24 +10,21 @@ document.getElementById("loginBtn").onclick = async function () {
 
   errorEl.textContent = "";
 
-  if (!username || !password) {
+  if (!username || !password || password !== DEFAULT_PASSWORD) {
     errorEl.textContent = "incorrect username or password";
     return;
   }
 
-  if (password !== DEFAULT_PASSWORD) {
-    errorEl.textContent = "incorrect username or password";
-    return;
-  }
-
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A:A?key=${API_KEY}`;
 
   try {
     const res = await fetch(url);
     const data = await res.json();
-    const rows = data.values.flat();
 
-    if (rows.includes(username)) {
+    // remove header row
+    const ids = data.values.slice(1).map(row => row[0].toString().trim());
+
+    if (ids.includes(username)) {
       window.location.href = "https://kbk-ops.github.io/OrganizationFund/collectordashb";
     } else {
       errorEl.textContent = "incorrect username or password";
