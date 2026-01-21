@@ -1,38 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Officers Login</title>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
+  <div class="container">
+    <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="logo"/>
 
-<h2>Collector Login</h2>
+    <div class="login-form">
+      <input type="text" id="username" placeholder="User Name (ID Number)" />
+      <input type="password" id="password" placeholder="Password" />
+      <button id="loginBtn" class="portal-btn">Access Dashboard</button>
+    </div>
 
-<input id="collectorID" placeholder="Enter ID">
-<button onclick="verifyCollector()">Login</button>
+    <p class="hint">Only Authorized Personnel can access this Portal</p>
+    <p id="error" class="error"></p>
+  </div>
 
-<div id="dashboard" hidden>
-  <label>ID Number</label><input id="memberID" placeholder="Scan/Enter ID Number"><br>
-  <label>Full Name</label><input id="fullName" readonly placeholder="Full Name"><br>
-  <label>Brgy</label><input id="brgy" readonly placeholder="Brgy."><br>
-  <label>Month</label><select id="month"><br>
-    <option>January</option>
-    <option>February</option>
-    <option>March</option>
-    <option>April</option>
-    <option>May</option>
-    <option>June</option>
-    <option>July</option>
-    <option>August</option>
-    <option>September</option>
-    <option>October</option>
-    <option>November</option>
-    <option>December</option>
-  </select>
-  <label>Amount</label><input id="amount" placeholder="Amount"><br>
-  <button onclick="saveContribution()">Submit</button>
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
