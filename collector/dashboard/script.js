@@ -57,8 +57,11 @@ async function loadMember() {
 
 // Submit data to Contribution sheet
 async function submitData(){
+  const errorEl = document.getElementById("error");
+  errorEl.textContent = "";
+
   if(!idNumber.value.trim() || !fullName.value.trim()){
-    alert("ID Number is Empty");
+    errorEl.textContent = "ID Number is Empty";
     return;
   }
 
