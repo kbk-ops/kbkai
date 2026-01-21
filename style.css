@@ -24,7 +24,7 @@ body {
 
 .logo {
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
   margin-bottom: 30px;
 }
 
@@ -40,7 +40,7 @@ body {
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  background: #4bc902;
+  background: #44b304;
   color: white;
   transition: 0.2s;
 }
