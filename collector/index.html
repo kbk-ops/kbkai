@@ -13,9 +13,9 @@
 
 <div id="dashboard" hidden>
   <label>ID Number</label><input id="memberID" placeholder="Scan/Enter ID Number"><br>
-  <input id="fullName" readonly placeholder="Full Name"><br>
-  <input id="brgy" readonly placeholder="Brgy.">
-  <select id="month">
+  <label>Full Name</label><input id="fullName" readonly placeholder="Full Name"><br>
+  <label>Brgy</label><input id="brgy" readonly placeholder="Brgy."><br>
+  <label>Month</label><select id="month"><br>
     <option>January</option>
     <option>February</option>
     <option>March</option>
@@ -29,7 +29,7 @@
     <option>November</option>
     <option>December</option>
   </select>
-  <input id="amount" placeholder="Amount">
+  <label>Amount</label><input id="amount" placeholder="Amount"><br>
   <button onclick="saveContribution()">Submit</button>
 </div>
 
