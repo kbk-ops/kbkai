@@ -1,5 +1,3 @@
-alert("JS Loaded");
-
 const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
 const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
 
@@ -17,7 +15,7 @@ async function verifyCollector() {
   }
 
   document.getElementById("login").style.display = "none";
-  document.getElementById("form").style.display = "block";
+  document.getElementById("form").style.display = "hidden";
   startScanner();
 }
 
