@@ -23,9 +23,9 @@ body {
 }
 
 .logo {
-  width: 120%;
-  max-width: 280px;
-  margin-bottom: 60px;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 30px;
 }
 
 .buttons {
@@ -40,7 +40,7 @@ body {
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  background: #54d106;
+  background: #4bc902;
   color: white;
   transition: 0.2s;
 }
