@@ -64,7 +64,7 @@ async function submitData(){
     errorEl.textContent = "ID Number is Empty";
     setTimeout(() => {
       location.reload();
-    }, 3000);
+    }, 5000);
     return;
   }
 
