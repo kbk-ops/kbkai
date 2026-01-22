@@ -1,10 +1,9 @@
 const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
-const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
-const SHEET_NAME = "Members";
+const SHEET_ID = "1p7NFJQWhSd2QEJb-Y_SgDQnjl7aL-3iVVufKjBiA4YI";
+const SHEET_NAME = "UserLogin"; 
 const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A:E?key=${API_KEY}`;
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx8XXVsS1Pb-Vf2eXI6uZ9LY_JgniBh-wzaeWYasJc_roj4XCcEa8Y7sXoZQL-4-2iS/exec";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwdS6PPH3wBvnLXkOi2T1uS844aCh6qyv0Jiib0kTebncr45oE8pyHOSaan1aZoxqB5sA/exec";
 
-// Elements
 const step1 = document.getElementById("step1");
 const step2 = document.getElementById("step2");
 const idNumberInput = document.getElementById("idNumber");
@@ -15,7 +14,6 @@ const errorEl = document.getElementById("error");
 let currentID = "";
 let pinExists = false;
 
-// STEP 1
 document.getElementById("nextBtn").onclick = async () => {
   errorEl.textContent = "";
   const id = idNumberInput.value.trim();
@@ -24,8 +22,8 @@ document.getElementById("nextBtn").onclick = async () => {
   const res = await fetch(MEMBERS_URL);
   const data = await res.json();
   const rows = data.values.slice(1);
-
   const member = rows.find(r => r[0] == id);
+
   if(!member) return errorEl.textContent = "ID not found";
 
   currentID = id;
@@ -37,7 +35,6 @@ document.getElementById("nextBtn").onclick = async () => {
   step2.style.display = "block";
 };
 
-// STEP 2
 document.getElementById("loginBtn").onclick = async () => {
   errorEl.textContent = "";
   const pin = pinInput.value.trim();
