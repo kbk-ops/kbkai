@@ -77,8 +77,23 @@ async function submitData(){
     collector:collectorID
   };
 
-  await fetch(WEBAPP_URL,{method:"POST",body:JSON.stringify(payload)});
-  location.reload();
+  try {
+    const res = await fetch(WEBAPP_URL,{method:"POST",body:JSON.stringify(payload)});
+    
+    if(res.ok){
+      errorEl.style.color = "green";
+      errorEl.textContent = "Contribution successfully recorded";
+      setTimeout(() => {
+        location.reload();
+      }, 3000);
+    } else {
+      errorEl.style.color = "red";
+      errorEl.textContent = "Failed to record contribution";
+    }
+  } catch {
+    errorEl.style.color = "red";
+    errorEl.textContent = "Error connecting to server";
+  }
 }
 
 // Reload page
