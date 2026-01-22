@@ -48,6 +48,7 @@ async function searchData(){
   });
 
   totalEl.textContent = total.toFixed(2);
+  totalRow.classList.remove("hidden"); // show Total now
 }
 
 function goBack(){
