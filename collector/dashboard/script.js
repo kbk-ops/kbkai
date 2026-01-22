@@ -11,9 +11,7 @@ let isScanning = false;
 
 // Start / Stop Camera button
 const toggleBtn = document.getElementById("toggleCam");
-const readerDiv = document.createElement("div");
-readerDiv.id = "reader";
-toggleBtn.parentElement.after(readerDiv);
+const readerDiv = document.getElementById("reader");
 
 toggleBtn.onclick = async () => {
   if(!isScanning){
@@ -23,12 +21,16 @@ toggleBtn.onclick = async () => {
 
     await html5QrCode.start(
       { facingMode: "environment" },
-      { fps: 10, qrbox: 250 },
-      (decodedText) => {
-        document.getElementById("idNumber").value = decodedText;
-        html5QrCode.stop();
+      { fps: 10, qrbox: { width: 300, height: 300 } },
+      async (decodedText) => {
+        idNumber.value = decodedText.trim();
+
+        await html5QrCode.stop();
         isScanning = false;
         toggleBtn.textContent = "Scan";
+
+        // auto trigger lookup after scan
+        fetchMember(); 
       }
     );
   } else {
@@ -39,21 +41,18 @@ toggleBtn.onclick = async () => {
 };
 
 // Load member info from Members sheet
-document.getElementById("idNumber").onchange = loadMember;
-async function loadMember() {
-  const id = document.getElementById("idNumber").value.trim();
-  if (!id) return;
+async function fetchMember(){
+  const id = idNumber.value.trim();
+  if(!id) return;
 
-  const res = await fetch(MEMBERS_URL);
+  const res = await fetch(URL);   // your existing sheet URL
   const data = await res.json();
-  const row = data.values.find(r => r[0] == id);
+  const rows = data.values.slice(1);
 
-  if (row) {
-    fullName.value = row[2];
-    brgy.value = row[3];
-  } else {
-    fullName.value = "";
-    brgy.value = "";
+  const record = rows.find(r => r[0] === id);
+  if(record){
+    fullName.value = record[1];
+    brgy.value = record[2];
   }
 }
 
