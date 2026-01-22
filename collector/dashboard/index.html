@@ -12,20 +12,39 @@
   <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="logo">
   <p>Organization Monthly Dues</p>
   <p id="error" style="color:red;margin-top:10px;"></p>
-  <div id="reader"></div>
-  <button id="toggleCam">Scan</button>
-  <label>ID Number</label><input id="idNumber" placeholder="Enter ID Number">
+  
+ <div class="row">
+  <label>ID Number</label>
+  <div class="id-group">
+    <button id="toggleCam" class="scan-btn">Scan</button>
+    <input id="idNumber" placeholder="Enter ID Number">
+  </div>
+</div>
 
-  <label>Name</label><input id="fullName" placeholder="Full Name" readonly>
-  <label>Barangay</label><input id="brgy" placeholder="Brgy" readonly>
-  <label>Amount</label><input id="amount" value="30" readonly>
+<div class="row">
+  <label>Name</label>
+  <input id="fullName" placeholder="Full Name" readonly>
+</div>
 
+<div class="row">
+  <label>Barangay</label>
+  <input id="brgy" placeholder="Brgy" readonly>
+</div>
+
+<div class="row">
+  <label>Amount</label>
+  <input id="amount" value="30" readonly>
+</div>
+
+<div class="row">
   <label>Year</label>
   <select id="year">
     <option value="All">All</option>
     <option>2026</option>
   </select>
+</div>
 
+<div class="row">
   <label>Month</label>
   <select id="month">
     <option value="All">All</option>
@@ -34,6 +53,8 @@
     <option>July</option><option>August</option><option>September</option>
     <option>October</option><option>November</option><option>December</option>
   </select>
+</div>
+
 
 
   <button onclick="submitData()">Submit</button>
