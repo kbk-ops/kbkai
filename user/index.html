@@ -1,40 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Members Login</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="container">
+  <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="logo">
+  <p>Team Leaders & Members Login</p>
+  <p id="error" style="color:red;margin-top:10px;"></p>
 
-<h2>Member Login</h2>
+  <!-- Step 1: Enter ID -->
+  <div id="step1">
+    <label>ID Number</label>
+    <input id="idNumber" placeholder="Enter ID Number">
+    <button id="nextBtn">Next</button>
+  </div>
 
-<input id="Members" placeholder="Enter ID">
-<button onclick="showDashboard()">Login</button>
-
-<div id="dashboard" hidden>
-  <h1 id="greeting"></h1>
-  <select id="year">
-    <option value="ALLY">All</option>
-    <option value="ALLY">2026</option>
-  </select>
-  <select id="month">
-    <option value="ALLM">All</option>
-    <option>January</option>
-    <option>February</option>
-    <option>March</option>
-    <option>April</option>
-    <option>May</option>
-    <option>June</option>
-    <option>July</option>
-    <option>August</option>
-    <option>September</option>
-    <option>October</option>
-    <option>November</option>
-    <option>December</option>
-  </select>
-  <div id="dues"></div>
+  <!-- Step 2: Create/Enter PIN -->
+  <div id="step2" style="display:none;">
+    <label id="pinLabel">Enter PIN</label>
+    <input id="pin" type="password" placeholder="4-digit PIN">
+    <button id="loginBtn">Login</button>
+  </div>
 </div>
 
-<script src="script.js"></script>
+<script src="members.js"></script>
 </body>
 </html>
