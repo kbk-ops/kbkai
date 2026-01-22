@@ -64,6 +64,11 @@ async function submitData(){
     errorEl.textContent = "ID Number is Empty";
     return;
   }
+  
+  if(!month.value.trim()){
+    errorEl.textContent = "Check month entry";
+    return;
+  }
 
   if(!confirm("Do you want to submit?")) return;
 
