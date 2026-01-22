@@ -1,7 +1,7 @@
 const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
 const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
 const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Members!A:D?key=${API_KEY}`;
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyUfWGCuStXo5TmBXIPmfiPL7e84STdYPU7QX-eGyfjzWKSWCaiRVkRTcZ9A7tXDTk/exec";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzMWIlDBNuuQg8vSc7tSC_-WYQMnud6__-cPWkM7L1ZJgZHy8pDwOGhFWTeqYYlewGi/exec";
 
 const collectorID = sessionStorage.getItem("collectorID");
 
