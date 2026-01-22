@@ -67,15 +67,16 @@ async function submitData(){
 
   if(!confirm("Do you want to submit?")) return;
 
-  const payload={
-    id:idNumber.value,
-    name:fullName.value,
-    brgy:brgy.value,
-    year:year.value,
-    month:month.value,
-    amount:amount.value,
-    collector:collectorID
-  };
+  body: JSON.stringify({
+  type:"contribution",
+  id:idNumber.value,
+  name:fullName.value,
+  brgy:brgy.value,
+  year:year.value,
+  month:month.value,
+  amount:amount.value,
+  collector:collectorID
+})
 
   try {
     const res = await fetch(WEBAPP_URL,{method:"POST",body:JSON.stringify(payload)});
