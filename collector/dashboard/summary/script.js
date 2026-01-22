@@ -7,9 +7,12 @@ async function searchData(){
   const errorEl = document.getElementById("error");
   const tbody = document.querySelector("#resultTable tbody");
   const totalEl = document.getElementById("totalAmount");
-  const totalRow = document.getElementById("totalRow"); // <--- added
-  totalRow.classList.add("hidden"); // hide initially
+  const totalRow = document.getElementById("totalRow"); // total row element
 
+  // hide total initially
+  totalRow.classList.add("hidden");
+
+  // clear previous data
   errorEl.textContent = "";
   tbody.innerHTML = "";
   totalEl.textContent = "0";
@@ -19,36 +22,47 @@ async function searchData(){
     return;
   }
 
-  const res = await fetch(URL);
-  const data = await res.json();
-  const rows = data.values.slice(1);
+  try {
+    const res = await fetch(URL);
+    const data = await res.json();
+    const rows = data.values.slice(1); // skip header
 
-  const records = rows.filter(r => r[1] == id);
+    // filter by ID
+    const records = rows.filter(r => r[1] == id);
 
-  if(records.length === 0){
-    errorEl.textContent = "No records found";
-    return;
+    if(records.length === 0){
+      errorEl.textContent = "No records found";
+      fullName.value = "";
+      brgy.value = "";
+      return;
+    }
+
+    // populate name and brgy
+    fullName.value = records[0][3];
+    brgy.value = records[0][4];
+
+    let total = 0;
+
+    records.forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${r[5]}</td>
+        <td>${r[6]}</td>
+        <td>${r[7]}</td>
+        <td>${new Date(r[0]).toLocaleString()}</td>
+      `;
+      tbody.appendChild(tr);
+      total += parseFloat(r[7]);
+    });
+
+    // update total and show row
+    totalEl.textContent = total.toFixed(2);
+    totalRow.classList.remove("hidden");
+
+  } catch(err){
+    errorEl.textContent = "Error fetching data";
+    console.error(err);
   }
-
-  fullName.value = records[0][3];
-  brgy.value = records[0][4];
-
-  let total = 0;
-
-  records.forEach(r => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${r[5]}</td>
-      <td>${r[6]}</td>
-      <td>${r[7]}</td>
-      <td>${new Date(r[0]).toLocaleString()}</td>
-    `;
-    tbody.appendChild(tr);
-    total += parseFloat(r[7]);
-  });
-
-  totalEl.textContent = total.toFixed(2);
-  totalRow.classList.remove("hidden"); // show Total now
 }
 
 function goBack(){
