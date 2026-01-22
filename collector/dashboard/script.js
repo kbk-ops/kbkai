@@ -6,53 +6,52 @@ const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzMWIlDBNuuQg8vSc7tS
 const collectorID = sessionStorage.getItem("collectorID");
 
 // QR Scanner variables
-let html5QrCode;
-let isScanning = false;
+let html5Qr;
+let cameraOn = false;
 
 // Start / Stop Camera button
 const toggleBtn = document.getElementById("toggleCam");
-const readerDiv = document.getElementById("reader");
-
-toggleBtn.onclick = async () => {
-  if(!isScanning){
-    html5QrCode = new Html5Qrcode("reader");
-    isScanning = true;
-    toggleBtn.textContent = "Stop";
-
-    await html5QrCode.start(
+toggleBtn.onclick = async function () {
+  if (!cameraOn) {
+    html5Qr = new Html5Qrcode("reader");
+    await html5Qr.start(
       { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 300, height: 300 } },
-      async (decodedText) => {
-        idNumber.value = decodedText.trim();
-
-        await html5QrCode.stop();
-        isScanning = false;
-        toggleBtn.textContent = "Scan";
-
-        // auto trigger lookup after scan
-        fetchMember(); 
+      { fps: 10, qrbox: 250 },
+      qr => {
+        document.getElementById("idNumber").value = qr;
+        loadMember();
+        navigator.vibrate(200); // vibrate on scan
+        new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg").play(); // sound on scan
+        html5Qr.stop();
+        cameraOn = false;
+        toggleBtn.textContent = "Start Camera";
       }
     );
+    cameraOn = true;
+    toggleBtn.textContent = "Stop Camera";
   } else {
-    await html5QrCode.stop();
-    isScanning = false;
-    toggleBtn.textContent = "Scan";
+    await html5Qr.stop();
+    cameraOn = false;
+    toggleBtn.textContent = "Start Camera";
   }
 };
 
 // Load member info from Members sheet
-async function fetchMember(){
-  const id = idNumber.value.trim();
-  if(!id) return;
+document.getElementById("idNumber").onchange = loadMember;
+async function loadMember() {
+  const id = document.getElementById("idNumber").value.trim();
+  if (!id) return;
 
-  const res = await fetch(URL);   // your existing sheet URL
+  const res = await fetch(MEMBERS_URL);
   const data = await res.json();
-  const rows = data.values.slice(1);
+  const row = data.values.find(r => r[0] == id);
 
-  const record = rows.find(r => r[0] === id);
-  if(record){
-    fullName.value = record[1];
-    brgy.value = record[2];
+  if (row) {
+    fullName.value = row[2];
+    brgy.value = row[3];
+  } else {
+    fullName.value = "";
+    brgy.value = "";
   }
 }
 
