@@ -7,6 +7,8 @@ async function searchData(){
   const errorEl = document.getElementById("error");
   const tbody = document.querySelector("#resultTable tbody");
   const totalEl = document.getElementById("totalAmount");
+  const totalRow = document.getElementById("totalRow"); // <--- added
+  totalRow.classList.add("hidden"); // hide initially
 
   errorEl.textContent = "";
   tbody.innerHTML = "";
