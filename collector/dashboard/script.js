@@ -102,6 +102,6 @@ function reloadPage() {
 }
 
 // Exit page
-function exitPage() {
-  if (confirm("Are you sure you want  to exit?")) window.close();
+function exitPage(){
+    window.location.href = "https://kbk-ops.github.io/OrganizationFund/collector/dashboard/summary";
 }
