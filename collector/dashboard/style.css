@@ -39,3 +39,29 @@ button{
   width:100%;
   margin-bottom:10px
 }
+.row{
+  display:grid;
+  grid-template-columns: 120px 1fr;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.row label{
+  text-align:left;
+  font-size:14px;
+  font-weight:bold;
+}
+
+.id-group{
+  display:flex;
+  gap:6px;
+}
+
+.scan-btn{
+  width:auto;
+  padding:6px 10px;
+  font-size:12px;
+  border-radius:8px;
+  background:#2563eb;
+}
