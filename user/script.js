@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(member[4] === pin){
           sessionStorage.setItem("memberID", currentID);
           sessionStorage.setItem("auth", "true");
-          window.location.href = "https://kbk-ops.github.io/OrganizationFund/member/dashboard";
+          window.location.href = "https://kbk-ops.github.io/OrganizationFund/user/dashboard";
         } else {
           errorEl.textContent = "Incorrect PIN";
         }
