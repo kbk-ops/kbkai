@@ -16,3 +16,7 @@ th,td{border:1px solid #ccc;padding:8px;text-align:center}
 th{background:#eee}
 
 .error{color:red;text-align:center;margin-top:10px}
+
+.hidden {
+  display: none;
+}
