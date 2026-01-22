@@ -21,6 +21,6 @@ setInterval(() => {
 
   if (now - last > SESSION_TIME) {
     sessionStorage.clear();
-    window.location.href = "https://kbk-ops.github.io/OrganizationFund/collector";
+    window.location.href = "https://kbk-ops.github.io/OrganizationFund";
   }
 }, 10000);
