@@ -101,7 +101,7 @@ function reloadPage() {
   if (confirm("Do you want to reload this page?")) location.reload();
 }
 
-// Exit page
-function summaryPage(){
-    window.location.href = "https://kbk-ops.github.io/OrganizationFund/collector/dashboard/summary";
-}
+// Summary page
+document.getElementById("summaryPage").addEventListener("click", () => {
+  window.location.href = "https://kbk-ops.github.io/OrganizationFund/collector/dashboard/summary";
+});
