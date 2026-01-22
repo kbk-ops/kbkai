@@ -2,7 +2,7 @@ const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
 const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
 const SHEET_NAME = "Collectors";
 const DEFAULT_PASSWORD = "Letmein123#";
-const SESSION_TIME = 5 * 60 * 1000; // 5 minutes
+const SESSION_TIME = 3 * 60 * 1000; // 3 minutes
 
 // clear fields on back/refresh
 window.onload = () => {
@@ -31,10 +31,9 @@ document.getElementById("loginBtn").onclick = async function () {
     const ids = data.values.slice(1).map(r => r[0].toString().trim());
 
     if (ids.includes(username)) {
-      const expiry = Date.now() + SESSION_TIME;
       sessionStorage.setItem("auth", "true");
-      sessionStorage.setItem("expiry", expiry);
       sessionStorage.setItem("collectorID", username);
+      sessionStorage.setItem("lastActivity", Date.now());
       window.location.href = "https://kbk-ops.github.io/OrganizationFund/collector/dashboard";
     } else {
       errorEl.textContent = "incorrect username or password";
