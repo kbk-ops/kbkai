@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contribution Summary</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="logo">
 
+  <div class="row">
+    <label>ID Number</label>
+    <input id="idNumber" placeholder="Enter ID Number">
+  </div>
+
+  <div class="row">
+    <label>Name</label>
+    <input id="fullName" readonly>
+  </div>
+
+  <div class="row">
+    <label>Barangay</label>
+    <input id="brgy" readonly>
+  </div>
+
+  <div class="btn-row">
+    <button onclick="searchData()">Search</button>
+    <button onclick="goBack()">Back</button>
+  </div>
+
+  <p id="error" class="error"></p>
+
+  <table id="resultTable">
+    <thead>
+      <tr>
+        <th>Year</th>
+        <th>Month</th>
+        <th>Amount</th>
+        <th>Posted</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2"><b>Total</b></td>
+        <td id="totalAmount">0</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
