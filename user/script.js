@@ -2,7 +2,6 @@ const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
 const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
 const SHEET_NAME = "Members";
 const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A:E?key=${API_KEY}`;
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyUfWGCuStXo5TmBXIPmfiPL7e84STdYPU7QX-eGyfjzWKSWCaiRVkRTcZ9A7tXDTk/exec";
 
 // Elements
 const step1 = document.getElementById("step1");
@@ -68,7 +67,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   } else {
     // save new PIN
     try {
-      const WEBAPP_URL = "YOUR_GOOGLE_APPSCRIPT_WEBAPP_URL"; // must create a POST endpoint to update sheet
+      const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyUfWGCuStXo5TmBXIPmfiPL7e84STdYPU7QX-eGyfjzWKSWCaiRVkRTcZ9A7tXDTk/exec"; // must create a POST endpoint to update sheet
       const payload = { id: currentID, pin: pin };
       await fetch(WEBAPP_URL, { method: "POST", body: JSON.stringify(payload) });
 
