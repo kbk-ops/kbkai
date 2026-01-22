@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         sessionStorage.setItem("memberID", currentID);
         sessionStorage.setItem("auth", "true");
-        window.location.href = "https://kbk-ops.github.io/OrganizationFund/member/dashboard";
+        window.location.href = "https://kbk-ops.github.io/OrganizationFund/user/dashboard";
       } catch(err){
         errorEl.textContent = "Error saving PIN";
         console.error(err);
