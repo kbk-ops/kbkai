@@ -24,15 +24,15 @@ toggleBtn.onclick = async function () {
         new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg").play(); // sound on scan
         html5Qr.stop();
         cameraOn = false;
-        toggleBtn.textContent = "Start Camera";
+        toggleBtn.textContent = "Scan";
       }
     );
     cameraOn = true;
-    toggleBtn.textContent = "Stop Camera";
+    toggleBtn.textContent = "Stop";
   } else {
     await html5Qr.stop();
     cameraOn = false;
-    toggleBtn.textContent = "Start Camera";
+    toggleBtn.textContent = "Scan";
   }
 };
 
