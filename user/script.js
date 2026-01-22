@@ -2,6 +2,7 @@ const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
 const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
 const SHEET_NAME = "Members";
 const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A:E?key=${API_KEY}`;
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx8XXVsS1Pb-Vf2eXI6uZ9LY_JgniBh-wzaeWYasJc_roj4XCcEa8Y7sXoZQL-4-2iS/exec";
 
 // Elements
 const step1 = document.getElementById("step1");
@@ -14,68 +15,54 @@ const errorEl = document.getElementById("error");
 let currentID = "";
 let pinExists = false;
 
-// Step 1: check ID
-document.getElementById("nextBtn").addEventListener("click", async () => {
+// STEP 1
+document.getElementById("nextBtn").onclick = async () => {
   errorEl.textContent = "";
   const id = idNumberInput.value.trim();
-  if(!id){ errorEl.textContent = "ID Number is required"; return; }
+  if(!id) return errorEl.textContent = "ID Number is required";
 
-  try {
-    const res = await fetch(MEMBERS_URL);
-    const data = await res.json();
-    const rows = data.values.slice(1); // skip header
+  const res = await fetch(MEMBERS_URL);
+  const data = await res.json();
+  const rows = data.values.slice(1);
 
-    const member = rows.find(r => r[0] === id);
-    if(!member){ errorEl.textContent = "ID not found"; return; }
+  const member = rows.find(r => r[0] == id);
+  if(!member) return errorEl.textContent = "ID not found";
 
-    currentID = id;
-    pinExists = member[4] && member[4].trim() !== "";
+  currentID = id;
+  pinExists = member[4] && member[4].trim() !== "";
 
-    // update step 2
-    pinLabel.textContent = pinExists ? "Enter PIN" : "Create 4-digit PIN";
-    pinInput.value = "";
-    step1.style.display = "none";
-    step2.style.display = "block";
-  } catch(err){
-    errorEl.textContent = "Error fetching data";
-    console.error(err);
-  }
-});
+  pinLabel.textContent = pinExists ? "Enter PIN" : "Create 4-digit PIN";
+  pinInput.value = "";
+  step1.style.display = "none";
+  step2.style.display = "block";
+};
 
-// Step 2: login / create PIN
-document.getElementById("loginBtn").addEventListener("click", async () => {
+// STEP 2
+document.getElementById("loginBtn").onclick = async () => {
+  errorEl.textContent = "";
   const pin = pinInput.value.trim();
-  if(!pin || !/^\d{4}$/.test(pin)){ errorEl.textContent = "PIN must be 4 digits"; return; }
+  if(!/^\d{4}$/.test(pin)) return errorEl.textContent = "PIN must be 4 digits";
+
+  const res = await fetch(MEMBERS_URL);
+  const data = await res.json();
+  const rows = data.values.slice(1);
+  const member = rows.find(r => r[0] == currentID);
 
   if(pinExists){
-    // verify PIN
-    try {
-      const res = await fetch(MEMBERS_URL);
-      const data = await res.json();
-      const rows = data.values.slice(1);
-      const member = rows.find(r => r[0] === currentID);
-      if(member[4] === pin){
-        sessionStorage.setItem("memberID", currentID);
-        sessionStorage.setItem("auth", "true");
-        window.location.href = "https://kbk-ops.github.io/OrganizationFund/user/dashboard";
-      } else {
-        errorEl.textContent = "Incorrect PIN";
-      }
-    } catch(err){
-      errorEl.textContent = "Error verifying PIN";
-    }
+    if(member[4] !== pin) return errorEl.textContent = "Incorrect PIN";
   } else {
-    // save new PIN
-    try {
-      const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyUfWGCuStXo5TmBXIPmfiPL7e84STdYPU7QX-eGyfjzWKSWCaiRVkRTcZ9A7tXDTk/exec"; // must create a POST endpoint to update sheet
-      const payload = { id: currentID, pin: pin };
-      await fetch(WEBAPP_URL, { method: "POST", body: JSON.stringify(payload) });
-
-      sessionStorage.setItem("memberID", currentID);
-      sessionStorage.setItem("auth", "true");
-      window.location.href = "https://kbk-ops.github.io/OrganizationFund/user/dashboard";
-    } catch(err){
-      errorEl.textContent = "Error saving PIN";
-    }
+    await fetch(WEBAPP_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        type:"pin",
+        id: currentID,
+        pin: pin
+      })
+    });
   }
-});
+
+  sessionStorage.setItem("memberID", currentID);
+  sessionStorage.setItem("auth", "true");
+  sessionStorage.setItem("expiry", Date.now() + (60*60*1000));
+  window.location.href = "https://kbk-ops.github.io/OrganizationFund/user/dashboard";
+};
