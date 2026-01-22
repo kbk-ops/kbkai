@@ -17,6 +17,4 @@ th{background:#eee}
 
 .error{color:red;text-align:center;margin-top:10px}
 
-.hidden {
-  display: none;
-}
+.hidden{display:none;}
