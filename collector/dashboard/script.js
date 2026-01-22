@@ -6,33 +6,35 @@ const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzMWIlDBNuuQg8vSc7tS
 const collectorID = sessionStorage.getItem("collectorID");
 
 // QR Scanner variables
-let html5Qr;
-let cameraOn = false;
+let html5QrCode;
+let isScanning = false;
 
 // Start / Stop Camera button
 const toggleBtn = document.getElementById("toggleCam");
-toggleBtn.onclick = async function () {
-  if (!cameraOn) {
-    html5Qr = new Html5Qrcode("reader");
-    await html5Qr.start(
+const readerDiv = document.createElement("div");
+readerDiv.id = "reader";
+toggleBtn.parentElement.after(readerDiv);
+
+toggleBtn.onclick = async () => {
+  if(!isScanning){
+    html5QrCode = new Html5Qrcode("reader");
+    isScanning = true;
+    toggleBtn.textContent = "Stop";
+
+    await html5QrCode.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: 250 },
-      qr => {
-        document.getElementById("idNumber").value = qr;
-        loadMember();
-        navigator.vibrate(200); // vibrate on scan
-        new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg").play(); // sound on scan
-        html5Qr.stop();
-        cameraOn = false;
-        toggleBtn.textContent = "Start Camera";
+      (decodedText) => {
+        document.getElementById("idNumber").value = decodedText;
+        html5QrCode.stop();
+        isScanning = false;
+        toggleBtn.textContent = "Scan";
       }
     );
-    cameraOn = true;
-    toggleBtn.textContent = "Stop Camera";
   } else {
-    await html5Qr.stop();
-    cameraOn = false;
-    toggleBtn.textContent = "Start Camera";
+    await html5QrCode.stop();
+    isScanning = false;
+    toggleBtn.textContent = "Scan";
   }
 };
 
