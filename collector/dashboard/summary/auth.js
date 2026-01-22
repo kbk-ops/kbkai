@@ -8,7 +8,7 @@ const lastActivity = sessionStorage.getItem("lastActivity");
 // redirect if not logged in
 if (!isAuth || !lastActivity) {
   sessionStorage.clear();
-  window.location.href = "https://kbk-ops.github.io/OrganizationFund/collector";
+  window.location.href = "https://kbk-ops.github.io/OrganizationFund";
 }
 
 // reset last activity on user interaction
