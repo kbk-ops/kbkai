@@ -16,11 +16,6 @@ function go(page){
   location.href = page;
 }
 
-function logout(){
-  sessionStorage.clear();
-  location.href="../index.html";
-}
-
 fetch(MEMBERS_URL)
 .then(r=>r.json())
 .then(d=>{
