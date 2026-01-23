@@ -1,15 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 <body>
-  <div class="container">
-    <h2 id="welcome"></h2>
 
-    <div class="card">
-      <p><b>ID:</b> <span id="uid"></span></p>
-      <p><b>Name:</b> <span id="name"></span></p>
-      <p><b>Barangay:</b> <span id="brgy"></span></p>
-    </div>
+<div class="app">
 
-    <button onclick="logout()">Logout</button>
+  <div class="topbar">
+    <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="top-logo">
+    <div class="logout" onclick="logout()">⎋</div>
   </div>
 
-<script src="dashboard.js"></script>
+  <div id="homeTab" class="tab-content active">
+    <h2 id="greet"></h2>
+
+    <div class="grid">
+      <div class="card" onclick="go('perks')">Membership<br>Perks</div>
+      <div class="card" onclick="go('soon1')">Soon</div>
+      <div class="card" onclick="go('soon2')">Soon</div>
+      <div class="card" onclick="go('soon3')">Soon</div>
+    </div>
+  </div>
+
+  <div id="contributionTab" class="tab-content">
+    <select id="yearFilter" onchange="loadContributions()">
+      <option value="all">All</option>
+      <option value="2026">2026</option>
+      <option value="2027">2027</option>
+    </select>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Amount</th>
+          <th>Posted</th>
+        </tr>
+      </thead>
+      <tbody id="contriBody"></tbody>
+      <tfoot>
+        <tr>
+          <th>Total</th>
+          <th id="totalAmt"></th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div id="aboutTab" class="tab-content">
+    <h3>Kasangga ng Batang Kankaloo Association Inc.</h3>
+    <p>
+      Our aim is to uplift the quality of life of members through livelihood programs, education,
+      skills training, and community development programs that promote self-reliance and
+      well-being with the help of one another, other private entities and local government unit
+    </p>
+  </div>
+
+  <div class="bottombar">
+    <div onclick="showTab('homeTab')">Home</div>
+    <div onclick="showTab('contributionTab')">Contribution</div>
+    <div onclick="showTab('aboutTab')">About</div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
 </body>
+</html>
