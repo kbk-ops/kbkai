@@ -1,12 +1,9 @@
 // ===== AUTH CHECK =====
-const memberID = sessionStorage.getItem("memberID");
-
-// If not logged in, redirect to login page
-if (!memberID) {
+if (!sessionStorage.getItem("memberID")) {
   location.href = "https://kbk-ops.github.io/OrganizationFund";
 }
 
-// ===== LOGOUT FUNCTION (used by logout icon too) =====
+// ===== GLOBAL LOGOUT (used everywhere) =====
 function logout() {
   sessionStorage.clear();
   location.href = "https://kbk-ops.github.io/OrganizationFund";
