@@ -65,21 +65,32 @@ body {
   display:flex;
   background:#f44336;
   color:white;
+  height:60px;
+  position:relative;
 }
 
 .bottombar div {
   flex:1;
-  padding:8px;
-  text-align:center;
-  cursor:pointer;
   display:flex;
-  flex-direction:column;
+  justify-content:center;
   align-items:center;
-  gap:4px;
 }
 
 .bottombar img {
-  height:30px;
+  height:26px;
+}
+
+/* Center floating button */
+.center-btn {
+  position:relative;
+}
+
+.center-btn img {
+  height:48px;
+  margin-top:-20px;
+  background:white;
+  border-radius:50%;
+  padding:8px;
 }
 
 table {
