@@ -1,1 +1,66 @@
+* {
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
 
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f2f4f7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background logo */
+.bg-logo {
+  position: absolute;
+  inset: 0;
+  background: url("https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png") center/contain no-repeat;
+  opacity: 0.5;
+  z-index: 0;
+}
+
+/* Main card */
+.container {
+  background: rgba(255,255,255,0.9);
+  padding: 20px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 10px;
+}
+
+.card {
+  margin-top: 20px;
+  text-align: left;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #1e7802;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #145a01;
+}
