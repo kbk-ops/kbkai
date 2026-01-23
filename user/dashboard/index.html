@@ -11,9 +11,9 @@
 <div class="app">
 
   <div class="topbar">
-    <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="top-logo">
-    <div class="logout" onclick="logout()">⎋</div>
-  </div>
+  <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="top-logo">
+  <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/Icons/logout.png" class="logout-icon" onclick="logout()">
+</div>
 
   <div id="homeTab" class="tab-content active">
     <h2 id="greet"></h2>
@@ -53,7 +53,7 @@
   </div>
 
   <div id="aboutTab" class="tab-content">
-    <h3>Kasangga ng Batang Kankaloo Association Inc.</h3>
+    <h2>Kasangga ng Batang Kankaloo Association Inc.</h2>
     <p>
       Our aim is to uplift the quality of life of members through livelihood programs, education,
       skills training, and community development programs that promote self-reliance and
@@ -62,10 +62,19 @@
   </div>
 
   <div class="bottombar">
-    <div onclick="showTab('homeTab')">Home</div>
-    <div onclick="showTab('contributionTab')">Contribution</div>
-    <div onclick="showTab('aboutTab')">About</div>
+  <div onclick="showTab('homeTab')">
+    <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/Icons/home.png">
+    <span>Home</span>
   </div>
+  <div onclick="showTab('contributionTab')">
+    <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/Icons/contribution.png">
+    <span>Contribution</span>
+  </div>
+  <div onclick="showTab('aboutTab')">
+    <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/Icons/about.png">
+    <span>About</span>
+  </div>
+</div>
 
 </div>
 
