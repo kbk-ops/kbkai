@@ -1,26 +1,33 @@
-const SESSION_TIME = 1 * 60 * 1000;
-const auth = sessionStorage.getItem("auth");
-const lastActivity = sessionStorage.getItem("lastActivity");
+// ===== AUTH CHECK =====
+const memberID = sessionStorage.getItem("memberID");
 
-if (!auth || !lastActivity) {
-  sessionStorage.clear();
-  window.location.href = "https://kbk-ops.github.io/OrganizationFund";
+// If not logged in, redirect to login page
+if (!memberID) {
+  location.href = "https://kbk-ops.github.io/OrganizationFund";
 }
 
-// update activity on any interaction
-["click","mousemove","keydown","touchstart","scroll"].forEach(evt => {
-  document.addEventListener(evt, () => {
-    sessionStorage.setItem("lastActivity", Date.now());
-  });
+// ===== LOGOUT FUNCTION (used by logout icon too) =====
+function logout() {
+  sessionStorage.clear();
+  location.href = "https://kbk-ops.github.io/OrganizationFund";
+}
+
+// ===== IDLE AUTO-LOGOUT =====
+let idleTimer;
+const IDLE_LIMIT = 2 * 60 * 1000; // 2 minutes in milliseconds
+
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    alert("You have been logged out due to inactivity.");
+    logout();
+  }, IDLE_LIMIT);
+}
+
+// User activity events that reset the timer
+["mousemove", "keydown", "click", "scroll", "touchstart"].forEach(event => {
+  document.addEventListener(event, resetIdleTimer, true);
 });
 
-// idle checker
-setInterval(() => {
-  const now = Date.now();
-  const last = parseInt(sessionStorage.getItem("lastActivity"));
-
-  if (now - last > SESSION_TIME) {
-    sessionStorage.clear();
-    window.location.href = "https://kbk-ops.github.io/OrganizationFund";
-  }
-}, 10000);
+// Start timer on load
+resetIdleTimer()
