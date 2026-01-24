@@ -53,7 +53,7 @@ body {
 .card {
   background:linear-gradient(#eaffda,#9ccc7c);
   border-radius:20px;
-  height:180px;
+  height:170px;
   display:flex;
   justify-content:center;
   align-items:center;
