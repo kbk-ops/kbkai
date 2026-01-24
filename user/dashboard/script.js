@@ -16,25 +16,13 @@ function go(page){
   location.href = page;
 }
 
-function loadMemberInfo() {
-  fetch(MEMBERS_URL)
-    .then(res => res.json())
-    .then(data => {
-      const rows = data.values.slice(1); // skip header
-      const user = rows.find(r => r[0] == memberID);
-      if (!user) return;
-
-      const name = user[1] || "Member";
-      const photo = (user[5] || "").trim() || "https://via.placeholder.com/100";
-
-      // Set greeting
-      document.getElementById("greet").textContent = `Hi ${name}!`;
-      // Set profile picture
-      const profileImg = document.getElementById("profilePic");
-      if (profileImg) profileImg.src = photo;
-    })
-    .catch(err => console.error("Error loading member info:", err));
-}
+fetch(MEMBERS_URL)
+  .then(r=>r.json())
+  .then(d=>{
+    const rows=d.values.slice(1);
+    const user=rows.find(r=>r[0]==memberID);
+    document.getElementById("greet").textContent="Hi " + user[1] + "!";
+});
 
 function loadContributions(){
   fetch(CONTRI_URL)
@@ -60,7 +48,4 @@ function loadContributions(){
     document.getElementById("totalAmt").textContent=total;
   });
 }
-
-window.onload = () => {
-  loadMemberInfo();
   loadContributions();
