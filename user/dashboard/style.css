@@ -130,3 +130,11 @@ select {
   padding-top: 20px;
   margin-top: 40px;
 }
+
+.clips {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
