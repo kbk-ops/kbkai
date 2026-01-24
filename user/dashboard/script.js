@@ -61,4 +61,6 @@ function loadContributions(){
   });
 }
 
-loadContributions();
+window.onload = () => {
+  loadMemberInfo();
+  loadContributions();
