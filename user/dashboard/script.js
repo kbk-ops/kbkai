@@ -16,23 +16,25 @@ function go(page){
   location.href = page;
 }
 
-window.onload = () => {
-fetch(MEMBERS_URL)
-.then(r => r.json())
-.then(d => {
-  const rows = d.values.slice(1);
-  const user = rows.find(r => r[0] == memberID);
+function loadMemberInfo() {
+  fetch(MEMBERS_URL)
+    .then(res => res.json())
+    .then(data => {
+      const rows = data.values.slice(1); // skip header
+      const user = rows.find(r => r[0] == memberID);
+      if (!user) return;
 
-  if (!user) return;
+      const name = user[1] || "Member";
+      const photo = (user[5] || "").trim() || "https://via.placeholder.com/100";
 
-  const name = user[1];     // Column B
-  const photo = user[5];    // Column F
-
-  document.getElementById("greet").textContent = `Hi ${name}!`;
-  const photo = user[5].trim();
-  document.getElementById("profilePic").src = photo || "https://via.placeholder.com/100";
-});
-};
+      // Set greeting
+      document.getElementById("greet").textContent = `Hi ${name}!`;
+      // Set profile picture
+      const profileImg = document.getElementById("profilePic");
+      if (profileImg) profileImg.src = photo;
+    })
+    .catch(err => console.error("Error loading member info:", err));
+}
 
 function loadContributions(){
   fetch(CONTRI_URL)
