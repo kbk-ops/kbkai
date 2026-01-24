@@ -125,9 +125,8 @@ select {
   margin-bottom:10px
 }
 
-.divider {
-  border: none;
-  height: 2px;
-  background-color: black;
-  margin: 20px 0;
+.line {
+  height: 1px;
+  background: #ddd;
+  width: 100%;
 }
