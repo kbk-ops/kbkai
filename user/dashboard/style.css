@@ -119,12 +119,6 @@ select {
   margin-bottom:10px;
 }
 
-.logo{
-  max-width:320px;
-  width:100%;
-  margin-bottom:10px
-}
-
 .line {
   border-top: 6px solid #000; /* thickness + color */
   padding-top: 20px;
