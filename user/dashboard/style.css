@@ -126,7 +126,7 @@ select {
 }
 
 .line {
-  height: 1px;
-  background: #ddd;
-  width: 100%;
+  border-top: 6px solid #000; /* thickness + color */
+  padding-top: 20px;
+  margin-top: 40px;
 }
