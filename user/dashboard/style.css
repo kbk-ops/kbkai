@@ -53,13 +53,14 @@ body {
 .card {
   background:linear-gradient(#eaffda,#9ccc7c);
   border-radius:20px;
-  height:150px;
+  height:180px;
   display:flex;
   justify-content:center;
   align-items:center;
   font-weight:bold;
   text-align:center;
   cursor:pointer;
+  font-size: 24px;
 }
 
 .bottombar {
