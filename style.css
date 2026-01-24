@@ -36,14 +36,14 @@ body {
 
 .portal-btn {
   padding: 16px;
-  font-size: 18px;
+  font-size: 24px;
   border: none;
   border-radius: 12px;
   cursor: pointer;
   background: #3ea303;
   color: white;
   transition: 0.2s;
-  height: 150px;
+  height: 130px;
 }
 
 .portal-btn:hover {
