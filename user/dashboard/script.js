@@ -29,6 +29,7 @@ fetch(MEMBERS_URL)
   const photo = user[5];    // Column F
 
   document.getElementById("greet").textContent = `Hi ${name}!`;
+  const photo = user[5].trim();
   document.getElementById("profilePic").src = photo || "https://via.placeholder.com/100";
 });
 };
