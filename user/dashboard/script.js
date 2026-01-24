@@ -16,6 +16,7 @@ function go(page){
   location.href = page;
 }
 
+window.onload = () => {
 fetch(MEMBERS_URL)
 .then(r => r.json())
 .then(d => {
@@ -30,6 +31,7 @@ fetch(MEMBERS_URL)
   document.getElementById("greet").textContent = `Hi ${name}!`;
   document.getElementById("profilePic").src = photo || "https://via.placeholder.com/100";
 });
+};
 
 function loadContributions(){
   fetch(CONTRI_URL)
