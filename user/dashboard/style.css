@@ -132,17 +132,3 @@ select {
   display: block;
   object-fit: contain;
 }
-
-.greet-box {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.profile-pic {
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #1e9b43;
-}
