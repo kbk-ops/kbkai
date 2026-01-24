@@ -17,11 +17,18 @@ function go(page){
 }
 
 fetch(MEMBERS_URL)
-.then(r=>r.json())
-.then(d=>{
-  const rows=d.values.slice(1);
-  const user=rows.find(r=>r[0]==memberID);
-  document.getElementById("greet").textContent="Hi " + user[1] + "!";
+.then(r => r.json())
+.then(d => {
+  const rows = d.values.slice(1);
+  const user = rows.find(r => r[0] == memberID);
+
+  if (!user) return;
+
+  const name = user[1];     // Column B
+  const photo = user[5];    // Column F
+
+  document.getElementById("greet").textContent = `Hi ${name}!`;
+  document.getElementById("profilePic").src = photo || "https://via.placeholder.com/100";
 });
 
 function loadContributions(){
