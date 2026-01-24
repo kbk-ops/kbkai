@@ -13,7 +13,6 @@ body {
   background:#fff;
   display:flex;
   flex-direction:column;
-  position:relative;
 }
 
 .topbar {
@@ -39,6 +38,7 @@ body {
   overflow-y:auto;
   padding:20px;
   padding-Bottom:80px;
+  display:none;
 }
 
 .tab-content.active {
