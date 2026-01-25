@@ -84,8 +84,10 @@ body{
   object-fit:cover;
 }
 
-.card-back{
-  transform:rotateY(180deg);
+.card-back {
+  transform: rotateY(180deg);
+  background-color: #fff;
+  padding: 20px;
 }
 
 .card-back img{
