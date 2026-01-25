@@ -65,15 +65,15 @@
 
   <!-- BOTTOM BAR -->
   <div class="bottombar">
-  <div onclick="showTab('homeTab')">
+  <div onclick="goDashboard('homeTab')">
     <div><img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/Icons/home.png"></div>
   </div>
     
-    <div class="center-btn" onclick="showTab('contributionTab')">
+    <div class="center-btn" onclick="goDashboard('contributionTab')">
       <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/Icons/contribution.png">
     </div>
 
-   <div onclick="showTab('aboutTab')"> 
+   <div onclick="goDashboard('aboutTab')"> 
     <div><img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/Icons/about.png"></div>
   </div>
 </div>
@@ -87,6 +87,7 @@
   </div>
 </div>
 
-<script src="script.js"></script>
+  <script src="../nav.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
