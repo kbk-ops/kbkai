@@ -1,11 +1,10 @@
 const cards = document.querySelectorAll(".card");
 const fullscreen = document.getElementById("fullscreen");
 const fsText = document.getElementById("fs-text");
-const fsInner = document.getElementById("fs-inner");
 
 cards.forEach(card=>{
   card.addEventListener("click",()=>{
-    card.classList.add("flipped");
+    card.classList.add("flipped"); // triggers blank flip
 
     setTimeout(() => {
       const back = card.querySelector(".card-back");
