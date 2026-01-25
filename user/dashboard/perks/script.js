@@ -18,3 +18,7 @@ cards.forEach(card=>{
 function closeFullscreen(){
   fullscreen.classList.remove("active");
 }
+
+function go(page){
+  location.href = page;
+}
