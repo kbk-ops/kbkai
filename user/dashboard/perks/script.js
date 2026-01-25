@@ -1,6 +1,7 @@
 const cards = document.querySelectorAll(".card");
 const fullscreen = document.getElementById("fullscreen");
 const fsText = document.getElementById("fs-text");
+const fsInner = document.getElementById("fs-inner");
 
 cards.forEach(card=>{
   card.addEventListener("click",()=>{
