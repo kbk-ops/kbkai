@@ -7,14 +7,17 @@ cards.forEach(card=>{
   card.addEventListener("click",()=>{
     card.classList.add("flipped");
 
-    setTimeout(()=>{
-      fsText.textContent = card.dataset.text;
+    setTimeout(() => {
+      const back = card.querySelector(".card-back");
+      if (back) {
+        fsText.innerHTML = back.innerHTML; // Show the back div content
+      }
       fullscreen.classList.add("active");
       card.classList.remove("flipped");
-    },600);
+    }, 600);
   });
 });
 
-function closeFullscreen(){
+function closeFullscreen() {
   fullscreen.classList.remove("active");
 }
