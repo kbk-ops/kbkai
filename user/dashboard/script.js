@@ -49,3 +49,4 @@ function loadContributions(){
   });
 }
   loadContributions();
+  initDashboardTabs();
