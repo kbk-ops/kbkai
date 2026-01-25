@@ -1,32 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Image Grid</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flip Gallery</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="image-grid">
-    <a href="page1.html" class="image-button">
-        <img src="images/img1.jpg" alt="Page 1">
-    </a>
-    <a href="page2.html" class="image-button">
-        <img src="images/img2.jpg" alt="Page 2">
-    </a>
-    <a href="page3.html" class="image-button">
-        <img src="images/img3.jpg" alt="Page 3">
-    </a>
-    <a href="page4.html" class="image-button">
-        <img src="images/img4.jpg" alt="Page 4">
-    </a>
-    <a href="page5.html" class="image-button">
-        <img src="images/img5.jpg" alt="Page 5">
-    </a>
-    <a href="page6.html" class="image-button">
-        <img src="images/img6.jpg" alt="Page 6">
-    </a>
+<div class="gallery">
+  <div class="col">
+    <div class="card" data-text="Ejist is a technological school located near Monumento Caloocan City">
+      <img src="https://raw.github.com/kbk-ops/OrganizationFund/main/Clips/ejist.jpg">
+    </div>
+    <div class="card" data-text="is a school for senior highshool that is located in Lagro Quezon City">
+      <img src="https://raw.github.com/kbk-ops/OrganizationFund/main/Clips/jbest.png">
+    </div>
+    <div class="card" data-text="is a optical shop that provides premium eye wear and has branch in carriedo and monumento">
+      <img src="https://raw.github.com/kbk-ops/OrganizationFund/main/Clips/escashop.png">
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card" data-text="Is a laboratory and diagnostic clinic theat provide 10% discount to all members of KBK">
+      <img src="https://raw.github.com/kbk-ops/OrganizationFund/main/Clips/lnslab.png">
+    </div>
+    <div class="card" data-text="is a institution that offers free funeral service and located at malabon, caloocan and valenzuela">
+      <img src="https://raw.github.com/kbk-ops/OrganizationFund/main/Clips/mbqbossing.png">
+    </div>
+  </div>
 </div>
 
+<div class="fullscreen" id="fullscreen">
+  <div class="fs-card">
+    <div class="back-btn" onclick="closeFullscreen()">↩</div>
+    <p id="fs-text"></p>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
