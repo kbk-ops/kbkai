@@ -93,7 +93,7 @@ body{
 
 /* FULLSCREEN */
 .fullscreen{
-  position: fixed;
+  position:relative;
   inset:0;
   background:#000;
   display:none;
@@ -123,14 +123,18 @@ body{
   to{transform:rotateY(0deg);}
 }
 
-.back-btn{
-  position:absolute;
-  top:5px;
-  left:20px;
-  font-size:40px;
-  cursor:pointer;
-  z-index:10;
+.back-btn {
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  cursor: pointer;
 }
+
+.back-btn img {
+  width: 32px;
+  height: 32px;
+}
+
 
 .bottombar{
   position:fixed;
