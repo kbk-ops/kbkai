@@ -88,7 +88,7 @@ body{
   transform: rotateY(180deg);
   background-color: #fff;
   padding: 20px;
-  overflow-y: auto; /* in case content is long */
+  visibility: hidden; /* hide preview */
 }
 
 .card-back img{
