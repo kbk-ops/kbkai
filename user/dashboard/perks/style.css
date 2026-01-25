@@ -89,6 +89,7 @@ body{
   background-color: #fff;
   padding: 20px;
   visibility: hidden; /* hide preview */
+  overflow-y: auto;
 }
 
 .card-back img{
