@@ -1,20 +1,18 @@
 const cards = document.querySelectorAll(".card");
 const fullscreen = document.getElementById("fullscreen");
 const fsText = document.getElementById("fs-text");
-const fsInner = document.getElementById("fs-inner");
 
-cards.forEach(card=>{
-  card.addEventListener("click",()=>{
-    card.classList.add("flipped");
+cards.forEach(card => {
+  card.addEventListener("click", () => {
+    // Get the back content of the clicked card
+    const backContent = card.querySelector(".card-back").innerHTML;
 
-    setTimeout(()=>{
-      fsText.textContent = card.dataset.text;
-      fullscreen.classList.add("active");
-      card.classList.remove("flipped");
-    },600);
+    // Show fullscreen with that content
+    fsText.innerHTML = backContent;
+    fullscreen.classList.add("active");
   });
 });
 
-function closeFullscreen(){
+function closeFullscreen() {
   fullscreen.classList.remove("active");
 }
