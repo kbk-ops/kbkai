@@ -88,7 +88,6 @@ body{
   transform: rotateY(180deg);
   background-color: #fff;
   padding: 20px;
-  visibility: hidden; /* hide preview */
 }
 
 .card-back img{
