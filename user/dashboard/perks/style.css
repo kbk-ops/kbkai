@@ -100,13 +100,13 @@ body{
 
 /* FULLSCREEN */
 .fullscreen{
-  position:fixed;
   inset:0;
   background:#000;
   display:none;
   justify-content:center;
   align-items:center;
   perspective:1200px;
+  overflow-y:auto;
 }
 
 .fullscreen.active{
