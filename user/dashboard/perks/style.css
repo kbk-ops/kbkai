@@ -111,11 +111,10 @@ body{
   height:100%;
   background:#fff;
   position:relative;
-  padding:80px 20px 20px;
+  padding:60px 20px 20px;
   overflow-y:auto;
   transform:rotateY(180deg);
   animation:flipIn 0.6s forwards;
-  padding-top: calc(70px + env(safe-area-inset-top));
 }
 
 @keyframes flipIn{
