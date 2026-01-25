@@ -110,7 +110,6 @@ body{
 
 .fullscreen.active{
   display:flex;
-  overflow-y:auto;
 }
 
 .fs-inner{
