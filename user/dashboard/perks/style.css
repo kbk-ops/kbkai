@@ -96,7 +96,7 @@ body{
   text-align:center;
   padding:40px;
   transform:rotateY(180deg);
-  animation:flipIn 0.6s forwards;
+  animation:flipIn 0.3s forwards;
 }
 
 @keyframes flipIn{
