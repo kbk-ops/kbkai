@@ -37,7 +37,7 @@ function toggleCard() {
   if (cards.style.display === 'none') {
     cards.style.display = 'block';
   } else {
-    card-back.style.display = 'none';
+    cards.style.display = 'none';
     // Stop the video by reloading the iframe
     iframe.src = iframe.src;
   }
