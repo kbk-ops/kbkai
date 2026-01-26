@@ -133,9 +133,13 @@ body{
   z-index: 900;
 }
 
-@keyframes flipIn{
-  from{transform:rotateY(180deg);}
-  to{transform:rotateY(0deg);}
+@keyframes flipIn {
+  from {
+    transform: translate(-50%, -50%) rotateY(180deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotateY(0deg);
+  }
 }
 
 .back-btn {
