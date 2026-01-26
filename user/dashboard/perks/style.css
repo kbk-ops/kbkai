@@ -179,11 +179,11 @@ body{
     opacity: 1;
   }
   50% {
-    transform: translate(-50%, -50%) rotateY(120deg) scale(0.7);
+    transform: translate(-50%, -50%) rotateY(90deg) scale(0.7);
     opacity: 0.8;
   }
   100% {
-    transform: translate(-50%, -50%) rotateY(240deg) scale(0.5);
+    transform: translate(-50%, -50%) rotateY(180deg) scale(0.4);
     opacity: 0;
   }
 }
