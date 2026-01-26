@@ -174,7 +174,7 @@ body{
 }
 @keyframes flipOut {
   from { transform: translate(-50%, -50%) rotateY(0deg); }
-  to   { transform: translate(-50%, -50%) rotateY(180deg); }
+  to   { transform: translate(-50%, -50%) rotateY(360deg); }
 }
 
 .bottombar{
