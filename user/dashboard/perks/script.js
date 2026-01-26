@@ -15,15 +15,6 @@ cards.forEach(card => {
       fullscreen.classList.add("active");
       card.classList.remove("flipped");
 
-      // Optional: autoplay video if it exists in the card
-      const iframe = fullscreen.querySelector('iframe');
-      if (iframe && iframe.src.indexOf('autoplay=1') === -1) {
-        iframe.src += (iframe.src.includes('?') ? '&' : '?') + 'autoplay=1';
-      }
-    }, 600);
-  });
-});
-
 function closeFullscreen() {
   // Add flip-back animation
   fsInner.classList.add('flip-back');
