@@ -123,6 +123,19 @@ body{
   box-shadow: 0 25px 60px rgba(0,0,0,0.3);
 }
 
+.fs-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.fs-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(3px);
+}
+
 @keyframes flipIn{
   from{transform:rotateY(180deg);}
   to{transform:rotateY(0deg);}
