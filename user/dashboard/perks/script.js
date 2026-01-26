@@ -14,6 +14,9 @@ cards.forEach(card => {
       }
       fullscreen.classList.add("active");
       card.classList.remove("flipped");
+    }, 600);
+  });
+});
 
 function closeFullscreen() {
   // Add flip-back animation
