@@ -95,7 +95,7 @@ body{
 .fullscreen{
   position:fixed;
   inset:0;
-  background:#000;
+  background:none;
   display:none;
   justify-content:center;
   align-items:center;
@@ -127,6 +127,7 @@ body{
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
@@ -146,6 +147,7 @@ body{
   position: fixed;
   top: 5px;
   left: 10px;
+  z-index: 1100;
   cursor: pointer;
 }
 
