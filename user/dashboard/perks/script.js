@@ -3,8 +3,6 @@ const fullscreen = document.getElementById("fullscreen");
 const fsText = document.getElementById("fs-text");
 const fsInner = document.getElementById('fs-inner');
 
-const iframe = document.getElementById('myVideo');
-
 cards.forEach(card=>{
   card.addEventListener("click",()=>{
     card.classList.add("flipped"); // triggers blank flip
@@ -32,13 +30,10 @@ function closeFullscreen() {
   });
 }
 
-function toggleCard() {
-  
-  if (cards.style.display === 'none') {
-    cards.style.display = 'block';
-  } else {
-    cards.style.display = 'none';
-    // Stop the video by reloading the iframe
-    iframe.src = iframe.src;
-  }
+// STOP THE VIDEO when the fullscreen closes
+    const iframe = document.getElementById('myVideo');
+    if (iframe) {
+      iframe.src = iframe.src; // reload iframe to stop playback
+    }
+  });
 }
