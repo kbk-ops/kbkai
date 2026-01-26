@@ -3,7 +3,6 @@ const fullscreen = document.getElementById("fullscreen");
 const fsText = document.getElementById("fs-text");
 const fsInner = document.getElementById('fs-inner');
 
-const card = document.getElementById('cardContent');
 const iframe = document.getElementById('myVideo');
 
 cards.forEach(card=>{
@@ -35,8 +34,8 @@ function closeFullscreen() {
 
 function toggleCard() {
   
-  if (card-back.style.display === 'none') {
-    card-back.style.display = 'block';
+  if (cards.style.display === 'none') {
+    cards.style.display = 'block';
   } else {
     card-back.style.display = 'none';
     // Stop the video by reloading the iframe
