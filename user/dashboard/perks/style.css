@@ -95,15 +95,12 @@ body{
 .fullscreen{
   position:fixed;
   inset:0;
-  background:none;
   display:none;
-  justify-content:center;
-  align-items:center;
-  perspective:1200px;
+  z-index: 900;
 }
 
 .fullscreen.active{
-  display:flex;
+  display:block;
 }
 
 .fs-inner{
@@ -129,9 +126,12 @@ body{
   background: rgba(0,0,0,0.45);
   backdrop-filter: blur(3px);
   opacity: 0;
-  pointer-events: none;
   transition: opacity 0.3s;
   z-index: 900;
+}
+
+.fullscreen.active .fs-backdrop {
+  opacity: 1;
 }
 
 @keyframes flipIn {
