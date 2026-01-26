@@ -3,6 +3,9 @@ const fullscreen = document.getElementById("fullscreen");
 const fsText = document.getElementById("fs-text");
 const fsInner = document.getElementById('fs-inner');
 
+const card = document.getElementById('cardContent');
+const iframe = document.getElementById('myVideo');
+
 cards.forEach(card=>{
   card.addEventListener("click",()=>{
     card.classList.add("flipped"); // triggers blank flip
@@ -28,4 +31,15 @@ function closeFullscreen() {
     fsInner.classList.remove('flip-back'); // reset
     fsInner.removeEventListener('animationend', handler);
   });
+}
+
+function toggleCard() {
+  
+  if (card.style.display === 'none') {
+    card.style.display = 'block';
+  } else {
+    card.style.display = 'none';
+    // Stop the video by reloading the iframe
+    iframe.src = iframe.src;
+  }
 }
