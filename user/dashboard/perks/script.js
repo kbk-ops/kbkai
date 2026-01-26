@@ -35,10 +35,10 @@ function closeFullscreen() {
 
 function toggleCard() {
   
-  if (card.style.display === 'none') {
-    card.style.display = 'block';
+  if (card-back.style.display === 'none') {
+    card-back.style.display = 'block';
   } else {
-    card.style.display = 'none';
+    card-back.style.display = 'none';
     // Stop the video by reloading the iframe
     iframe.src = iframe.src;
   }
