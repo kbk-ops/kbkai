@@ -1,6 +1,7 @@
 const cards = document.querySelectorAll(".card");
 const fullscreen = document.getElementById("fullscreen");
 const fsText = document.getElementById("fs-text");
+const fsInner = document.getElementById('fs-inner');
 
 cards.forEach(card=>{
   card.addEventListener("click",()=>{
@@ -18,5 +19,13 @@ cards.forEach(card=>{
 });
 
 function closeFullscreen() {
-  fullscreen.classList.remove("active");
+  // Add flip-back animation
+  fsInner.classList.add('flip-back');
+
+  // Wait for animation to finish before hiding
+  fsInner.addEventListener('animationend', function handler() {
+    fullscreen.classList.remove('active');
+    fsInner.classList.remove('flip-back'); // reset
+    fsInner.removeEventListener('animationend', handler);
+  });
 }
