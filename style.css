@@ -1,27 +1,43 @@
 * {
   box-sizing: border-box;
   font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
+/* Body & Particle Background */
 body {
-  margin: 0;
   min-height: 100vh;
-  background: linear-gradient(180deg, #2fae0a 0%, #1e7802 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 16px;
+  position: relative;
+  overflow: hidden;
+  background: #e0ffe0; /* light green base */
+}
+
+#particles-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(120deg, #d4f8d6, #ffe1b3, #d4f8d6);
 }
 
 /* Container */
 .container {
   width: 100%;
   max-width: 980px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
   padding: 24px;
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 /* Logo */
@@ -59,28 +75,18 @@ body {
   transition: background 0.2s ease, transform 0.1s ease;
 }
 
-/* Darker green on hover */
+/* Hover effect */
 .portal-btn:hover {
   background: #3ea303;
 }
 
 /* Shake animation */
 @keyframes shake {
-  0% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-8px);
-  }
-  50% {
-    transform: translateX(8px);
-  }
-  75% {
-    transform: translateX(-8px);
-  }
-  100% {
-    transform: translateX(0);
-  }
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-8px); }
+  100% { transform: translateX(0); }
 }
 
 .portal-btn.shake {
@@ -93,7 +99,7 @@ body {
   color: #555;
 }
 
-/* Desktop tweak */
+/* Desktop tweaks */
 @media (min-width: 768px) {
   .portal-btn {
     font-size: 20px;
