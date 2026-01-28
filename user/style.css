@@ -71,7 +71,7 @@ button {
   margin-top: 12px;
   border-radius: 10px;
   border: none;
-  background: #1e7802;
+  background: linear-gradient(180deg, #2fae0a 0%, #1e7802 100%);
   color: #fff;
   font-weight: bold;
   cursor: pointer;
@@ -79,7 +79,7 @@ button {
 }
 
 button:hover {
-  background: #145a01;
+  background: #3ea303;
   transform: scale(1.03);
 }
 
