@@ -1,17 +1,24 @@
 // ===== AUTH CHECK =====
 if (!sessionStorage.getItem("memberID")) {
-  location.href = "https://kbk-ops.github.io/OrganizationFund";
+  location.replace("https://kbk-ops.github.io/OrganizationFund");
 }
 
-// ===== GLOBAL LOGOUT (used everywhere) =====
+// ===== HANDLE BACK/FORWARD CACHE =====
+window.addEventListener("pageshow", function (event) {
+  if (event.persisted && !sessionStorage.getItem("memberID")) {
+    location.replace("https://kbk-ops.github.io/OrganizationFund");
+  }
+});
+
+// ===== GLOBAL LOGOUT =====
 function logout() {
   sessionStorage.clear();
-  location.href = "https://kbk-ops.github.io/OrganizationFund";
+  location.replace("https://kbk-ops.github.io/OrganizationFund");
 }
 
 // ===== IDLE AUTO-LOGOUT =====
 let idleTimer;
-const IDLE_LIMIT = 2 * 60 * 1000; // 2 minutes in milliseconds
+const IDLE_LIMIT = 2 * 60 * 1000;
 
 function resetIdleTimer() {
   clearTimeout(idleTimer);
@@ -21,10 +28,8 @@ function resetIdleTimer() {
   }, IDLE_LIMIT);
 }
 
-// User activity events that reset the timer
 ["mousemove", "keydown", "click", "scroll", "touchstart"].forEach(event => {
   document.addEventListener(event, resetIdleTimer, true);
 });
 
-// Start timer on load
-resetIdleTimer()
+resetIdleTimer();
