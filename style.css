@@ -1,59 +1,102 @@
 * {
   box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  background: #f2f4f7;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f2f4f7;
+  padding: 16px;
 }
 
 /* Container */
 .container {
   width: 100%;
-  height:auto;
-  max-width: 1024px;
+  max-width: 980px;
   background: #ffffff;
   padding: 24px;
   border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
+/* Logo */
 .logo {
   width: 100%;
-  max-width: 360px;
-  margin-bottom: 8px;
+  max-width: 420px;
+  height: auto;
+  margin-bottom: 12px;
 }
 
+.subtitle {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Buttons */
 .buttons {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 .portal-btn {
+  width: 100%;
+  min-height: 72px;
   padding: 16px;
-  font-size: 24px;
+  font-size: 18px;
+  font-weight: bold;
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  background: #3ea303;
-  color: white;
-  transition: 0.2s;
-  height: 110px;
+  background: linear-gradient(180deg, #2fae0a 0%, #1e7802 100%);
+  color: #ffffff;
+  transition: background 0.2s ease, transform 0.1s ease;
 }
 
+/* Darker green on hover */
 .portal-btn:hover {
-  background: #1e7802;
+  background: #3ea303;
+}
+
+/* Shake animation */
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+  75% {
+    transform: translateX(-8px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.portal-btn.shake {
+  animation: shake 0.3s;
 }
 
 .hint {
   margin-top: 20px;
-  color: #555;
   font-size: 14px;
+  color: #555;
+}
+
+/* Desktop tweak */
+@media (min-width: 768px) {
+  .portal-btn {
+    font-size: 20px;
+    min-height: 90px;
+  }
 }
