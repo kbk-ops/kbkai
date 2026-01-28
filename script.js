@@ -1,7 +1,16 @@
-document.getElementById("officersBtn").onclick = function () {
-  window.location.href = "https://kbk-ops.github.io/OrganizationFund/collector";
-};
+document.querySelectorAll(".portal-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    // Shake effect
+    button.classList.add("shake");
 
-document.getElementById("membersBtn").onclick = function () {
-  window.location.href = "https://kbk-ops.github.io/OrganizationFund/user";
-};
+    setTimeout(() => {
+      button.classList.remove("shake");
+
+      // Redirect after shake
+      const link = button.getAttribute("data-link");
+      if (link) {
+        window.location.href = link;
+      }
+    }, 300);
+  });
+});
