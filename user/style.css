@@ -23,12 +23,14 @@ body {
 
 .container {
   background: rgba(255, 255, 255, 0.95);
-  padding: 30px 25px;
+  padding: 24px;
   border-radius: 16px;
   width: 100%;
   max-width: 980px;
   text-align: center;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
   transform: scale(0.95);
   animation: containerIn 0.5s forwards;
 }
