@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,27 +8,29 @@
   <link rel="icon" href="../Kasangga New Logo Small.png" type="image/x-icon">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div class="container">
-  <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="logo">
-  <p>Team Leaders & Members Login</p>
-  <p id="error" style="color:red;margin-top:10px;"></p>
+  <div class="container">
+    <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="logo animate-fade" alt="logo">
+    <p class="animate-fade delay-1">Team Leaders & Members Login</p>
+    <p id="error" style="color:red;margin-top:10px; min-height:20px;" class="animate-fade delay-2"></p>
 
-  <!-- Step 1: Enter ID -->
-  <div id="step1">
-    <label>ID Number</label>
-    <input id="idNumber" placeholder="Enter ID Number">
-    <button id="nextBtn">Next</button>
+    <!-- Step 1: Enter ID -->
+    <div id="step1" class="animate-fade delay-3">
+      <label>ID Number</label>
+      <input id="idNumber" placeholder="Enter ID Number">
+      <button id="nextBtn">Next</button>
+    </div>
+
+    <!-- Step 2: Create/Enter PIN -->
+    <div id="step2" class="animate-fade" style="display:none;">
+      <label id="pinLabel">Enter PIN</label>
+      <input id="pin" type="password" placeholder="4-digit PIN">
+      <button id="loginBtn">Login</button>
+    </div>
   </div>
 
-  <!-- Step 2: Create/Enter PIN -->
-  <div id="step2" style="display:none;">
-    <label id="pinLabel">Enter PIN</label>
-    <input id="pin" type="password" placeholder="4-digit PIN">
-    <button id="loginBtn">Login</button>
-  </div>
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
+
 </html>
