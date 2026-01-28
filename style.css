@@ -14,7 +14,7 @@ body {
 
 .container {
   width: 100%;
-  max-width: 420px;
+  max-width: 1024px;
   padding: 20px;
   text-align: center;
   background: white;
