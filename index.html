@@ -1,26 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KBK Portal</title>
+
   <link rel="icon" href="Kasangga New Logo Small.png" type="image/x-icon">
   <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="logo" />
 
-    <p>Community</p>
+  <!-- Font Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+
+<body>
+
+  <main class="container">
+    <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png" class="logo" alt="KBK Logo" />
+
+    <p class="subtitle">Community</p>
 
     <div class="buttons">
-      <button id="officersBtn" class="portal-btn">Officers Portal</button>
-      <button id="membersBtn" class="portal-btn">Team Leads & Members Portal</button>
+      <button class="portal-btn" data-link="https://kbk-ops.github.io/OrganizationFund/collector">
+        <i class="fa-solid fa-user-tie"></i>
+        <span>Officers Portal</span>
+      </button>
+
+      <button class="portal-btn" data-link="https://kbk-ops.github.io/OrganizationFund/user">
+        <i class="fa-solid fa-users"></i>
+        <span>Team Leads & Members Portal</span>
+      </button>
     </div>
 
     <p class="hint">Select your portal to continue</p>
-  </div>
+  </main>
 
   <script src="script.js"></script>
 </body>
+
 </html>
