@@ -1,14 +1,23 @@
 * {
-  font-family: Arial, sans-serif;
   box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
+/* Fullscreen particles */
+#particles-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+}
+
+/* Body is NO LONGER flex */
 body {
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
+  overflow: hidden;
+
   background: linear-gradient(120deg, #d4f8d6, #ffe1b3, #d4f8d6);
   background-size: 300% 300%;
   animation: gradientMove 15s ease infinite;
@@ -20,15 +29,28 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+/* ✅ TRUE CENTERING (FIX) */
+.page-center {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 2;
+  padding: 16px;
+}
+
+/* Login card */
 .container {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 24px;
-  border-radius: 16px;
-  max-width: 980px;
   width: 100%;
+  max-width: 980px;
+  padding: 24px;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-  animation: containerIn 0.5s forwards;
+
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+
+  animation: containerIn 0.5s ease forwards;
 }
 
 @keyframes containerIn {
@@ -85,7 +107,7 @@ button:hover {
   margin-top: 10px;
 }
 
-/* Unified fade-up animation */
+/* Fade-up animation */
 .animate-fade {
   opacity: 0;
   transform: translateY(15px);
