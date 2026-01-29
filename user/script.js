@@ -1,6 +1,6 @@
 const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
 const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
-const SHEET_NAME = "Members"; 
+const SHEET_NAME = "Members";
 const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A:F?key=${API_KEY}`;
 const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwVpd3KLk1aCiCY44PTRePlzL-l8JEDRqh8mBKigCNznX6L6FqvgWL77AbhV-OQKLXG/exec";
 
@@ -17,7 +17,7 @@ let pinExists = false;
 document.getElementById("nextBtn").onclick = async () => {
   errorEl.textContent = "";
   const id = idNumberInput.value.trim();
-  if(!id) return errorEl.textContent = "ID Number is required";
+  if (!id) return errorEl.textContent = "ID Number is required";
 
   try {
     const res = await fetch(MEMBERS_URL);
@@ -25,7 +25,7 @@ document.getElementById("nextBtn").onclick = async () => {
     const rows = data.values.slice(1);
     const member = rows.find(r => r[0] == id);
 
-    if(!member) return errorEl.textContent = "ID not found";
+    if (!member) return errorEl.textContent = "ID not found";
 
     currentID = id;
     pinExists = member[4] && member[4].trim() !== "";
@@ -33,15 +33,16 @@ document.getElementById("nextBtn").onclick = async () => {
     pinLabel.textContent = pinExists ? "Enter PIN" : "Create 4-digit PIN";
     pinInput.value = "";
 
-    // Animate transition
-    step1.classList.add("fade-out");
-    setTimeout(() => {
-      step1.style.display = "none";
-      step2.style.display = "block";
-      step2.classList.add("fade-in");
-    }, 500);
+    // Hide Step 1
+    step1.style.display = "none";
 
-  } catch(err) {
+    // Show Step 2 with same animation as Step 1
+    step2.style.display = "block";
+    step2.classList.remove("animate-fade");
+    void step2.offsetWidth; // force reflow
+    step2.classList.add("animate-fade");
+
+  } catch (err) {
     errorEl.textContent = "Error fetching members";
     console.error(err);
   }
@@ -50,7 +51,7 @@ document.getElementById("nextBtn").onclick = async () => {
 document.getElementById("loginBtn").onclick = async () => {
   errorEl.textContent = "";
   const pin = pinInput.value.trim();
-  if(!/^\d{4}$/.test(pin)) return errorEl.textContent = "PIN must be 4 digits";
+  if (!/^\d{4}$/.test(pin)) return errorEl.textContent = "PIN must be 4 digits";
 
   try {
     const res = await fetch(MEMBERS_URL);
@@ -58,25 +59,24 @@ document.getElementById("loginBtn").onclick = async () => {
     const rows = data.values.slice(1);
     const member = rows.find(r => r[0] == currentID);
 
-    if(pinExists){
-      if(member[4] !== pin) return errorEl.textContent = "Incorrect PIN";
-    } else {
+    if (pinExists && member[4] !== pin)
+      return errorEl.textContent = "Incorrect PIN";
+
+    if (!pinExists) {
       await fetch(WEBAPP_URL, {
         method: "POST",
-        body: JSON.stringify({
-          type:"pin",
-          id: currentID,
-          pin: pin
-        })
+        body: JSON.stringify({ type: "pin", id: currentID, pin })
       });
     }
 
     sessionStorage.setItem("memberID", currentID);
     sessionStorage.setItem("auth", "true");
-    sessionStorage.setItem("expiry", Date.now() + (60*60*1000));
-    window.location.href = "https://kbk-ops.github.io/OrganizationFund/user/dashboard";
-    
-  } catch(err) {
+    sessionStorage.setItem("expiry", Date.now() + 3600000);
+
+    window.location.replace =
+      "https://kbk-ops.github.io/OrganizationFund/user/dashboard";
+
+  } catch (err) {
     errorEl.textContent = "Login failed";
     console.error(err);
   }
