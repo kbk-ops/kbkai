@@ -7,46 +7,91 @@ const CONTRI_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/va
 const memberID = sessionStorage.getItem("memberID");
 if(!memberID) location.href="../index.html";
 
+// Generic profile picture (always)
+const GENERIC_ICON = "https://img.icons8.com/ios-filled/100/000000/user-male-circle.png";
+
+/* ------------------ LOADING SCREEN ------------------ */
+window.addEventListener("DOMContentLoaded", () => {
+  const loader = document.getElementById("loader");
+  const app = document.getElementById("app");
+
+  setTimeout(() => {
+    loader.style.display = "none";
+    app.classList.remove("hidden");
+
+    // Animate cards
+    const cards = document.querySelectorAll(".card");
+    cards.forEach((card, i) => {
+      card.style.opacity = 0;
+      card.style.transform = "translateY(20px)";
+      void card.offsetWidth; // force reflow
+      card.style.animation = `fadeUp 0.6s ease forwards ${i * 0.1}s`;
+    });
+  }, 1000); // 1-second loader
+});
+
+/* ------------------ TAB NAVIGATION ------------------ */
 function showTab(id){
-  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-function go(page){
-  location.href = page;
-}
-
+/* ------------------ GREETING ------------------ */
 fetch(MEMBERS_URL)
-  .then(r=>r.json())
-  .then(d=>{
-    const rows=d.values.slice(1);
-    const user=rows.find(r=>r[0]==memberID);
-    document.getElementById("greet").textContent="Hi " + user[1] + "!";
-});
+  .then(r => r.json())
+  .then(d => {
+    const rows = d.values?.slice(1) || [];
+    const user = rows.find(r => r[0] == memberID);
 
+    const name = user?.[1] || "Member";
+
+    // Set generic profile picture
+    const profileImg = document.getElementById("profilePic");
+    profileImg.src = GENERIC_ICON;
+    profileImg.alt = "Profile Picture";
+
+    // Time-based greeting
+    const hour = new Date().getHours();
+    let greet = hour < 12 ? "Good Morning" :
+                hour < 18 ? "Good Afternoon" :
+                "Good Evening";
+
+    document.getElementById("greet").textContent = `${greet}, ${name}!`;
+  })
+  .catch(err => {
+    console.error(err);
+    document.getElementById("greet").textContent = "Hello, Member!";
+    document.getElementById("profilePic").src = GENERIC_ICON;
+  });
+
+/* ------------------ CONTRIBUTION TABLE ------------------ */
 function loadContributions(){
   fetch(CONTRI_URL)
-  .then(r=>r.json())
-  .then(d=>{
-    const rows=d.values.slice(1);
-    const year=document.getElementById("yearFilter").value;
-    let total=0;
-    let html="";
+    .then(r => r.json())
+    .then(d => {
+      const rows = d.values?.slice(1) || [];
+      const year = document.getElementById("yearFilter").value;
+      let total = 0;
+      let html = "";
 
-    rows.filter(r=>r[1]==memberID)
-        .filter(r=>year=="all" || r[5]==year)
-        .forEach(r=>{
-          total+=Number(r[7]);
-          html+=`<tr>
+      rows
+        .filter(r => r[1] == memberID)
+        .filter(r => year == "all" || r[5] == year)
+        .forEach(r => {
+          total += Number(r[7]);
+          html += `<tr>
             <td>${r[6]}</td>
             <td>${r[7]}</td>
             <td>${r[0]}</td>
           </tr>`;
         });
 
-    document.getElementById("contriBody").innerHTML=html;
-    document.getElementById("totalAmt").textContent=total;
-  });
+      document.getElementById("contriBody").innerHTML = html;
+      document.getElementById("totalAmt").textContent = total;
+    })
+    .catch(err => console.error(err));
 }
-  loadContributions();
-  initDashboardTabs();
+
+// Load contributions initially
+loadContributions();
+initDashboardTabs();
