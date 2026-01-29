@@ -12,7 +12,6 @@ body {
   background: linear-gradient(120deg, #d4f8d6, #ffe1b3, #d4f8d6);
   background-size: 300% 300%;
   animation: gradientMove 15s ease infinite;
-  overflow: hidden;
 }
 
 @keyframes gradientMove {
@@ -25,23 +24,21 @@ body {
   background: rgba(255, 255, 255, 0.95);
   padding: 24px;
   border-radius: 16px;
-  width: 100%;
   max-width: 980px;
+  width: 100%;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  position: relative;
-  z-index: 1;
-  transform: scale(0.95);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   animation: containerIn 0.5s forwards;
 }
 
 @keyframes containerIn {
+  from { transform: scale(0.95); }
   to { transform: scale(1); }
 }
 
 .logo {
-  width: 100%;
   max-width: 320px;
+  width: 100%;
   margin-bottom: 10px;
 }
 
@@ -58,12 +55,11 @@ input {
   margin-top: 4px;
   border-radius: 10px;
   border: 1px solid #ccc;
-  transition: border 0.3s, box-shadow 0.3s;
 }
 
 input:focus {
   border-color: #1e7802;
-  box-shadow: 0 0 8px rgba(30, 120, 2, 0.3);
+  box-shadow: 0 0 8px rgba(30,120,2,0.3);
   outline: none;
 }
 
@@ -73,25 +69,23 @@ button {
   margin-top: 12px;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(180deg, #2fae0a 0%, #1e7802 100%);
-  color: #fff;
+  background: linear-gradient(180deg, #2fae0a, #1e7802);
+  color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.2s, background 0.3s;
 }
 
 button:hover {
-  background: #3ea303;
   transform: scale(1.03);
 }
 
 #error {
   color: red;
-  margin-top: 10px;
   min-height: 20px;
+  margin-top: 10px;
 }
 
-/* Fade-in animations */
+/* Unified fade-up animation */
 .animate-fade {
   opacity: 0;
   transform: translateY(15px);
@@ -103,20 +97,8 @@ button:hover {
 .animate-fade.delay-3 { animation-delay: 0.6s; }
 
 @keyframes fadeIn {
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Step transitions */
-#step1, #step2 {
-  transition: opacity 0.5s, transform 0.5s;
-}
-
-.fade-out {
-  opacity: 0;
-  transform: translateX(-50px);
-}
-
-.fade-in {
-  opacity: 1;
-  transform: translateX(0);
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
