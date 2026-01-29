@@ -36,6 +36,10 @@ function showTab(id){
   document.getElementById(id).classList.add("active");
 }
 
+function go(page){
+  location.href = page;
+}
+
 /* ------------------ GREETING ------------------ */
 fetch(MEMBERS_URL)
   .then(r => r.json())
