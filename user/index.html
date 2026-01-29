@@ -14,31 +14,33 @@
   <!-- Particles Background -->
   <canvas id="particles-bg"></canvas>
 
-  <!-- Login UI -->
-  <div class="container">
-    <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png"
-         class="logo animate-fade"
-         alt="logo">
+  <!-- Centering Wrapper -->
+  <div class="page-center">
+    <div class="container">
+      <img src="https://raw.githubusercontent.com/kbk-ops/OrganizationFund/main/KBK%20Header.png"
+           class="logo animate-fade"
+           alt="logo">
 
-    <p class="animate-fade delay-1">Team Leaders & Members Login</p>
-    <p id="error" class="animate-fade delay-2"></p>
+      <p class="animate-fade delay-1">Team Leaders & Members Login</p>
+      <p id="error" class="animate-fade delay-2"></p>
 
-    <!-- Step 1 -->
-    <div id="step1" class="animate-fade delay-3">
-      <label>ID Number</label>
-      <input id="idNumber" placeholder="Enter ID Number">
-      <button id="nextBtn">Next</button>
-    </div>
+      <!-- Step 1 -->
+      <div id="step1" class="animate-fade delay-3">
+        <label>ID Number</label>
+        <input id="idNumber" placeholder="Enter ID Number">
+        <button id="nextBtn">Next</button>
+      </div>
 
-    <!-- Step 2 -->
-    <div id="step2" style="display:none;">
-      <label id="pinLabel">Enter PIN</label>
-      <input id="pin" type="password" placeholder="4-digit PIN">
-      <button id="loginBtn">Login</button>
+      <!-- Step 2 -->
+      <div id="step2" style="display:none;">
+        <label id="pinLabel">Enter PIN</label>
+        <input id="pin" type="password" placeholder="4-digit PIN">
+        <button id="loginBtn">Login</button>
+      </div>
     </div>
   </div>
 
-  <script src="../particles.js"></script>
+  <script src="particles.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
