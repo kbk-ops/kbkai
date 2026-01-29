@@ -73,7 +73,7 @@ document.getElementById("loginBtn").onclick = async () => {
     sessionStorage.setItem("auth", "true");
     sessionStorage.setItem("expiry", Date.now() + 3600000);
 
-    window.location.replace =
+    window.location.href =
       "https://kbk-ops.github.io/OrganizationFund/user/dashboard";
 
   } catch (err) {
