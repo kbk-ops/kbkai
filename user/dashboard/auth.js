@@ -21,6 +21,9 @@ window.addEventListener("pageshow", function (event) {
 
 // ===== GLOBAL LOGOUT =====
 function logout() {
+  // Hide UI instantly
+  document.body.style.display = "none";
+
   sessionStorage.clear();
   location.replace("https://kbk-ops.github.io/OrganizationFund");
 }
