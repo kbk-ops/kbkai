@@ -1,5 +1,5 @@
 (function () {
-  const LOGIN_PATH = "https://kbk-ops.github.io/OrganizationFund/user";
+  const LOGIN_PATH = "https://kbk-ops.github.io/OrganizationFund/user/dashboard";
 
   // 🔒 HARD CHECK — runs immediately
   if (!sessionStorage.getItem("isLoggedIn")) {
