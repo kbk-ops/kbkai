@@ -1,12 +1,21 @@
 // ===== AUTH CHECK =====
-if (!sessionStorage.getItem("memberID")) {
-  location.replace("https://kbk-ops.github.io/OrganizationFund");
+function checkAuth() {
+  const memberID = sessionStorage.getItem("memberID");
+  const auth = sessionStorage.getItem("auth");
+  const expiry = sessionStorage.getItem("expiry");
+
+  if (!memberID || auth !== "true" || Date.now() > expiry) {
+    sessionStorage.clear();
+    location.replace("https://kbk-ops.github.io/OrganizationFund");
+  }
 }
+
+checkAuth();
 
 // ===== HANDLE BACK/FORWARD CACHE =====
 window.addEventListener("pageshow", function (event) {
-  if (event.persisted && !sessionStorage.getItem("memberID")) {
-    location.replace("https://kbk-ops.github.io/OrganizationFund");
+  if (event.persisted) {
+    checkAuth();
   }
 });
 
