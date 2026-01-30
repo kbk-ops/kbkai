@@ -17,7 +17,7 @@ function showTab(id){
 }
 
 function go(page){
-  location.replace = page;
+  location.href = page;
 }
 
 /* ------------------ GREETING ------------------ */
