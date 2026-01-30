@@ -10,26 +10,6 @@ if(!memberID) location.href="../index.html";
 // Generic profile picture (always)
 const GENERIC_ICON = "https://img.icons8.com/ios-filled/100/000000/user-male-circle.png";
 
-/* ------------------ LOADING SCREEN ------------------ */
-window.addEventListener("DOMContentLoaded", () => {
-  const loader = document.getElementById("loader");
-  const app = document.getElementById("app");
-
-  setTimeout(() => {
-    loader.style.display = "none";
-    app.classList.remove("hidden");
-
-    // Animate cards
-    const cards = document.querySelectorAll(".card");
-    cards.forEach((card, i) => {
-      card.style.opacity = 0;
-      card.style.transform = "translateY(20px)";
-      void card.offsetWidth; // force reflow
-      card.style.animation = `fadeUp 0.6s ease forwards ${i * 0.1}s`;
-    });
-  }, 1000); // 1-second loader
-});
-
 /* ------------------ TAB NAVIGATION ------------------ */
 function showTab(id){
   document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
