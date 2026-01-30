@@ -219,12 +219,8 @@ body{
   padding:8px;
 }
 
-.hidden { 
-  display: none; 
-}
-
-.locked { 
-  background: #fff; 
+body.locked {
+  display: none;
 }
 
 .clips {
