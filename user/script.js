@@ -11,6 +11,9 @@ const pinInput = document.getElementById("pin");
 const pinLabel = document.getElementById("pinLabel");
 const errorEl = document.getElementById("error");
 
+// FORCE LOGOUT WHEN VISITING LOGIN PAGE
+sessionStorage.clear();
+
 let currentID = "";
 let pinExists = false;
 
