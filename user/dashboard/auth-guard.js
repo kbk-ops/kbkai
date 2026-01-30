@@ -1,6 +1,6 @@
-/* ===============================
-   AUTH GUARD (DASHBOARD PAGES)
-   =============================== */
+/* ======================================
+   AUTH GUARD — FLASH-SAFE + COMPATIBLE
+   ====================================== */
 (function () {
   const LOGIN_URL = "https://kbk-ops.github.io/OrganizationFund";
 
@@ -22,32 +22,37 @@
     location.replace(LOGIN_URL);
   }
 
-  /* ---------- IMMEDIATE BLOCK ---------- */
+  /* ---------- HIDE IMMEDIATELY ---------- */
+  const html = document.documentElement;
+  html.style.visibility = "hidden";
+
+  /* ---------- HARD AUTH CHECK ---------- */
   if (!isAuthorized()) {
     redirectToLogin();
     return;
   }
 
-  /* ---------- HIDE CONTENT UNTIL AUTH ---------- */
-  document.documentElement.style.visibility = "hidden";
+  /* ---------- GUARANTEED UNHIDE ---------- */
+  function unhide() {
+    html.style.visibility = "visible";
+  }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    document.documentElement.style.visibility = "visible";
-  });
+  // Works even if DOM already loaded
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", unhide);
+  } else {
+    unhide();
+  }
 
-  /* ---------- BACK/FORWARD CACHE PROTECTION ---------- */
-  window.addEventListener("pageshow", (event) => {
-    if (event.persisted && !isAuthorized()) {
+  // Extra safety: unhide again after full load
+  window.addEventListener("load", unhide);
+
+  /* ---------- BACK/FORWARD CACHE ---------- */
+  window.addEventListener("pageshow", e => {
+    if (e.persisted && !isAuthorized()) {
       redirectToLogin();
+    } else {
+      unhide();
     }
   });
-
-  /* ---------- EXPOSE GLOBAL LOGOUT ---------- */
-  window.logout = function () {
-    // Instantly hide UI (prevents flash)
-    document.documentElement.style.visibility = "hidden";
-
-    sessionStorage.clear();
-    location.replace(LOGIN_URL);
-  };
 })();
