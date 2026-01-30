@@ -8,7 +8,7 @@ const memberID = sessionStorage.getItem("memberID");
 if(!memberID) location.href="../index.html";
 
 // Generic profile picture (always)
-const GENERIC_ICON = "https://img.icons8.com/ios-filled/100/000000/user-male-circle.png";
+const GENERIC_ICON = "https://raw.github.com/kbk-ops/OrganizationFund/main/Icons/profileicon.png";
 
 /* ------------------ TAB NAVIGATION ------------------ */
 function showTab(id){
