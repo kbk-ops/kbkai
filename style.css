@@ -8,6 +8,7 @@
 /* Body & Particle Background */
 body {
   min-height: 100vh;
+  display: flex;
   justify-content: center;
   align-items: center;
   padding: 16px;
