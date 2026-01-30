@@ -1,16 +1,21 @@
+// auth-guard
 (function () {
-  const LOGIN_PATH = "https://kbk-ops.github.io/OrganizationFund/user/dashboard";
 
-  // 🔒 HARD CHECK — runs immediately
-  if (!sessionStorage.getItem("isLoggedIn")) {
-    location.replace(LOGIN_PATH);
+  function isAuthenticated() {
+    const memberID = sessionStorage.getItem("memberID");
+    const auth = sessionStorage.getItem("auth");
+    const expiry = sessionStorage.getItem("expiry");
+
+    return memberID && auth === "true" && Date.now() < expiry;
+  }
+
+  // 🔒 HARD BLOCK (runs immediately)
+  if (!isAuthenticated()) {
+    location.replace("https://kbk-ops.github.io/OrganizationFund");
     return;
   }
 
-  // 🔓 UNLOCK PAGE AS SOON AS POSSIBLE
-  document.documentElement.style.visibility = "visible";
-
-  // 🔓 UNLOCK APP AFTER DOM READY
+  // 🔓 UNLOCK AFTER DOM READY
   document.addEventListener("DOMContentLoaded", () => {
     const app = document.getElementById("app");
     if (app) app.classList.remove("hidden");
@@ -19,8 +24,9 @@
 
   // 🚫 BLOCK BACK/FORWARD CACHE
   window.addEventListener("pageshow", (e) => {
-    if (e.persisted && !sessionStorage.getItem("isLoggedIn")) {
-      location.replace(LOGIN_PATH);
+    if (e.persisted && !isAuthenticated()) {
+      location.replace("https://kbk-ops.github.io/OrganizationFund");
     }
   });
+
 })();
