@@ -8,6 +8,10 @@ body {
   background: #f2f4f7;
 }
 
+body.locked {
+  display: none;
+}
+
 .hidden {
   display: none;
 }
