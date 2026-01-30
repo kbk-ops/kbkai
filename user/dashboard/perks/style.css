@@ -219,6 +219,14 @@ body{
   padding:8px;
 }
 
+.hidden { 
+  display: none; 
+}
+
+.locked { 
+  background: #fff; 
+}
+
 .clips {
   width: 100%;
   max-width: 100%;
