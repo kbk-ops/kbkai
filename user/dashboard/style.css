@@ -137,32 +137,6 @@ body {
   padding: 8px;
 }
 
-/* LOADER */
-#loader {
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(120deg, #d4f8d6, #ffe1b3, #d4f8d6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 6px solid #fff;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* CONTRIBUTION TABLE */
 table {
   width: 95%; /* slightly narrower table */
