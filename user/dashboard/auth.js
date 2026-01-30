@@ -1,44 +1,76 @@
-// ===== AUTH CHECK =====
-function checkAuth() {
-  const memberID = sessionStorage.getItem("memberID");
-  const auth = sessionStorage.getItem("auth");
-  const expiry = sessionStorage.getItem("expiry");
+// ================================
+// AUTH + UI GUARD (CONSOLIDATED)
+// ================================
+(function () {
 
-  if (!memberID || auth !== "true" || Date.now() > expiry) {
+  const LOGIN_URL = "https://kbk-ops.github.io/OrganizationFund";
+  const IDLE_LIMIT = 2 * 60 * 1000; // 2 minutes
+  let idleTimer;
+
+  // ===== AUTH STATE =====
+  function isAuthenticated() {
+    const memberID = sessionStorage.getItem("memberID");
+    const auth = sessionStorage.getItem("auth");
+    const expiry = sessionStorage.getItem("expiry");
+    return memberID && auth === "true" && Date.now() < expiry;
+  }
+
+  // ===== HARD AUTH CHECK =====
+  function checkAuth() {
+    if (!isAuthenticated()) {
+      sessionStorage.clear();
+      location.replace(LOGIN_URL);
+      return false;
+    }
+    return true;
+  }
+
+  // ===== UI UNLOCK =====
+  function unlockUI() {
+    if (!checkAuth()) return;
+
+    document.body.classList.remove("locked");
+
+    const app = document.getElementById("app");
+    if (app) app.classList.remove("hidden");
+  }
+
+  // 🔒 HARD BLOCK — RUNS IMMEDIATELY
+  if (!checkAuth()) return;
+
+  // 🔓 UNLOCK ASAP (prevents flash)
+  unlockUI();
+
+  // 🔓 SAFE UNLOCK AFTER DOM
+  document.addEventListener("DOMContentLoaded", unlockUI);
+
+  // ===== BACK / FORWARD CACHE PROTECTION =====
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+      unlockUI();
+    }
+  });
+
+  // ===== GLOBAL LOGOUT =====
+  window.logout = function () {
     sessionStorage.clear();
-    location.replace("https://kbk-ops.github.io/OrganizationFund");
+    history.replaceState(null, "", "/");
+    location.replace(LOGIN_URL);
+  };
+
+  // ===== IDLE AUTO-LOGOUT =====
+  function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      alert("You have been logged out due to inactivity.");
+      window.logout();
+    }, IDLE_LIMIT);
   }
-}
 
-checkAuth();
+  ["mousemove", "keydown", "click", "scroll", "touchstart"].forEach(evt => {
+    document.addEventListener(evt, resetIdleTimer, true);
+  });
 
-// ===== HANDLE BACK/FORWARD CACHE =====
-window.addEventListener("pageshow", function (event) {
-  if (event.persisted) {
-    checkAuth();
-  }
-});
+  resetIdleTimer();
 
-// ===== GLOBAL LOGOUT =====
-function logout() {
-  sessionStorage.clear();
-  location.replace("https://kbk-ops.github.io/OrganizationFund");
-}
-
-// ===== IDLE AUTO-LOGOUT =====
-let idleTimer;
-const IDLE_LIMIT = 2 * 60 * 1000;
-
-function resetIdleTimer() {
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(() => {
-    alert("You have been logged out due to inactivity.");
-    logout();
-  }, IDLE_LIMIT);
-}
-
-["mousemove", "keydown", "click", "scroll", "touchstart"].forEach(event => {
-  document.addEventListener(event, resetIdleTimer, true);
-});
-
-resetIdleTimer();
+})();
