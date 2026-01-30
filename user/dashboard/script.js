@@ -4,6 +4,9 @@ const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
 const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Members!A:F?key=${API_KEY}`;
 const CONTRI_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Contribution!A:H?key=${API_KEY}`;
 
+const memberID = sessionStorage.getItem("memberID");
+if(!memberID) location.href="../index.html";
+
 // Generic profile picture (always)
 const GENERIC_ICON = "https://raw.github.com/kbk-ops/OrganizationFund/main/Icons/profileicon.png";
 
@@ -14,7 +17,7 @@ function showTab(id){
 }
 
 function go(page){
-  location.href = page;
+  location.replace = page;
 }
 
 /* ------------------ GREETING ------------------ */
