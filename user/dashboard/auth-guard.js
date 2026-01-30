@@ -1,26 +1,26 @@
 (function () {
-  // 1️⃣ Check login immediately before anything renders
-  const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+  const LOGIN_PATH = "https://kbk-ops.github.io/OrganizationFund/user";
 
-  if (!isLoggedIn) {
-    // Redirect instantly if not logged in
-    location.replace("https://kbk-ops.github.io/OrganizationFund/user/index.html");
+  // 🔒 HARD CHECK — runs immediately
+  if (!sessionStorage.getItem("isLoggedIn")) {
+    location.replace(LOGIN_PATH);
     return;
   }
 
-  // 2️⃣ Reveal page after DOM content is loaded
-  window.addEventListener("DOMContentLoaded", () => {
-    document.documentElement.style.visibility = "visible";
+  // 🔓 UNLOCK PAGE AS SOON AS POSSIBLE
+  document.documentElement.style.visibility = "visible";
 
+  // 🔓 UNLOCK APP AFTER DOM READY
+  document.addEventListener("DOMContentLoaded", () => {
     const app = document.getElementById("app");
     if (app) app.classList.remove("hidden");
     document.body.classList.remove("locked");
   });
 
-  // 3️⃣ Handle Back-Forward Cache (BFCache)
-  window.addEventListener("pageshow", (event) => {
-    if (event.persisted && !sessionStorage.getItem("isLoggedIn")) {
-      location.replace("https://kbk-ops.github.io/OrganizationFund/user/index.html");
+  // 🚫 BLOCK BACK/FORWARD CACHE
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted && !sessionStorage.getItem("isLoggedIn")) {
+      location.replace(LOGIN_PATH);
     }
   });
 })();
