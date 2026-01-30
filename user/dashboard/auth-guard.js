@@ -4,7 +4,7 @@
 
   if (!isLoggedIn) {
     // Redirect instantly if not logged in
-    location.replace("../../userlogin/index.html");
+    location.replace("https://kbk-ops.github.io/OrganizationFund/user/index.html");
     return;
   }
 
