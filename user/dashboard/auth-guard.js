@@ -20,7 +20,7 @@
   // 3️⃣ Handle Back-Forward Cache (BFCache)
   window.addEventListener("pageshow", (event) => {
     if (event.persisted && !sessionStorage.getItem("isLoggedIn")) {
-      location.replace("../../userlogin/index.html");
+      location.replace("https://kbk-ops.github.io/OrganizationFund/user/index.html");
     }
   });
 })();
