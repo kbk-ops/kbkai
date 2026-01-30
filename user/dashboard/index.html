@@ -2,6 +2,14 @@
 <html>
 
 <head>
+  <script>
+  // HARD BLOCK before paint
+  if (!sessionStorage.getItem("isLoggedIn")) {
+    location.replace("../../userlogin/index.html");
+  }
+  document.documentElement.style.visibility = "hidden";
+</script>
+  
   <meta charset="UTF-8">
   <title>Dashboard</title>
   <link rel="icon" href="../../Kasangga New Logo Small.png" type="image/x-icon">
