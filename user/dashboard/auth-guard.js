@@ -1,5 +1,5 @@
 /* ======================================
-   AUTH GUARD — FLASH-SAFE + COMPATIBLE
+   AUTH GUARD — FINAL (UNLOCKS #app)
    ====================================== */
 (function () {
   const LOGIN_URL = "https://kbk-ops.github.io/OrganizationFund";
@@ -22,37 +22,38 @@
     location.replace(LOGIN_URL);
   }
 
-  /* ---------- HIDE IMMEDIATELY ---------- */
-  const html = document.documentElement;
-  html.style.visibility = "hidden";
+  // Hide everything immediately (prevents flash)
+  document.documentElement.style.visibility = "hidden";
 
-  /* ---------- HARD AUTH CHECK ---------- */
+  // Hard auth check
   if (!isAuthorized()) {
     redirectToLogin();
     return;
   }
 
-  /* ---------- GUARANTEED UNHIDE ---------- */
-  function unhide() {
-    html.style.visibility = "visible";
+  // 🔓 UNLOCK PAGE (THIS WAS MISSING)
+  function unlockPage() {
+    document.documentElement.style.visibility = "visible";
+
+    const app = document.getElementById("app");
+    if (app) app.classList.remove("hidden");
+
+    document.body.classList.remove("locked");
   }
 
-  // Works even if DOM already loaded
+  // Run unlock safely
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", unhide);
+    document.addEventListener("DOMContentLoaded", unlockPage);
   } else {
-    unhide();
+    unlockPage();
   }
 
-  // Extra safety: unhide again after full load
-  window.addEventListener("load", unhide);
-
-  /* ---------- BACK/FORWARD CACHE ---------- */
+  // Back/forward cache protection
   window.addEventListener("pageshow", e => {
     if (e.persisted && !isAuthorized()) {
       redirectToLogin();
     } else {
-      unhide();
+      unlockPage();
     }
   });
 })();
