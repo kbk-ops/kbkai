@@ -1,6 +1,6 @@
 function goDashboard(tab = "homeTab") {
   sessionStorage.setItem("activeTab", tab);
-  location.replace = "https://kbk-ops.github.io/OrganizationFund/user/dashboard/";
+  location.href = "https://kbk-ops.github.io/OrganizationFund/user/dashboard/";
 }
 
 function initDashboardTabs() {
