@@ -3,7 +3,7 @@
 // ================================
 (function () {
 
-  const LOGIN_URL = "https://kbk-ops.github.io/OrganizationFund";
+  const LOGIN_URL = "https://kbk-ops.github.io/kbkai";
   const IDLE_LIMIT = 2 * 60 * 1000; // 2 minutes
   let idleTimer;
 
@@ -54,9 +54,8 @@
   // ===== GLOBAL LOGOUT =====
   window.logout = function () {
     sessionStorage.clear();
-    history.replaceState(null, "", "/");
     location.replace(LOGIN_URL);
-  };
+};
 
   // ===== IDLE AUTO-LOGOUT =====
   function resetIdleTimer() {
