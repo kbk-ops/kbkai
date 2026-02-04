@@ -77,7 +77,7 @@ document.getElementById("loginBtn").onclick = async () => {
     sessionStorage.setItem("expiry", Date.now() + 3600000);
 
     window.location.replace(
-  "https://kbk-ops.github.io/OrganizationFund/user/dashboard"
+  "https://kbk-ops.github.io/kbkai/user/dashboard"
 );
 
   } catch (err) {
