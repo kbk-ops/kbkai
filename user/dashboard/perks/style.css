@@ -188,35 +188,34 @@ body{
   }
 }
 
-.bottombar{
-  position:fixed;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:100%;
-  max-width:420px;
-  height:60px;
-  background:#f44336;
-  display:flex;
+/* BOTTOM BAR – ADAPTS TO APP WIDTH */
+.bottombar {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  background: #f44336;
+  display: flex;
+  z-index: 1000;
 }
 
-.bottombar div{
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+.bottombar div {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.bottombar img{
-  height:26px;
+.bottombar img {
+  height: 26px;
 }
 
-.center-btn img{
-  height:60px;
-  margin-top:-30px;
-  background:#fff;
-  border-radius:50%;
-  padding:8px;
+.center-btn img {
+  height: 60px;
+  margin-top: -30px;
+  background: white;
+  border-radius: 50%;
+  padding: 8px;
 }
 
 body.locked {
