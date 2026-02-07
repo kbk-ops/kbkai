@@ -14,12 +14,10 @@ body{
   width: 100%;
   max-width: 980px;
   height: 100dvh;
-  min-height: 100vh; /* fallback */
   margin: 0 auto;
   background: #fff;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .topbar{
