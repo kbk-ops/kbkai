@@ -10,14 +10,14 @@ body{
   background:#f2f4f7;
 }
 
-.app{
-  width:100%;
-  max-width:420px;
-  height:100dvh;
-  margin:0 auto;
-  background:#fff;
-  display:flex;
-  flex-direction:column;
+.app {
+  width: 100%;
+  max-width: 980px;
+  height: 100dvh;
+  margin: 0 auto;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 .topbar{
