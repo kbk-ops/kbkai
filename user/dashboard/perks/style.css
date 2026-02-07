@@ -197,12 +197,13 @@ body{
 
 /* BOTTOM BAR – ADAPTS TO APP WIDTH */
 .bottombar {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
   height: 60px;
   background: #f44336;
   display: flex;
   z-index: 1000;
-  flex-shrink: 0;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .bottombar div {
