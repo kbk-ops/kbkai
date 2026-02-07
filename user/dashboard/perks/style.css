@@ -19,6 +19,7 @@ body{
   background: #fff;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .topbar{
@@ -45,8 +46,9 @@ body{
   justify-content:center;
   gap:20px;
   margin-top:20px;
-  overflow-y: auto;           /* scrolls */
-  padding-bottom: 90px;       /* space for bottom bar */
+  overflow-y: auto; /* scrolls */
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 20px 0 90px;        /* space for bottom bar */
 }
 
 .col{
