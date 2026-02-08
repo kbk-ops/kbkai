@@ -145,8 +145,8 @@ body.locked {
   color: white;
 }
 
-.btn-filter { background: #1e9b43; }
-.btn-download { background: #2196F3; }
+.btn-filter { background: linear-gradient(180deg, #2fae0a 0%, #1e7802 100%); }
+.btn-download { background: linear-gradient(180deg, #2fae0a 0%, #1e7802 100%); }
 
 .filter-actions button:active {
   opacity: 0.8;
