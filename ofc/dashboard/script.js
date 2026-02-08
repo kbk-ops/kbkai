@@ -58,7 +58,7 @@ async function initDashboard() {
     }
 
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Filter" to view data.</td></tr>';
 
   } catch (err) {
     console.error("Initialization error:", err);
@@ -165,7 +165,7 @@ function downloadPDF() {
 function showTab(id) {
   if (id === 'homeTab' || id === 'aboutTab') {
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Filter" to view data.</td></tr>';
     document.getElementById("totalAmt").textContent = "0";
   }
   document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
