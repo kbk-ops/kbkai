@@ -103,12 +103,43 @@ function loadContributions() {
 }
 
 /* PDF */
-function downloadPDF() {
+function downloadPDF(){
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.text(`Requested by: ${officerName}`, 10, 10);
-  doc.text(`Barangay: ${fBrgy.value}`, 10, 18);
-  doc.text(`Month: ${fMonth.value}`, 10, 26);
-  doc.fromHTML(document.querySelector("table"), 10, 40);
-  doc.save("contributions.pdf");
+  const doc = new jsPDF("p","mm","a4");
+
+  const brgy = document.getElementById("fBrgy").value;
+  const month = document.getElementById("fMonth").value;
+
+  doc.setFontSize(12);
+  doc.text(`Requested by: ${officerName}`, 14, 15);
+  doc.text(`Barangay: ${brgy}`, 14, 22);
+  doc.text(`Month: ${month}`, 14, 29);
+
+  const rows = [];
+  document.querySelectorAll("#contriBody tr").forEach(tr=>{
+    const cols = tr.querySelectorAll("td");
+    rows.push([
+      cols[0].innerText,
+      cols[1].innerText,
+      cols[2].innerText,
+      cols[3].innerText,
+      cols[4].innerText,
+      cols[5].innerText,
+      cols[6].innerText
+    ]);
+  });
+
+  doc.autoTable({
+    startY: 40,
+    head: [[
+      "ID","Full Name","Month","Year",
+      "Amount","Posted","Received By"
+    ]],
+    body: rows
+  });
+
+  const finalY = doc.lastAutoTable.finalY || 40;
+  doc.text(`Total: ${document.getElementById("totalAmt").innerText}`, 14, finalY + 10);
+
+  doc.save("monthly_dues.pdf");
 }
