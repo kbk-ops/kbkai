@@ -25,7 +25,7 @@ function go(url) {
   window.location.href = url;
 }
 
-/* LOAD FILTER OPTIONS */
+/* ---------------------- LOAD FILTER OPTIONS ---------------------- */
 fetch(DUES_URL)
   .then((r) => r.json())
   .then((d) => {
@@ -45,7 +45,7 @@ function fillSelect(id, data) {
   });
 }
 
-/* CONTRIBUTION */
+/* ---------------------- LOAD CONTRIBUTIONS ---------------------- */
 function loadContributions() {
   fetch(DUES_URL)
     .then((r) => r.json())
@@ -63,14 +63,14 @@ function loadContributions() {
       let total = 0;
 
       // ----------------------
-      // DETERMINE COLUMN FILTER FOR OFFICER
+      // DETERMINE COLUMN FILTER FOR OFFICER ACCESS
       // ----------------------
-      let filterColumn = null; // 'D' or 'E' index
+      let filterColumn = null; // 3 = D, 4 = E
       if (officerAccess !== "All") {
-        const hasD = rows.some(r => r[3] === officerAccess); // Column D
-        const hasE = rows.some(r => r[4] === officerAccess); // Column E
-        if (hasD) filterColumn = 3; // Column D index
-        else if (hasE) filterColumn = 4; // Column E index
+        const hasD = rows.some(r => r[3] === officerAccess);
+        const hasE = rows.some(r => r[4] === officerAccess);
+        if (hasD) filterColumn = 3;
+        else if (hasE) filterColumn = 4;
       }
 
       rows.forEach((r) => {
@@ -78,10 +78,12 @@ function loadContributions() {
         // ACCESS CONTROL
         // ----------------------
         if (officerAccess !== "All" && filterColumn !== null) {
-          if (r[filterColumn] !== officerAccess) return; // skip rows not matching
+          if (r[filterColumn] !== officerAccess) return;
         }
 
+        // ----------------------
         // FILTERS
+        // ----------------------
         if (fID && fID !== "all" && r[1] != fID) return;
         if (fBrgy !== "all" && r[3] != fBrgy) return;
         if (fDistrict !== "all" && r[4] != fDistrict) return;
@@ -90,6 +92,7 @@ function loadContributions() {
         if (fReceived !== "all" && r[9] != fReceived) return;
 
         total += Number(r[7] || 0);
+
         html += `<tr>
           <td>${r[1]}</td>
           <td>${r[2]}</td>
@@ -106,7 +109,7 @@ function loadContributions() {
     });
 }
 
-/* PDF */
+/* ---------------------- PDF DOWNLOAD ---------------------- */
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("p", "mm", "a4");
