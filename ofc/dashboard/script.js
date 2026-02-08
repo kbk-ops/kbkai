@@ -1,83 +1,114 @@
 const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
-const SHEET_ID = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
 
-const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Officers!A:G?key=${API_KEY}`;
-const CONTRI_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Monthly_Dues!A:J?key=${API_KEY}`;
+const DUES_SHEET = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
+const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${DUES_SHEET}/values/Monthly_Dues!A:J?key=${API_KEY}`;
 
-const memberID = sessionStorage.getItem("memberID");
-if (!memberID) {
-  window.location.replace("../index.html");
-}
+const officerName = sessionStorage.getItem("officerName") || "Officer";
+document.getElementById("greet").textContent = `Welcome, ${officerName}!`;
+document.getElementById("profilePic").src =
+  "https://raw.github.com/kbk-ops/OrganizationFund/main/Icons/profileicon.png";
 
-// Generic profile picture (always)
-const GENERIC_ICON = "https://raw.github.com/kbk-ops/OrganizationFund/main/Icons/profileicon.png";
+document.body.classList.remove("locked");
+document.getElementById("app").classList.remove("hidden");
 
-/* ------------------ TAB NAVIGATION ------------------ */
-function showTab(id){
-  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+function showTab(id) {
+  document
+    .querySelectorAll(".tab-content")
+    .forEach((t) => t.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-function go(page) {
-  window.location.replace(page);
+function go(url) {
+  window.location.href = url;
 }
 
-/* ------------------ GREETING ------------------ */
-fetch(MEMBERS_URL)
-  .then(r => r.json())
-  .then(d => {
-    const rows = d.values?.slice(1) || [];
-    const user = rows.find(r => r[0] == memberID);
-
-    const name = user?.[1] || "Member";
-
-    // Set generic profile picture
-    const profileImg = document.getElementById("profilePic");
-    profileImg.src = GENERIC_ICON;
-    profileImg.alt = "Profile Picture";
-
-    // Time-based greeting
-    const hour = new Date().getHours();
-    let greet = hour < 12 ? "Good Morning" :
-                hour < 18 ? "Good Afternoon" :
-                "Good Evening";
-
-    document.getElementById("greet").textContent = `${greet}, ${name}!`;
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("greet").textContent = "Hello, Member!";
-    document.getElementById("profilePic").src = GENERIC_ICON;
+/* LOAD FILTER OPTIONS */
+fetch(DUES_URL)
+  .then((r) => r.json())
+  .then((d) => {
+    const rows = d.values.slice(1);
+    fillSelect(
+      "fBrgy",
+      rows.map((r) => r[3])
+    );
+    fillSelect(
+      "fDistrict",
+      rows.map((r) => r[4])
+    );
+    fillSelect(
+      "fMonth",
+      rows.map((r) => r[6])
+    );
+    fillSelect(
+      "fYear",
+      rows.map((r) => r[5])
+    );
+    fillSelect(
+      "fReceived",
+      rows.map((r) => r[9])
+    );
   });
 
-/* ------------------ CONTRIBUTION TABLE ------------------ */
-function loadContributions(){
-  fetch(CONTRI_URL)
-    .then(r => r.json())
-    .then(d => {
-      const rows = d.values?.slice(1) || [];
-      const year = document.getElementById("yearFilter").value;
-      let total = 0;
+function fillSelect(id, data) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = '<option value="all">All</option>';
+  [...new Set(data)].forEach((v) => {
+    if (v) sel.innerHTML += `<option value="${v}">${v}</option>`;
+  });
+}
+
+/* CONTRIBUTION */
+function loadContributions() {
+  fetch(DUES_URL)
+    .then((r) => r.json())
+    .then((d) => {
+      const rows = d.values.slice(1);
+
+      const fID = document.getElementById("fID").value;
+      const fBrgy = document.getElementById("fBrgy").value;
+      const fDistrict = document.getElementById("fDistrict").value;
+      const fMonth = document.getElementById("fMonth").value;
+      const fYear = document.getElementById("fYear").value;
+      const fReceived = document.getElementById("fReceived").value;
+
       let html = "";
+      let total = 0;
 
       rows
-        .filter(r => r[1] == memberID)
-        .filter(r => year == "all" || r[5] == year)
-        .forEach(r => {
-          total += Number(r[7]);
+        .filter(
+          (r) =>
+            (!fID || r[1] == fID) &&
+            (fBrgy == "all" || r[3] == fBrgy) &&
+            (fDistrict == "all" || r[4] == fDistrict) &&
+            (fMonth == "all" || r[6] == fMonth) &&
+            (fYear == "all" || r[5] == fYear) &&
+            (fReceived == "all" || r[9] == fReceived)
+        )
+        .forEach((r) => {
+          total += Number(r[7] || 0);
           html += `<tr>
-            <td>${r[6]}</td>
-            <td>${r[7]}</td>
-            <td>${r[0]}</td>
-          </tr>`;
+        <td>${r[1]}</td>
+        <td>${r[2]}</td>
+        <td>${r[6]}</td>
+        <td>${r[5]}</td>
+        <td>${r[7]}</td>
+        <td>${r[0]}</td>
+        <td>${r[9]}</td>
+      </tr>`;
         });
 
       document.getElementById("contriBody").innerHTML = html;
-      document.getElementById("totalAmt").textContent = total;
-    })
-    .catch(err => console.error(err));
+      document.getElementById("totalAmt").textContent = total.toLocaleString();
+    });
 }
 
-// Load contributions initially
-loadContributions();
-initDashboardTabs();
+/* PDF */
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.text(`Requested by: ${officerName}`, 10, 10);
+  doc.text(`Barangay: ${fBrgy.value}`, 10, 18);
+  doc.text(`Month: ${fMonth.value}`, 10, 26);
+  doc.fromHTML(document.querySelector("table"), 10, 40);
+  doc.save("contributions.pdf");
+}
