@@ -25,16 +25,32 @@ function go(url) {
   window.location.href = url;
 }
 
-/* ---------------------- LOAD FILTER OPTIONS ---------------------- */
+/* ---------------------- LOAD FILTER OPTIONS WITH ACCESS CONTROL ---------------------- */
 fetch(DUES_URL)
   .then((r) => r.json())
   .then((d) => {
     const rows = d.values.slice(1);
-    fillSelect("fBrgy", rows.map((r) => r[3]));
-    fillSelect("fDistrict", rows.map((r) => r[4]));
-    fillSelect("fMonth", rows.map((r) => r[6]));
-    fillSelect("fYear", rows.map((r) => r[5]));
-    fillSelect("fReceived", rows.map((r) => r[9]));
+
+    // Determine which column controls officer access
+    let filterColumn = null; // 3 = D (Barangay), 4 = E (District)
+    let allowedRows = rows;
+
+    if (officerAccess !== "All") {
+      const hasD = rows.some((r) => r[3] === officerAccess);
+      const hasE = rows.some((r) => r[4] === officerAccess);
+      if (hasD) filterColumn = 3;
+      else if (hasE) filterColumn = 4;
+
+      // Only keep rows that match officer access for filters
+      allowedRows = rows.filter((r) => r[filterColumn] === officerAccess);
+    }
+
+    // Populate filter dropdowns using only allowedRows
+    fillSelect("fBrgy", allowedRows.map((r) => r[3]));
+    fillSelect("fDistrict", allowedRows.map((r) => r[4]));
+    fillSelect("fMonth", allowedRows.map((r) => r[6]));
+    fillSelect("fYear", allowedRows.map((r) => r[5]));
+    fillSelect("fReceived", allowedRows.map((r) => r[9]));
   });
 
 function fillSelect(id, data) {
@@ -45,7 +61,7 @@ function fillSelect(id, data) {
   });
 }
 
-/* ---------------------- LOAD CONTRIBUTIONS ---------------------- */
+/* ---------------------- LOAD CONTRIBUTIONS WITH ACCESS CONTROL ---------------------- */
 function loadContributions() {
   fetch(DUES_URL)
     .then((r) => r.json())
@@ -62,13 +78,11 @@ function loadContributions() {
       let html = "";
       let total = 0;
 
-      // ----------------------
-      // DETERMINE COLUMN FILTER FOR OFFICER ACCESS
-      // ----------------------
-      let filterColumn = null; // 3 = D, 4 = E
+      // Determine which column controls officer access
+      let filterColumn = null;
       if (officerAccess !== "All") {
-        const hasD = rows.some(r => r[3] === officerAccess);
-        const hasE = rows.some(r => r[4] === officerAccess);
+        const hasD = rows.some((r) => r[3] === officerAccess);
+        const hasE = rows.some((r) => r[4] === officerAccess);
         if (hasD) filterColumn = 3;
         else if (hasE) filterColumn = 4;
       }
@@ -78,7 +92,7 @@ function loadContributions() {
         // ACCESS CONTROL
         // ----------------------
         if (officerAccess !== "All" && filterColumn !== null) {
-          if (r[filterColumn] !== officerAccess) return;
+          if (r[filterColumn] !== officerAccess) return; // skip row
         }
 
         // ----------------------
