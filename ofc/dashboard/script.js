@@ -22,6 +22,8 @@ async function initDashboard() {
     currentOfficer = {
       firstName: officerRow[1],
       fullName: officerRow[2],
+      barangay: officerRow[3],
+      district: officerRow[4],
       access: officerRow[5] 
     };
 
@@ -36,13 +38,21 @@ async function initDashboard() {
     if (accessValue === "All") {
       allowedRows = allDuesRows;
     } else {
+      // 1. Check for Barangay Match
       const brgyMatches = allDuesRows.filter(row => row[3] === accessValue);
+      
       if (brgyMatches.length > 0) {
         allowedRows = brgyMatches;
         defaultSelections.brgy = accessValue;
+        // Logic fix: Also pre-select the District this Barangay belongs to
+        defaultSelections.dist = brgyMatches[0][4]; 
       } else {
-        allowedRows = allDuesRows.filter(row => row[4] === accessValue);
+        // 2. If no Barangay match, check for District Match
+        const distMatches = allDuesRows.filter(row => row[4] === accessValue);
+        allowedRows = distMatches;
         defaultSelections.dist = accessValue;
+        // If they are locked to a district, Barangay remains "all" 
+        // unless they have a specific assigned Barangay in Column D
       }
     }
 
@@ -126,7 +136,7 @@ function showTab(id) {
   // 1. Reset logic if moving to Home or About
   if (id === 'homeTab' || id === 'aboutTab') {
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Filter" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
     document.getElementById("totalAmt").textContent = "0";
   }
 
