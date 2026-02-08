@@ -27,7 +27,10 @@ async function initDashboard() {
       access: officerRow[5] 
     };
 
+    // UI Greeting & Profile
     document.getElementById("greet").textContent = `Hello ${currentOfficer.firstName}!`;
+    const pic = document.getElementById("profilePic");
+    if (pic) pic.src = "https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/profileicon.png";
 
     const duesRes = await fetch(DUES_URL);
     const duesData = await duesRes.json();
@@ -38,7 +41,7 @@ async function initDashboard() {
     if (accessValue === "All") {
       allowedRows = allDuesRows;
     } else {
-      // 1. Check for Barangay Match
+      // 1. Try to match by Barangay (Column D / Index 3)
       const brgyMatches = allDuesRows.filter(row => row[3] === accessValue);
       
       if (brgyMatches.length > 0) {
@@ -47,28 +50,21 @@ async function initDashboard() {
         // Logic fix: Also pre-select the District this Barangay belongs to
         defaultSelections.dist = brgyMatches[0][4]; 
       } else {
-        // 2. If no Barangay match, check for District Match
+        // 2. If no Barangay match, try District (Column E / Index 4)
         const distMatches = allDuesRows.filter(row => row[4] === accessValue);
         allowedRows = distMatches;
         defaultSelections.dist = accessValue;
-        // If they are locked to a district, Barangay remains "all" 
-        // unless they have a specific assigned Barangay in Column D
       }
     }
 
-    // Populate filters (but we won't call loadContributions yet!)
     refreshFilterUI();
-    
-    // Set initial empty state for the table
-    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Filter" to view data.</td></tr>';
 
   } catch (err) {
     console.error("Initialization error:", err);
   }
 }
 
-/** * Populates/Resets the dropdown menus
- */
 function refreshFilterUI() {
   fillSelect("fBrgy", allowedRows.map(r => r[3]), defaultSelections.brgy);
   fillSelect("fDistrict", allowedRows.map(r => r[4]), defaultSelections.dist);
@@ -91,8 +87,6 @@ function fillSelect(id, data, defaultValue) {
   });
 }
 
-/** * TRIGGERED ONLY ON CLICK
- */
 function loadContributions() {
   const fID = document.getElementById("fID").value.toLowerCase();
   const fBrgy = document.getElementById("fBrgy").value;
@@ -129,24 +123,58 @@ function loadContributions() {
   document.getElementById("totalAmt").textContent = total.toLocaleString();
 }
 
-/** * UPDATED TAB SWITCHER
- * Resets data when leaving the contribution tab
- */
+function downloadPDF() {
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF("p", "mm", "a4");
+
+    const tableRows = document.querySelectorAll("#contriBody tr");
+    if (tableRows.length === 0 || tableRows[0].cells.length < 2) {
+      alert("Please generate data before downloading.");
+      return;
+    }
+
+    doc.setFontSize(16);
+    doc.text("Monthly Dues Report", 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Requested by: ${currentOfficer.fullName || "Officer"}`, 14, 22);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 27);
+
+    const tableData = [];
+    tableRows.forEach(tr => {
+      const cols = tr.querySelectorAll("td");
+      if (cols.length > 1) tableData.push(Array.from(cols).map(td => td.innerText));
+    });
+
+    doc.autoTable({
+      startY: 35,
+      head: [["ID", "Full Name", "Month", "Year", "Amount", "Timestamp", "Received By"]],
+      body: tableData,
+      headStyles: { fillColor: [30, 155, 67] }
+    });
+
+    const finalY = doc.lastAutoTable.finalY || 40;
+    doc.text(`Total: PHP ${document.getElementById("totalAmt").textContent}`, 14, finalY + 10);
+    doc.save(`Dues_Report_${Date.now()}.pdf`);
+  } catch (err) {
+    console.error("PDF Error:", err);
+    alert("Error generating PDF.");
+  }
+}
+
 function showTab(id) {
-  // 1. Reset logic if moving to Home or About
   if (id === 'homeTab' || id === 'aboutTab') {
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Filter" to view data.</td></tr>';
     document.getElementById("totalAmt").textContent = "0";
   }
-
-  // 2. Standard Tab Switching
   document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
   const target = document.getElementById(id);
   if (target) target.classList.add("active");
 }
 
 function go(url) { window.location.href = url; }
+
 function logout() { 
   sessionStorage.clear(); 
   window.location.replace("https://kbk-ops.github.io/kbkai"); 
