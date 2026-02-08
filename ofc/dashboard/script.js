@@ -126,7 +126,7 @@ function showTab(id) {
   // 1. Reset logic if moving to Home or About
   if (id === 'homeTab' || id === 'aboutTab') {
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Filter" to view data.</td></tr>';
     document.getElementById("totalAmt").textContent = "0";
   }
 
