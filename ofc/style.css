@@ -161,3 +161,9 @@ button:disabled {
   background: #999;
   cursor: not-allowed;
 }
+
+.hint {
+  margin-top: 20px;
+  color: #555;
+  font-size: 14px;
+}
