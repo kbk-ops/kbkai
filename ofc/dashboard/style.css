@@ -9,7 +9,7 @@ body {
 }
 
 body.locked {
-  display: none;
+  visibility: hidden;
 }
 
 .hidden {
