@@ -5,92 +5,84 @@ const SHEET_ID = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
 const OFFICERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Officers!A:F?key=${API_KEY}`;
 const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Monthly_Dues!A:J?key=${API_KEY}`;
 
-// Get current user ID from session (set during login)
-const loggedInID = sessionStorage.getItem("officerID"); 
+// Get ID from auth.js session key
+const loggedInID = sessionStorage.getItem("memberID"); 
 
-// Global variables for data handling
 let allowedRows = [];
 let currentOfficer = {};
 
-// Initial Load
-async function init() {
+/** * CORE INITIALIZATION 
+ * Verify who the officer is, find their access level, then fetch dues.
+ */
+async function initDashboard() {
   try {
-    // 1. Fetch Officer Data to verify Access
+    // 1. Fetch the Officers sheet to find the logged-in user's permissions
     const offRes = await fetch(OFFICERS_URL);
     const offData = await offRes.json();
     const officers = offData.values || [];
     
-    // Find the specific officer row by ID (Column A)
+    // Look for match in Column A (ID Number)
     const officerRow = officers.find(row => row[0] === loggedInID);
 
     if (!officerRow) {
-      alert("Access Denied: Officer ID not found in database.");
-      window.location.href = "../../index.html"; 
-      return;
+      console.error("ID not found in Officers sheet.");
+      return; // auth.js will eventually kick them out if session is invalid
     }
 
-    // Assign Officer Info (A=ID, B=First, C=Full, D=Brgy, E=Dist, F=Access)
+    // Mapping: A=0(ID), B=1(First), C=2(Full), D=3(Brgy), E=4(Dist), F=5(Access)
     currentOfficer = {
-      id: officerRow[0],
       firstName: officerRow[1],
       fullName: officerRow[2],
-      barangay: officerRow[3],
-      district: officerRow[4],
-      access: officerRow[5]
+      access: officerRow[5] 
     };
 
-    // Update UI Header
-    document.getElementById("greet").textContent = `Hello ${currentOfficer.firstName}!`;
-    document.getElementById("profilePic").src = "https://raw.github.com/kbk-ops/OrganizationFund/main/Icons/profileicon.png";
-    document.body.classList.remove("locked");
-    document.getElementById("app").classList.remove("hidden");
+    // Update Greeting
+    const greetEl = document.getElementById("greet");
+    if (greetEl) greetEl.textContent = `Hello ${currentOfficer.firstName}!`;
 
-    // 2. Fetch Monthly Dues Data
+    // 2. Fetch all Monthly Dues
     const duesRes = await fetch(DUES_URL);
     const duesData = await duesRes.json();
     const allDuesRows = duesData.values ? duesData.values.slice(1) : [];
 
-    // 3. Apply Restriction Goal Logic
+    // 3. APPLY YOUR GOAL RESTRICTIONS
     const accessValue = currentOfficer.access;
 
     if (accessValue === "All") {
-      // Goal 1: If access is "All", show everything
+      // GOAL: If "All", see everything
       allowedRows = allDuesRows;
     } else {
-      // Goal 2: Try to find exact match in Barangay (Dues Column D / Index 3)
+      // GOAL: Look for exact match in Dues Column D (Barangay - Index 3)
       const brgyMatches = allDuesRows.filter(row => row[3] === accessValue);
       
       if (brgyMatches.length > 0) {
         allowedRows = brgyMatches;
       } else {
-        // Goal 3: If no Brgy match, look for match in District (Dues Column E / Index 4)
-        const distMatches = allDuesRows.filter(row => row[4] === accessValue);
-        allowedRows = distMatches;
+        // GOAL: If no Brgy match, look for match in Dues Column E (District - Index 4)
+        allowedRows = allDuesRows.filter(row => row[4] === accessValue);
       }
     }
 
-    // 4. Populate the Filter Dropdowns based on allowed data
+    // 4. Set up the UI with the restricted data
     fillSelect("fBrgy", allowedRows.map(r => r[3]));
     fillSelect("fDistrict", allowedRows.map(r => r[4]));
     fillSelect("fMonth", allowedRows.map(r => r[6]));
     fillSelect("fYear", allowedRows.map(r => r[5]));
     fillSelect("fReceived", allowedRows.map(r => r[9]));
 
-    // 5. Initial Table Load
     loadContributions();
 
   } catch (err) {
     console.error("Initialization error:", err);
-    alert("Error loading data. Please check your internet connection.");
   }
 }
 
-/** ---------------------- UTILITY FUNCTIONS ---------------------- **/
+/** ---------------------- UI RENDERERS ---------------------- **/
 
 function fillSelect(id, data) {
   const sel = document.getElementById(id);
+  if (!sel) return;
   sel.innerHTML = '<option value="all">All</option>';
-  // Remove duplicates and sort
   [...new Set(data)].sort().forEach(v => {
     if (v) sel.innerHTML += `<option value="${v}">${v}</option>`;
   });
@@ -108,7 +100,7 @@ function loadContributions() {
   let total = 0;
 
   allowedRows.forEach(r => {
-    // UI Filter checks (ID, Brgy, Dist, Month, Year, Collector)
+    // Front-end Filter Logic
     if (fID && !r[1].toLowerCase().includes(fID)) return;
     if (fBrgy !== "all" && r[3] !== fBrgy) return;
     if (fDistrict !== "all" && r[4] !== fDistrict) return;
@@ -129,9 +121,16 @@ function loadContributions() {
     </tr>`;
   });
 
-  document.getElementById("contriBody").innerHTML = html || '<tr><td colspan="7">No matching records found</td></tr>';
-  document.getElementById("totalAmt").textContent = total.toLocaleString();
+  const body = document.getElementById("contriBody");
+  if (body) {
+      body.innerHTML = html || '<tr><td colspan="7">No records found</td></tr>';
+  }
+  
+  const totalEl = document.getElementById("totalAmt");
+  if (totalEl) totalEl.textContent = total.toLocaleString();
 }
+
+/** ---------------------- PDF GENERATION ---------------------- **/
 
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
@@ -141,46 +140,41 @@ function downloadPDF() {
   doc.text("Monthly Dues Report", 14, 15);
   
   doc.setFontSize(10);
-  doc.text(`Requested by: ${currentOfficer.fullName}`, 14, 22);
-  doc.text(`Access Filter: ${currentOfficer.access}`, 14, 27);
-  doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 32);
+  doc.text(`Requested by: ${currentOfficer.fullName || "Officer"}`, 14, 22);
+  doc.text(`Scope: ${currentOfficer.access}`, 14, 27);
+  doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 32);
 
-  const tableRows = [];
+  const tableData = [];
   document.querySelectorAll("#contriBody tr").forEach(tr => {
     const cols = tr.querySelectorAll("td");
     if (cols.length > 1) {
-      tableRows.push(Array.from(cols).map(td => td.innerText));
+      tableData.push(Array.from(cols).map(td => td.innerText));
     }
   });
 
   doc.autoTable({
     startY: 38,
     head: [["ID", "Full Name", "Month", "Year", "Amount", "Timestamp", "Collector"]],
-    body: tableRows,
-    theme: 'grid',
+    body: tableData,
     headStyles: { fillColor: [30, 155, 67] }
   });
 
   const finalY = doc.lastAutoTable.finalY || 40;
-  doc.setFont(undefined, 'bold');
-  doc.text(`Total: PHP ${document.getElementById("totalAmt").innerText}`, 14, finalY + 10);
+  doc.text(`Total Amount: PHP ${document.getElementById("totalAmt").innerText}`, 14, finalY + 10);
 
-  doc.save(`Dues_${currentOfficer.access}_${Date.now()}.pdf`);
+  doc.save(`Report_${currentOfficer.access}_${Date.now()}.pdf`);
 }
 
+// Helper Functions
 function showTab(id) {
   document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  const target = document.getElementById(id);
+  if (target) target.classList.add("active");
 }
 
 function go(url) {
   window.location.href = url;
 }
 
-function logout() {
-  sessionStorage.clear();
-  window.location.href = "../../index.html"; 
-}
-
-// Start the app
-init();
+// Start the process
+initDashboard();
