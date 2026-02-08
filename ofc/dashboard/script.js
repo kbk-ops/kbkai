@@ -1,93 +1,88 @@
 const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
 const SHEET_ID = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
 
-// Sheet URLs
 const OFFICERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Officers!A:F?key=${API_KEY}`;
 const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Monthly_Dues!A:J?key=${API_KEY}`;
 
-// Get ID from auth.js session key
 const loggedInID = sessionStorage.getItem("memberID"); 
 
 let allowedRows = [];
 let currentOfficer = {};
+let defaultSelections = { brgy: "all", dist: "all" };
 
-/** * CORE INITIALIZATION 
- * Verify who the officer is, find their access level, then fetch dues.
- */
 async function initDashboard() {
   try {
-    // 1. Fetch the Officers sheet to find the logged-in user's permissions
     const offRes = await fetch(OFFICERS_URL);
     const offData = await offRes.json();
     const officers = offData.values || [];
     
-    // Look for match in Column A (ID Number)
     const officerRow = officers.find(row => row[0] === loggedInID);
+    if (!officerRow) return;
 
-    if (!officerRow) {
-      console.error("ID not found in Officers sheet.");
-      return; // auth.js will eventually kick them out if session is invalid
-    }
-
-    // Mapping: A=0(ID), B=1(First), C=2(Full), D=3(Brgy), E=4(Dist), F=5(Access)
     currentOfficer = {
       firstName: officerRow[1],
       fullName: officerRow[2],
       access: officerRow[5] 
     };
 
-    // Update Greeting
-    const greetEl = document.getElementById("greet");
-    if (greetEl) greetEl.textContent = `Hello ${currentOfficer.firstName}!`;
+    document.getElementById("greet").textContent = `Hello ${currentOfficer.firstName}!`;
 
-    // 2. Fetch all Monthly Dues
     const duesRes = await fetch(DUES_URL);
     const duesData = await duesRes.json();
     const allDuesRows = duesData.values ? duesData.values.slice(1) : [];
 
-    // 3. APPLY YOUR GOAL RESTRICTIONS
     const accessValue = currentOfficer.access;
 
     if (accessValue === "All") {
-      // GOAL: If "All", see everything
       allowedRows = allDuesRows;
     } else {
-      // GOAL: Look for exact match in Dues Column D (Barangay - Index 3)
       const brgyMatches = allDuesRows.filter(row => row[3] === accessValue);
-      
       if (brgyMatches.length > 0) {
         allowedRows = brgyMatches;
+        defaultSelections.brgy = accessValue;
       } else {
-        // GOAL: If no Brgy match, look for match in Dues Column E (District - Index 4)
         allowedRows = allDuesRows.filter(row => row[4] === accessValue);
+        defaultSelections.dist = accessValue;
       }
     }
 
-    // 4. Set up the UI with the restricted data
-    fillSelect("fBrgy", allowedRows.map(r => r[3]));
-    fillSelect("fDistrict", allowedRows.map(r => r[4]));
-    fillSelect("fMonth", allowedRows.map(r => r[6]));
-    fillSelect("fYear", allowedRows.map(r => r[5]));
-    fillSelect("fReceived", allowedRows.map(r => r[9]));
-
-    loadContributions();
+    // Populate filters (but we won't call loadContributions yet!)
+    refreshFilterUI();
+    
+    // Set initial empty state for the table
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Filter" to view data.</td></tr>';
 
   } catch (err) {
     console.error("Initialization error:", err);
   }
 }
 
-/** ---------------------- UI RENDERERS ---------------------- **/
+/** * Populates/Resets the dropdown menus
+ */
+function refreshFilterUI() {
+  fillSelect("fBrgy", allowedRows.map(r => r[3]), defaultSelections.brgy);
+  fillSelect("fDistrict", allowedRows.map(r => r[4]), defaultSelections.dist);
+  fillSelect("fMonth", allowedRows.map(r => r[6]), "all");
+  fillSelect("fYear", allowedRows.map(r => r[5]), "all");
+  fillSelect("fReceived", allowedRows.map(r => r[9]), "all");
+  document.getElementById("fID").value = "";
+}
 
-function fillSelect(id, data) {
+function fillSelect(id, data, defaultValue) {
   const sel = document.getElementById(id);
   if (!sel) return;
   sel.innerHTML = '<option value="all">All</option>';
-  [...new Set(data)].sort().forEach(v => {
-    if (v) sel.innerHTML += `<option value="${v}">${v}</option>`;
+  const uniqueValues = [...new Set(data)].sort();
+  uniqueValues.forEach(v => {
+    if (v) {
+      const selected = (v === defaultValue) ? 'selected' : '';
+      sel.innerHTML += `<option value="${v}" ${selected}>${v}</option>`;
+    }
   });
 }
 
+/** * TRIGGERED ONLY ON CLICK
+ */
 function loadContributions() {
   const fID = document.getElementById("fID").value.toLowerCase();
   const fBrgy = document.getElementById("fBrgy").value;
@@ -100,7 +95,6 @@ function loadContributions() {
   let total = 0;
 
   allowedRows.forEach(r => {
-    // Front-end Filter Logic
     if (fID && !r[1].toLowerCase().includes(fID)) return;
     if (fBrgy !== "all" && r[3] !== fBrgy) return;
     if (fDistrict !== "all" && r[4] !== fDistrict) return;
@@ -121,60 +115,31 @@ function loadContributions() {
     </tr>`;
   });
 
-  const body = document.getElementById("contriBody");
-  if (body) {
-      body.innerHTML = html || '<tr><td colspan="7">No records found</td></tr>';
-  }
-  
-  const totalEl = document.getElementById("totalAmt");
-  if (totalEl) totalEl.textContent = total.toLocaleString();
+  document.getElementById("contriBody").innerHTML = html || '<tr><td colspan="7">No records found.</td></tr>';
+  document.getElementById("totalAmt").textContent = total.toLocaleString();
 }
 
-/** ---------------------- PDF GENERATION ---------------------- **/
-
-function downloadPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("p", "mm", "a4");
-
-  doc.setFontSize(16);
-  doc.text("Monthly Dues Report", 14, 15);
-  
-  doc.setFontSize(10);
-  doc.text(`Requested by: ${currentOfficer.fullName || "Officer"}`, 14, 22);
-  doc.text(`Scope: ${currentOfficer.access}`, 14, 27);
-  doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 32);
-
-  const tableData = [];
-  document.querySelectorAll("#contriBody tr").forEach(tr => {
-    const cols = tr.querySelectorAll("td");
-    if (cols.length > 1) {
-      tableData.push(Array.from(cols).map(td => td.innerText));
-    }
-  });
-
-  doc.autoTable({
-    startY: 38,
-    head: [["ID", "Full Name", "Month", "Year", "Amount", "Posted", "Received by"]],
-    body: tableData,
-    headStyles: { fillColor: [30, 155, 67] }
-  });
-
-  const finalY = doc.lastAutoTable.finalY || 40;
-  doc.text(`Total Amount: PHP ${document.getElementById("totalAmt").innerText}`, 14, finalY + 10);
-
-  doc.save(`Report_${currentOfficer.access}_${Date.now()}.pdf`);
-}
-
-// Helper Functions
+/** * UPDATED TAB SWITCHER
+ * Resets data when leaving the contribution tab
+ */
 function showTab(id) {
+  // 1. Reset logic if moving to Home or About
+  if (id === 'homeTab' || id === 'aboutTab') {
+    refreshFilterUI();
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("totalAmt").textContent = "0";
+  }
+
+  // 2. Standard Tab Switching
   document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
   const target = document.getElementById(id);
   if (target) target.classList.add("active");
 }
 
-function go(url) {
-  window.location.href = url;
+function go(url) { window.location.href = url; }
+function logout() { 
+  sessionStorage.clear(); 
+  window.location.replace("https://kbk-ops.github.io/kbkai"); 
 }
 
-// Start the process
 initDashboard();
