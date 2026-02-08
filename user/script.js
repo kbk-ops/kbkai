@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
+const API_KEY = process.env.GOOGLE_SHEET_API;
 
 const SHEET_MEMBER = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
 const SHEET_NAMEMEMBER = "Members";
