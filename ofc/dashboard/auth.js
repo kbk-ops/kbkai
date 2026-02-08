@@ -4,11 +4,11 @@ const lastActivity = sessionStorage.getItem("lastActivity");
 
 if (!auth || !lastActivity) {
   sessionStorage.clear();
-  window.location.href = "https://kbk-ops.github.io/OrganizationFund";
+  window.location.replace("https://kbk-ops.github.io/kbkai");
 }
 
 // update activity on any interaction
-["click","mousemove","keydown","touchstart","scroll"].forEach(evt => {
+["click", "mousemove", "keydown", "touchstart", "scroll"].forEach((evt) => {
   document.addEventListener(evt, () => {
     sessionStorage.setItem("lastActivity", Date.now());
   });
@@ -21,6 +21,6 @@ setInterval(() => {
 
   if (now - last > SESSION_TIME) {
     sessionStorage.clear();
-    window.location.href = "https://kbk-ops.github.io/OrganizationFund";
+    window.location.replace("https://kbk-ops.github.io/kbkai");
   }
 }, 10000);
