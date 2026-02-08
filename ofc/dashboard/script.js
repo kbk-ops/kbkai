@@ -1,75 +1,92 @@
 const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
-const SHEET_ID = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
 
-// URLs
-const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Monthly_Dues!A:J?key=${API_KEY}`;
-const RAW_DATA_URL = `https://sheets.googleapis.com/v4/spreadsheets/1lDzzDvwpPTp4GGhsBQ6kH-tVhAdhuFidP0ujpDTrp9A/values/Raw_Data!A:X?key=${API_KEY}`;
+const DUES_SHEET = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
+const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${DUES_SHEET}/values/Monthly_Dues!A:J?key=${API_KEY}`;
 
-// Officer info from sessionStorage
-const officerID = sessionStorage.getItem("memberID");
 const officerFirstName = sessionStorage.getItem("officerFirstName") || "Officer";
-const officerFullName = sessionStorage.getItem("officerFullName") || "Officer";
-const officerBrgy = sessionStorage.getItem("officerBrgy") || "All";
-const officerDistrict = sessionStorage.getItem("officerDistrict") || "All";
-const officerAccess = sessionStorage.getItem("officerAccess") || "All";
-
-// Redirect if not logged in
-if (!officerID) {
-  window.location.replace("../index.html");
-}
-
-// Greeting
 document.getElementById("greet").textContent = `Hello ${officerFirstName}!`;
+document.getElementById("profilePic").src =
+  "https://raw.github.com/kbk-ops/OrganizationFund/main/Icons/profileicon.png";
 
-// -------------------------
-// Tab navigation
-// -------------------------
+document.body.classList.remove("locked");
+document.getElementById("app").classList.remove("hidden");
+
 function showTab(id) {
-  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+  document
+    .querySelectorAll(".tab-content")
+    .forEach((t) => t.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-function go(page) {
-  window.location.replace(page);
+function go(url) {
+  window.location.href = url;
 }
 
-// -------------------------
-// Load Contributions with access control
-// -------------------------
-async function loadContributions() {
-  try {
-    const res = await fetch(DUES_URL);
-    const data = await res.json();
-    const rows = data.values?.slice(1) || [];
+/* LOAD FILTER OPTIONS */
+fetch(DUES_URL)
+  .then((r) => r.json())
+  .then((d) => {
+    const rows = d.values.slice(1);
+    fillSelect(
+      "fBrgy",
+      rows.map((r) => r[3])
+    );
+    fillSelect(
+      "fDistrict",
+      rows.map((r) => r[4])
+    );
+    fillSelect(
+      "fMonth",
+      rows.map((r) => r[6])
+    );
+    fillSelect(
+      "fYear",
+      rows.map((r) => r[5])
+    );
+    fillSelect(
+      "fReceived",
+      rows.map((r) => r[9])
+    );
+  });
 
-    const yearFilter = document.getElementById("fYear")?.value.toLowerCase() || "all";
-    const idFilter = document.getElementById("fID")?.value.toLowerCase() || "all";
-    const brgyFilter = document.getElementById("fBrgy")?.value.toLowerCase() || "all";
-    const districtFilter = document.getElementById("fDistrict")?.value.toLowerCase() || "all";
-    const monthFilter = document.getElementById("fMonth")?.value.toLowerCase() || "all";
-    const receivedByFilter = document.getElementById("fReceivedBy")?.value.toLowerCase() || "all";
+function fillSelect(id, data) {
+  const sel = document.getElementById(id);
+  sel.innerHTML = '<option value="all">All</option>';
+  [...new Set(data)].forEach((v) => {
+    if (v) sel.innerHTML += `<option value="${v}">${v}</option>`;
+  });
+}
 
-    let total = 0;
-    let html = "";
+/* CONTRIBUTION */
+function loadContributions() {
+  fetch(DUES_URL)
+    .then((r) => r.json())
+    .then((d) => {
+      const rows = d.values.slice(1);
 
-    rows.forEach(r => {
-      const rowAccess = r[23] || "All"; // Column X in Raw_Data
+      const fID = document.getElementById("fID").value;
+      const fBrgy = document.getElementById("fBrgy").value;
+      const fDistrict = document.getElementById("fDistrict").value;
+      const fMonth = document.getElementById("fMonth").value;
+      const fYear = document.getElementById("fYear").value;
+      const fReceived = document.getElementById("fReceived").value;
 
-      // -----------------------------
-      // ACCESS CONTROL
-      // -----------------------------
-      if (rowAccess !== "All" && rowAccess !== officerAccess) return;
+      let html = "";
+      let total = 0;
 
-      // Filters
-      if (idFilter !== "all" && r[1].toLowerCase() !== idFilter) return;
-      if (brgyFilter !== "all" && r[3].toLowerCase() !== brgyFilter) return;
-      if (districtFilter !== "all" && r[4].toLowerCase() !== districtFilter) return;
-      if (monthFilter !== "all" && r[6].toLowerCase() !== monthFilter) return;
-      if (yearFilter !== "all" && r[5] !== yearFilter) return;
-      if (receivedByFilter !== "all" && r[9].toLowerCase() !== receivedByFilter) return;
-
-      total += Number(r[7]);
-      html += `<tr>
+      rows
+        .filter(
+          (r) =>
+            (!fID || r[1] == fID) &&
+            (fBrgy == "all" || r[3] == fBrgy) &&
+            (fDistrict == "all" || r[4] == fDistrict) &&
+            (fMonth == "all" || r[6] == fMonth) &&
+            (fYear == "all" || r[5] == fYear) &&
+            (fReceived == "all" || r[9] == fReceived)
+        )
+        .forEach((r) => {
+          total += Number(r[7] || 0);
+          html += `<tr>
         <td>${r[1]}</td>
         <td>${r[2]}</td>
         <td>${r[6]}</td>
@@ -78,31 +95,24 @@ async function loadContributions() {
         <td>${r[0]}</td>
         <td>${r[9]}</td>
       </tr>`;
+        });
+
+      document.getElementById("contriBody").innerHTML = html;
+      document.getElementById("totalAmt").textContent = total.toLocaleString();
     });
-
-    document.getElementById("contriBody").innerHTML = html;
-    document.getElementById("totalAmt").textContent = total;
-
-  } catch (err) {
-    console.error(err);
-  }
 }
 
-// Initial load
-loadContributions();
-
-// -------------------------
-// Download PDF
-// -------------------------
+/* PDF */
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("p","mm","a4");
 
-  const brgy = document.getElementById("fBrgy")?.value || "All";
-  const month = document.getElementById("fMonth")?.value || "All";
+  const officerFullName = sessionStorage.getItem("officerFullName") || "Officer";
+  const brgy = document.getElementById("fBrgy").value;
+  const month = document.getElementById("fMonth").value;
 
   doc.setFontSize(12);
-  doc.text(`Requested by: ${officerFullName}`, 14, 15); // full name for PDF
+  doc.text(`Requested by: ${officerFullName}`, 14, 15); // use full name here
   doc.text(`Barangay: ${brgy}`, 14, 22);
   doc.text(`Month: ${month}`, 14, 29);
 
