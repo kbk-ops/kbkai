@@ -1,44 +1,92 @@
-const API_KEY = "AIzaSyByoZuo-QPFOfz1Kuqcc_V4CxFr7G5mW_c";
-const SHEET_ID = "1SoF6jtjeu7dWUHcTAL02_TKLBFslQgEpEbKQMHyFVdk";
-const SHEET_NAME = "Collectors";
-const DEFAULT_PASSWORD = "Letmein123#";
-const SESSION_TIME = 3 * 60 * 1000; // 3 minutes
+const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
 
-// clear fields on back/refresh
-window.onload = () => {
-  document.getElementById("username").value = "";
-  document.getElementById("password").value = "";
-  sessionStorage.clear();
-};
+const SHEET_MEMBER = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
+const SHEET_NAMEMEMBER = "Officers";
 
-document.getElementById("loginBtn").onclick = async function () {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const errorEl = document.getElementById("error");
+const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_MEMBER}/values/${SHEET_NAMEMEMBER}!A:G?key=${API_KEY}`;
 
+const WEBAPP_URL =
+  "https://script.google.com/macros/s/AKfycbyx6nI-1sF4nT0_8ICo8giRaDFKKPBBCqB9ld2MPdhxLnu8nGU8obYp0OTxUR_iSD_oBA/exec";
+
+const step1 = document.getElementById("step1");
+const step2 = document.getElementById("step2");
+const idNumberInput = document.getElementById("idNumber");
+const pinInput = document.getElementById("pin");
+const pinLabel = document.getElementById("pinLabel");
+const errorEl = document.getElementById("error");
+const loader = document.getElementById("loader");
+const nextBtn = document.getElementById("nextBtn");
+const loginBtn = document.getElementById("loginBtn");
+
+sessionStorage.clear();
+
+let currentID = "";
+let pinExists = false;
+
+// STEP 1
+nextBtn.onclick = async () => {
   errorEl.textContent = "";
+  const id = idNumberInput.value.trim();
+  if (!id) return (errorEl.textContent = "ID required");
 
-  if (!username || password !== DEFAULT_PASSWORD) {
-    errorEl.textContent = "incorrect username or password";
+  nextBtn.disabled = true;
+  loader.style.display = "block";
+
+  const res = await fetch(MEMBERS_URL);
+  const data = await res.json();
+  const rows = data.values.slice(1);
+  const member = rows.find((r) => r[0] == id);
+
+  loader.style.display = "none";
+
+  if (!member) {
+    errorEl.textContent = "ID not found";
+    nextBtn.disabled = false;
     return;
   }
 
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A:A?key=${API_KEY}`;
+  currentID = id;
+  pinExists = member[6] && member[6].trim() !== "";
+  pinLabel.textContent = pinExists ? "Enter 6-digit PIN" : "Create 6-digit PIN";
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    const ids = data.values.slice(1).map(r => r[0].toString().trim());
+  step1.style.display = "none";
+  step2.style.display = "block";
+};
 
-    if (ids.includes(username)) {
-      sessionStorage.setItem("auth", "true");
-      sessionStorage.setItem("collectorID", username);
-      sessionStorage.setItem("lastActivity", Date.now());
-      window.location.href = "https://kbk-ops.github.io/OrganizationFund/collector/dashboard";
-    } else {
-      errorEl.textContent = "incorrect username or password";
-    }
-  } catch {
-    errorEl.textContent = "incorrect username or password";
+// STEP 2
+loginBtn.onclick = async () => {
+  errorEl.textContent = "";
+  const pin = pinInput.value.trim();
+  if (!/^\d{6}$/.test(pin)) return (errorEl.textContent = "6 digits only");
+
+  loginBtn.disabled = true;
+  loader.style.display = "block";
+
+  const res = await fetch(MEMBERS_URL);
+  const data = await res.json();
+  const rows = data.values.slice(1);
+  const member = rows.find((r) => r[0] == currentID);
+
+  if (pinExists && member[6] !== pin) {
+    errorEl.textContent = "Wrong PIN";
+    loginBtn.disabled = false;
+    loader.style.display = "none";
+    return;
   }
+
+  if (!pinExists) {
+    await fetch(WEBAPP_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        id: currentID,
+        pin: pin
+      })
+    });
+  }
+
+  sessionStorage.setItem("memberID", currentID);
+  sessionStorage.setItem("auth", "true");
+  sessionStorage.setItem("expiry", Date.now() + 3600000);
+
+  window.location.replace("https://kbk-ops.github.io/kbkai/ofc/dashboard");
 };
