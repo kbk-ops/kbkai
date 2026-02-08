@@ -209,3 +209,11 @@ tfoot {
   .filters { grid-template-columns: repeat(2, 1fr); }
   .filter-actions { grid-column: span 2; }
 }
+
+.clips {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
