@@ -1,6 +1,6 @@
 * {
   box-sizing: border-box;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
 }
 
 body {
@@ -19,7 +19,7 @@ body.locked {
 .app {
   max-width: 980px;
   margin: auto;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: #fff;
@@ -28,9 +28,10 @@ body.locked {
 .topbar {
   background: #1e9b43;
   color: #fff;
-  padding: 10px;
+  padding: 10px 15px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .top-logo {
@@ -57,21 +58,22 @@ body.locked {
 .greeting {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
+  margin-bottom: 20px;
 }
 
 .profile-pic {
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   border: 2px solid #1e9b43;
+  object-fit: cover;
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
-  margin-top: 20px;
 }
 
 .card {
@@ -81,45 +83,99 @@ body.locked {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
   cursor: pointer;
+  text-align: center;
+  padding: 10px;
+  transition: transform 0.2s;
 }
 
+.card:hover {
+  transform: scale(1.02);
+}
+
+/* --- FILTER SECTION --- */
 .filters {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 12px;
+  margin-bottom: 20px;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
 }
 
-.filters input,
-.filters select,
-.filters button {
-  padding: 8px;
-  border-radius: 8px;
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-group label {
+  font-size: 11px;
+  font-weight: bold;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.filter-group input,
+.filter-group select {
+  padding: 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
+  font-size: 14px;
 }
 
+.filter-actions {
+  grid-column: span 3;
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.filter-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+}
+
+.btn-filter { background: #1e9b43; }
+.btn-download { background: #2196F3; }
+
+.filter-actions button:active {
+  opacity: 0.8;
+}
+
+/* --- TABLE SECTION --- */
 table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 13px;
 }
-th,
-td {
-  border: 1px solid #999;
-  padding: 8px;
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 10px;
   text-align: center;
 }
+
 thead {
   background: #1e9b43;
   color: #fff;
 }
+
 tfoot {
   background: #eee;
   font-weight: bold;
 }
 
+/* --- BOTTOM BAR --- */
 .bottombar {
   position: sticky;
   bottom: 0;
@@ -133,6 +189,7 @@ tfoot {
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .bottombar img {
@@ -145,4 +202,10 @@ tfoot {
   background: #fff;
   border-radius: 50%;
   padding: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 600px) {
+  .filters { grid-template-columns: repeat(2, 1fr); }
+  .filter-actions { grid-column: span 2; }
 }
