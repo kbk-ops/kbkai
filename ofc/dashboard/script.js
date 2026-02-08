@@ -3,8 +3,8 @@ const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
 const DUES_SHEET = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
 const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${DUES_SHEET}/values/Monthly_Dues!A:J?key=${API_KEY}`;
 
-const officerName = sessionStorage.getItem("officerName") || "Officer";
-document.getElementById("greet").textContent = `Welcome, ${officerName}!`;
+const officerFirstName = sessionStorage.getItem("officerFirstName") || "Officer";
+document.getElementById("greet").textContent = `Hello ${officerFirstName}!`;
 document.getElementById("profilePic").src =
   "https://raw.github.com/kbk-ops/OrganizationFund/main/Icons/profileicon.png";
 
