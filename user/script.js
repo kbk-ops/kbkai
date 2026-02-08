@@ -5,8 +5,7 @@ const SHEET_NAMEMEMBER = "Members";
 
 const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_MEMBER}/values/${SHEET_NAMEMEMBER}!A:F?key=${API_KEY}`;
 
-const WEBAPP_URL =
-  "https://script.google.com/macros/s/AKfycbyx6nI-1sF4nT0_8ICo8giRaDFKKPBBCqB9ld2MPdhxLnu8nGU8obYp0OTxUR_iSD_oBA/exec";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyx6nI-1sF4nT0_8ICo8giRaDFKKPBBCqB9ld2MPdhxLnu8nGU8obYp0OTxUR_iSD_oBA/exec";
 
 const step1 = document.getElementById("step1");
 const step2 = document.getElementById("step2");
@@ -14,6 +13,9 @@ const idNumberInput = document.getElementById("idNumber");
 const pinInput = document.getElementById("pin");
 const pinLabel = document.getElementById("pinLabel");
 const errorEl = document.getElementById("error");
+const loader = document.getElementById("loader");
+const nextBtn = document.getElementById("nextBtn");
+const loginBtn = document.getElementById("loginBtn");
 
 sessionStorage.clear();
 
@@ -21,16 +23,26 @@ let currentID = "";
 let pinExists = false;
 
 // STEP 1
-document.getElementById("nextBtn").onclick = async () => {
+nextBtn.onclick = async () => {
+  errorEl.textContent = "";
   const id = idNumberInput.value.trim();
-  if (!id) return (errorEl.textContent = "ID required");
+  if (!id) return errorEl.textContent = "ID required";
+
+  nextBtn.disabled = true;
+  loader.style.display = "block";
 
   const res = await fetch(MEMBERS_URL);
   const data = await res.json();
   const rows = data.values.slice(1);
-  const member = rows.find((r) => r[0] == id);
+  const member = rows.find(r => r[0] == id);
 
-  if (!member) return (errorEl.textContent = "ID not found");
+  loader.style.display = "none";
+
+  if (!member) {
+    errorEl.textContent = "ID not found";
+    nextBtn.disabled = false;
+    return;
+  }
 
   currentID = id;
   pinExists = member[5] && member[5].trim() !== "";
@@ -41,17 +53,25 @@ document.getElementById("nextBtn").onclick = async () => {
 };
 
 // STEP 2
-document.getElementById("loginBtn").onclick = async () => {
+loginBtn.onclick = async () => {
+  errorEl.textContent = "";
   const pin = pinInput.value.trim();
-  if (!/^\d{6}$/.test(pin)) return (errorEl.textContent = "6 digits only");
+  if (!/^\d{6}$/.test(pin)) return errorEl.textContent = "6 digits only";
+
+  loginBtn.disabled = true;
+  loader.style.display = "block";
 
   const res = await fetch(MEMBERS_URL);
   const data = await res.json();
   const rows = data.values.slice(1);
-  const member = rows.find((r) => r[0] == currentID);
+  const member = rows.find(r => r[0] == currentID);
 
-  if (pinExists && member[5] !== pin)
-    return (errorEl.textContent = "Wrong PIN");
+  if (pinExists && member[5] !== pin) {
+    errorEl.textContent = "Wrong PIN";
+    loginBtn.disabled = false;
+    loader.style.display = "none";
+    return;
+  }
 
   if (!pinExists) {
     await fetch(WEBAPP_URL, {
