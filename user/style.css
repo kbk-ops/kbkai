@@ -24,9 +24,15 @@ body {
 }
 
 @keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* ✅ TRUE CENTERING (FIX) */
@@ -48,14 +54,18 @@ body {
 
   background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 
   animation: containerIn 0.5s ease forwards;
 }
 
 @keyframes containerIn {
-  from { transform: scale(0.95); }
-  to { transform: scale(1); }
+  from {
+    transform: scale(0.95);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 .logo {
@@ -81,7 +91,7 @@ input {
 
 input:focus {
   border-color: #1e7802;
-  box-shadow: 0 0 8px rgba(30,120,2,0.3);
+  box-shadow: 0 0 8px rgba(30, 120, 2, 0.3);
   outline: none;
 }
 
@@ -114,13 +124,40 @@ button:hover {
   animation: fadeIn 0.6s forwards;
 }
 
-.animate-fade.delay-1 { animation-delay: 0.2s; }
-.animate-fade.delay-2 { animation-delay: 0.4s; }
-.animate-fade.delay-3 { animation-delay: 0.6s; }
+.animate-fade.delay-1 {
+  animation-delay: 0.2s;
+}
+.animate-fade.delay-2 {
+  animation-delay: 0.4s;
+}
+.animate-fade.delay-3 {
+  animation-delay: 0.6s;
+}
 
 @keyframes fadeIn {
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ccc;
+  border-top: 4px solid #1e7802;
+  border-radius: 50%;
+  margin: 15px auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+button:disabled {
+  background: #999;
+  cursor: not-allowed;
 }
