@@ -62,21 +62,23 @@ function loadContributions() {
       let html = "";
       let total = 0;
 
-      rows.forEach((r) => {
-        const rowBrgy = r[3];
-        const rowDistrict = r[4];
+      // ----------------------
+      // DETERMINE COLUMN FILTER FOR OFFICER
+      // ----------------------
+      let filterColumn = null; // 'D' or 'E' index
+      if (officerAccess !== "All") {
+        const hasD = rows.some(r => r[3] === officerAccess); // Column D
+        const hasE = rows.some(r => r[4] === officerAccess); // Column E
+        if (hasD) filterColumn = 3; // Column D index
+        else if (hasE) filterColumn = 4; // Column E index
+      }
 
-        // -----------------------------
-        // ACCESS CONTROL BASED ON OFFICER
-        // -----------------------------
-        if (officerAccess !== "All") {
-          if (rowBrgy === officerAccess) {
-            // officer sees rows where Column D matches
-          } else if (rowDistrict === officerAccess) {
-            // officer sees rows where Column E matches
-          } else {
-            return; // skip row
-          }
+      rows.forEach((r) => {
+        // ----------------------
+        // ACCESS CONTROL
+        // ----------------------
+        if (officerAccess !== "All" && filterColumn !== null) {
+          if (r[filterColumn] !== officerAccess) return; // skip rows not matching
         }
 
         // FILTERS
@@ -89,14 +91,14 @@ function loadContributions() {
 
         total += Number(r[7] || 0);
         html += `<tr>
-        <td>${r[1]}</td>
-        <td>${r[2]}</td>
-        <td>${r[6]}</td>
-        <td>${r[5]}</td>
-        <td>${r[7]}</td>
-        <td>${r[0]}</td>
-        <td>${r[9]}</td>
-      </tr>`;
+          <td>${r[1]}</td>
+          <td>${r[2]}</td>
+          <td>${r[6]}</td>
+          <td>${r[5]}</td>
+          <td>${r[7]}</td>
+          <td>${r[0]}</td>
+          <td>${r[9]}</td>
+        </tr>`;
       });
 
       document.getElementById("contriBody").innerHTML = html;
