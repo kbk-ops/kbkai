@@ -45,7 +45,7 @@ body.locked {
 
 .tab-content {
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
   padding: 20px;
   padding-bottom: 80px;
   display: none;
@@ -184,6 +184,7 @@ tfoot {
   height: 60px;
   background: #f44336;
   display: flex;
+  z-index: 1000;
 }
 
 .bottombar div {
