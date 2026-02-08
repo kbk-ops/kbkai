@@ -1,26 +1,75 @@
-const SESSION_TIME = 3 * 60 * 1000;
-const auth = sessionStorage.getItem("auth");
-const lastActivity = sessionStorage.getItem("lastActivity");
+// ================================
+// AUTH + UI GUARD (CONSOLIDATED)
+// ================================
+(function () {
 
-if (!auth || !lastActivity) {
-  sessionStorage.clear();
-  window.location.replace("https://kbk-ops.github.io/kbkai");
-}
+  const LOGIN_URL = "https://kbk-ops.github.io/kbkai";
+  const IDLE_LIMIT = 2 * 60 * 1000; // 2 minutes
+  let idleTimer;
 
-// update activity on any interaction
-["click", "mousemove", "keydown", "touchstart", "scroll"].forEach((evt) => {
-  document.addEventListener(evt, () => {
-    sessionStorage.setItem("lastActivity", Date.now());
-  });
-});
-
-// idle checker
-setInterval(() => {
-  const now = Date.now();
-  const last = parseInt(sessionStorage.getItem("lastActivity"));
-
-  if (now - last > SESSION_TIME) {
-    sessionStorage.clear();
-    window.location.replace("https://kbk-ops.github.io/kbkai");
+  // ===== AUTH STATE =====
+  function isAuthenticated() {
+    const memberID = sessionStorage.getItem("memberID");
+    const auth = sessionStorage.getItem("auth");
+    const expiry = sessionStorage.getItem("expiry");
+    return memberID && auth === "true" && Date.now() < expiry;
   }
-}, 10000);
+
+  // ===== HARD AUTH CHECK =====
+  function checkAuth() {
+    if (!isAuthenticated()) {
+      sessionStorage.clear();
+      location.replace(LOGIN_URL);
+      return false;
+    }
+    return true;
+  }
+
+  // ===== UI UNLOCK =====
+  function unlockUI() {
+    if (!checkAuth()) return;
+
+    document.body.classList.remove("locked");
+
+    const app = document.getElementById("app");
+    if (app) app.classList.remove("hidden");
+  }
+
+  // 🔒 HARD BLOCK — RUNS IMMEDIATELY
+  if (!checkAuth()) return;
+
+  // 🔓 UNLOCK ASAP (prevents flash)
+  unlockUI();
+
+  // 🔓 SAFE UNLOCK AFTER DOM
+  document.addEventListener("DOMContentLoaded", unlockUI);
+
+  // ===== BACK / FORWARD CACHE PROTECTION =====
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+      unlockUI();
+    }
+  });
+
+  // ===== GLOBAL LOGOUT =====
+  window.logout = function () {
+    sessionStorage.clear();
+    location.replace(LOGIN_URL);
+};
+
+  // ===== IDLE AUTO-LOGOUT =====
+  function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      alert("You have been logged out due to inactivity.");
+      window.logout();
+    }, IDLE_LIMIT);
+  }
+
+  ["mousemove", "keydown", "click", "scroll", "touchstart"].forEach(evt => {
+    document.addEventListener(evt, resetIdleTimer, true);
+  });
+
+  resetIdleTimer();
+
+})();
