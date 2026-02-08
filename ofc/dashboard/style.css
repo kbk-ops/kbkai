@@ -126,6 +126,8 @@ body.locked {
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 14px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .filter-actions {
