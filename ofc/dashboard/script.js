@@ -60,7 +60,7 @@ async function initDashboard() {
     refreshFilterUI();
     
     // Set initial empty state for the table
-    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Filter" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
 
   } catch (err) {
     console.error("Initialization error:", err);
