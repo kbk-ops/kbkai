@@ -103,20 +103,21 @@ function loadContributions() {
 }
 
 /* PDF */
-function downloadPDF(){
+function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF("p","mm","a4");
 
+  const officerFullName = sessionStorage.getItem("officerFullName") || "Officer";
   const brgy = document.getElementById("fBrgy").value;
   const month = document.getElementById("fMonth").value;
 
   doc.setFontSize(12);
-  doc.text(`Requested by: ${officerName}`, 14, 15);
+  doc.text(`Requested by: ${officerFullName}`, 14, 15); // use full name here
   doc.text(`Barangay: ${brgy}`, 14, 22);
   doc.text(`Month: ${month}`, 14, 29);
 
   const rows = [];
-  document.querySelectorAll("#contriBody tr").forEach(tr=>{
+  document.querySelectorAll("#contriBody tr").forEach(tr => {
     const cols = tr.querySelectorAll("td");
     rows.push([
       cols[0].innerText,
@@ -132,8 +133,7 @@ function downloadPDF(){
   doc.autoTable({
     startY: 40,
     head: [[
-      "ID","Full Name","Month","Year",
-      "Amount","Posted","Received By"
+      "ID","Full Name","Month","Year","Amount","Posted","Received By"
     ]],
     body: rows
   });
@@ -141,5 +141,5 @@ function downloadPDF(){
   const finalY = doc.lastAutoTable.finalY || 40;
   doc.text(`Total: ${document.getElementById("totalAmt").innerText}`, 14, finalY + 10);
 
-  doc.save("monthly_dues.pdf");
+  doc.save(`monthlydues_${brgy}.pdf`);
 }
