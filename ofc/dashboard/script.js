@@ -15,9 +15,7 @@ document.body.classList.remove("locked");
 document.getElementById("app").classList.remove("hidden");
 
 function showTab(id) {
-  document
-    .querySelectorAll(".tab-content")
-    .forEach((t) => t.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach((t) => t.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
@@ -25,32 +23,30 @@ function go(url) {
   window.location.href = url;
 }
 
-/* ---------------------- LOAD FILTER OPTIONS WITH ACCESS CONTROL ---------------------- */
+/* ---------------------- LOAD AND FILTER DATA ---------------------- */
+let allowedRows = []; // will hold only rows officer can access
+
 fetch(DUES_URL)
   .then((r) => r.json())
   .then((d) => {
     const rows = d.values.slice(1);
 
-    // Determine which column controls officer access
-    let filterColumn = null; // 3 = D (Barangay), 4 = E (District)
-    let allowedRows = rows;
-
-    if (officerAccess !== "All") {
-      const hasD = rows.some((r) => r[3] === officerAccess);
-      const hasE = rows.some((r) => r[4] === officerAccess);
-      if (hasD) filterColumn = 3;
-      else if (hasE) filterColumn = 4;
-
-      // Only keep rows that match officer access for filters
-      allowedRows = rows.filter((r) => r[filterColumn] === officerAccess);
+    // Determine which rows the officer can see
+    if (officerAccess === "All") {
+      allowedRows = rows;
+    } else {
+      allowedRows = rows.filter((r) => r[3] === officerAccess || r[4] === officerAccess);
     }
 
-    // Populate filter dropdowns using only allowedRows
+    // Fill filter dropdowns using allowedRows only
     fillSelect("fBrgy", allowedRows.map((r) => r[3]));
     fillSelect("fDistrict", allowedRows.map((r) => r[4]));
     fillSelect("fMonth", allowedRows.map((r) => r[6]));
     fillSelect("fYear", allowedRows.map((r) => r[5]));
     fillSelect("fReceived", allowedRows.map((r) => r[9]));
+
+    // Initial load
+    loadContributions();
   });
 
 function fillSelect(id, data) {
@@ -61,66 +57,42 @@ function fillSelect(id, data) {
   });
 }
 
-/* ---------------------- LOAD CONTRIBUTIONS WITH ACCESS CONTROL ---------------------- */
+/* ---------------------- LOAD CONTRIBUTIONS ---------------------- */
 function loadContributions() {
-  fetch(DUES_URL)
-    .then((r) => r.json())
-    .then((d) => {
-      const rows = d.values.slice(1);
+  const fID = document.getElementById("fID").value;
+  const fBrgy = document.getElementById("fBrgy").value;
+  const fDistrict = document.getElementById("fDistrict").value;
+  const fMonth = document.getElementById("fMonth").value;
+  const fYear = document.getElementById("fYear").value;
+  const fReceived = document.getElementById("fReceived").value;
 
-      const fID = document.getElementById("fID").value;
-      const fBrgy = document.getElementById("fBrgy").value;
-      const fDistrict = document.getElementById("fDistrict").value;
-      const fMonth = document.getElementById("fMonth").value;
-      const fYear = document.getElementById("fYear").value;
-      const fReceived = document.getElementById("fReceived").value;
+  let html = "";
+  let total = 0;
 
-      let html = "";
-      let total = 0;
+  allowedRows.forEach((r) => {
+    // Filters
+    if (fID && fID !== "all" && r[1] !== fID) return;
+    if (fBrgy !== "all" && r[3] !== fBrgy) return;
+    if (fDistrict !== "all" && r[4] !== fDistrict) return;
+    if (fMonth !== "all" && r[6] !== fMonth) return;
+    if (fYear !== "all" && r[5] !== fYear) return;
+    if (fReceived !== "all" && r[9] !== fReceived) return;
 
-      // Determine which column controls officer access
-      let filterColumn = null;
-      if (officerAccess !== "All") {
-        const hasD = rows.some((r) => r[3] === officerAccess);
-        const hasE = rows.some((r) => r[4] === officerAccess);
-        if (hasD) filterColumn = 3;
-        else if (hasE) filterColumn = 4;
-      }
+    total += Number(r[7] || 0);
 
-      rows.forEach((r) => {
-        // ----------------------
-        // ACCESS CONTROL
-        // ----------------------
-        if (officerAccess !== "All" && filterColumn !== null) {
-          if (r[filterColumn] !== officerAccess) return; // skip row
-        }
+    html += `<tr>
+      <td>${r[1]}</td>
+      <td>${r[2]}</td>
+      <td>${r[6]}</td>
+      <td>${r[5]}</td>
+      <td>${r[7]}</td>
+      <td>${r[0]}</td>
+      <td>${r[9]}</td>
+    </tr>`;
+  });
 
-        // ----------------------
-        // FILTERS
-        // ----------------------
-        if (fID && fID !== "all" && r[1] != fID) return;
-        if (fBrgy !== "all" && r[3] != fBrgy) return;
-        if (fDistrict !== "all" && r[4] != fDistrict) return;
-        if (fMonth !== "all" && r[6] != fMonth) return;
-        if (fYear !== "all" && r[5] != fYear) return;
-        if (fReceived !== "all" && r[9] != fReceived) return;
-
-        total += Number(r[7] || 0);
-
-        html += `<tr>
-          <td>${r[1]}</td>
-          <td>${r[2]}</td>
-          <td>${r[6]}</td>
-          <td>${r[5]}</td>
-          <td>${r[7]}</td>
-          <td>${r[0]}</td>
-          <td>${r[9]}</td>
-        </tr>`;
-      });
-
-      document.getElementById("contriBody").innerHTML = html;
-      document.getElementById("totalAmt").textContent = total.toLocaleString();
-    });
+  document.getElementById("contriBody").innerHTML = html;
+  document.getElementById("totalAmt").textContent = total.toLocaleString();
 }
 
 /* ---------------------- PDF DOWNLOAD ---------------------- */
