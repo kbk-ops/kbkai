@@ -154,7 +154,7 @@ function downloadPDF() {
 
   doc.autoTable({
     startY: 38,
-    head: [["ID", "Full Name", "Month", "Year", "Amount", "Timestamp", "Collector"]],
+    head: [["ID", "Full Name", "Month", "Year", "Amount", "Posted", "Received by"]],
     body: tableData,
     headStyles: { fillColor: [30, 155, 67] }
   });
