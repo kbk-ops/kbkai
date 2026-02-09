@@ -181,4 +181,4 @@ function logout() {
 }
 
 initDashboard();
-initDashboardTabs()
+initDashboardTabs();
