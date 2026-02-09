@@ -77,7 +77,7 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-top: 80px;
+  margin-top: 60px;
 }
 
 .loader {
