@@ -158,13 +158,16 @@ body.locked {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 11px;
+  table-layout: fixed; /* key */
 }
 
 th, td {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 thead {
