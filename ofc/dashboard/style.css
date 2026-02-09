@@ -17,12 +17,13 @@ body.locked {
 }
 
 .app {
+  width: 100%;
   max-width: 980px;
-  margin: auto;
-  min-height: 100dvh;
+  height: 100dvh;
+  margin: 0 auto;
+  background: #fff;
   display: flex;
   flex-direction: column;
-  background: #fff;
 }
 
 .topbar {
