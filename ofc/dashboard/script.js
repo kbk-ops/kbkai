@@ -173,7 +173,7 @@ function showTab(id) {
   if (target) target.classList.add("active");
 }
 
-function go(url) { window.location.href = url; }
+function go(url) { window.location.replace = (url); }
 
 function logout() { 
   sessionStorage.clear(); 
