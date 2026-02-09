@@ -35,7 +35,7 @@ body {
   }
 }
 
-/* ✅ TRUE CENTERING (FIX) */
+/* TRUE CENTERING (FIX) */
 .page-center {
   position: fixed;
   inset: 0;
