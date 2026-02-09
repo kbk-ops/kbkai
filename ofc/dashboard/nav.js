@@ -5,7 +5,7 @@ function goDashboard(tab = "homeTab") {
   );
 }
 
-function initDashboardTabs() {
+function initDashboard() {
   const tab = sessionStorage.getItem("activeTab");
   if (tab) {
     showTab(tab);
