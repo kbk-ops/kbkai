@@ -160,7 +160,7 @@ async function submitData() {
 
       setTimeout(() => {
         errorEl.textContent = "";
-      }, 6000);
+      }, 5000);
     } else {
       errorEl.textContent = "Failed to record";
     }
