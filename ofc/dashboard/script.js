@@ -181,4 +181,3 @@ function logout() {
 }
 
 initDashboard();
-initDashboardTabs();
