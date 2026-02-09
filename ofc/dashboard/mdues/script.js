@@ -10,7 +10,7 @@ const loader = document.getElementById("loader");
 const submitBtn = document.getElementById("submitBtn");
 
 // Officer ID from login session
-const collectorID = sessionStorage.getItem("collectorID");
+const collectorID = sessionStorage.getItem("memberID");
 
 // ============================
 // HELPER: CLEAR FIELDS
