@@ -89,6 +89,22 @@ function populateFilters() {
   }
 }
 
+// Filter changes update scorecard and chart
+barangayFilter.addEventListener("change", updateStatsOnFilterChange);
+districtFilter.addEventListener("change", updateStatsOnFilterChange);
+
+function updateStatsOnFilterChange(){
+  let rows = [...allowedRows];
+  const b = barangayFilter.value;
+  const d = districtFilter.value;
+
+  if(b) rows = rows.filter(r => r[15] == b);
+  if(d) rows = rows.filter(r => r[14] == d);
+
+  updateScoreCard(rows);
+  updateAgeChart(rows);
+}
+
 function generateData() {
   let rows = [...allowedRows];
   const b = barangayFilter.value;
