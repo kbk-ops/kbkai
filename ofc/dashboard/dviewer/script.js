@@ -60,15 +60,17 @@ function populateFilters(){
     districtFilter.innerHTML+=`<option>${d}</option>`;
   });
 
-  if(special=="All"){
-    barangayFilter.value="";
-    districtFilter.value="";
-  }else if(distSet.length>1 && brgySet.length>1){
-    barangayFilter.value="";
-    districtFilter.value=special;
-  }else{
-    barangayFilter.value=brgySet[0]||"";
-    districtFilter.value=distSet[0]||"";
+  if(special === "All"){
+    barangayFilter.value = "";
+    districtFilter.value = "";
+  } 
+  else if(special && special.startsWith("Dist.")){
+    barangayFilter.value = "";
+    districtFilter.value = special;
+  } 
+  else {
+    barangayFilter.value = brgySet[0] || "";
+    districtFilter.value = distSet[0] || "";
   }
 }
 
