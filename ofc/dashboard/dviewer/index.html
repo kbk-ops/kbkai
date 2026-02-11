@@ -4,38 +4,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Officer Data Viewer</title>
+  <title>Data Viewer</title>
+  <link rel="icon" href="../../Kasangga New Logo Small.png" type="image/x-icon">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Prevent browser caching -->
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<body>
+<body class="locked">
+  <div id="app" class="app hidden">
+    <div class="topbar">
+      <img src="https://raw.github.com/kbk-ops/kbkai/main/Clips/kbkheader.png" class="top-logo" alt="logo">
+      <img src="https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/logout.png" class="logout-icon" onclick="logout()" alt="logout">
+    </div>
+    <h2>Data Viewer</h2>
 
-  <div class="app">
-    <h2>Officer Data Viewer</h2>
-
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search ID or Full Name">
+      <button id="searchBtn">🔍</button>
+    </div>
     <div class="filter-container">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search ID or Full Name">
-        <button id="searchBtn">🔍</button>
-      </div>
       <select id="barangayFilter"></select>
       <select id="districtFilter"></select>
+
       <button id="generateBtn">Generate Data</button>
       <button id="pdfBtn">Download to PDF</button>
-
-      <div class="score-card">
-        <div class="card">
-          <h4>Total Active Members</h4>
-          <span id="totalActive">0</span>
-        </div>
-      </div>
     </div>
 
-    <canvas id="ageChart"></canvas>
+    <div class="score-card">
+      <div class="card">
 
+        <h3>Total Active Members</h3>
+        <span id="totalActive">0</span>
+      </div>
+    </div>
+    <canvas id="ageChart"></canvas>
     <div class="table-wrapper">
       <table id="dataTable">
         <thead>
@@ -50,9 +59,21 @@
         <tbody></tbody>
       </table>
     </div>
+    <div class="bottombar">
+      <div onclick="goDashboard('homeTab')">
+        <img src="https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/home.png" alt="home">
+      </div>
+      <div class="center-btn" onclick="goDashboard('contributionTab')">
+        <img src="https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/contribution.png" alt="contri">
+      </div>
+      <div onclick="goDashboard('aboutTab')">
+        <img src="https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/about.png" alt="about">
+      </div>
+    </div>
   </div>
 
-  <script src="auth.js"></script>
+  <script src="../auth.js"></script>
+  <script src="../nav.js"></script>
   <script src="script.js"></script>
 </body>
 
