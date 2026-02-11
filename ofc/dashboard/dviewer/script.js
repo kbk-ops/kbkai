@@ -41,14 +41,21 @@ function populateFilters(){
   const brgySet=[...new Set(allowedRows.map(r=>r[15]))];
   const distSet=[...new Set(allowedRows.map(r=>r[14]))];
 
-  barangayFilter.innerHTML="<option value=''>All Barangay</option>";
-  districtFilter.innerHTML="<option value=''>All District</option>";
+  barangayFilter.innerHTML="";
+  districtFilter.innerHTML="";
+
+  if(brgySet.length > 1){
+    barangayFilter.innerHTML="<option value=''>All Barangay</option>";
+  }
+  if(distSet.length > 1){
+    districtFilter.innerHTML="<option value=''>All District</option>";
+  }
 
   brgySet.forEach(b=>barangayFilter.innerHTML+=`<option>${b}</option>`);
   distSet.forEach(d=>districtFilter.innerHTML+=`<option>${d}</option>`);
 
-  barangayFilter.value=officerInfo[15]||"";
-  districtFilter.value=officerInfo[14]||"";
+  barangayFilter.value = brgySet.length === 1 ? brgySet[0] : (officerInfo[15]||"");
+  districtFilter.value = distSet.length === 1 ? distSet[0] : (officerInfo[14]||"");
 }
 
 function generateData(){
