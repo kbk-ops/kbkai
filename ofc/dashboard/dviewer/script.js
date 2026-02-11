@@ -44,6 +44,8 @@ function populateFilters(){
   barangayFilter.innerHTML="";
   districtFilter.innerHTML="";
 
+  const special = officerInfo[23];
+
   if(brgySet.length > 1){
     barangayFilter.innerHTML="<option value=''>All Barangay</option>";
   }
@@ -51,11 +53,23 @@ function populateFilters(){
     districtFilter.innerHTML="<option value=''>All District</option>";
   }
 
-  brgySet.forEach(b=>barangayFilter.innerHTML+=`<option>${b}</option>`);
-  distSet.forEach(d=>districtFilter.innerHTML+=`<option>${d}</option>`);
+  brgySet.sort((a,b)=>parseInt(a)-parseInt(b)).forEach(b=>{
+    barangayFilter.innerHTML+=`<option>${b}</option>`;
+  });
+  distSet.sort((a,b)=>parseInt(a)-parseInt(b)).forEach(d=>{
+    districtFilter.innerHTML+=`<option>${d}</option>`;
+  });
 
-  barangayFilter.value = brgySet.length === 1 ? brgySet[0] : (officerInfo[15]||"");
-  districtFilter.value = distSet.length === 1 ? distSet[0] : (officerInfo[14]||"");
+  if(special=="All"){
+    barangayFilter.value="";
+    districtFilter.value="";
+  }else if(distSet.length>1 && brgySet.length>1){
+    barangayFilter.value="";
+    districtFilter.value=special;
+  }else{
+    barangayFilter.value=brgySet[0]||"";
+    districtFilter.value=distSet[0]||"";
+  }
 }
 
 function generateData(){
@@ -65,6 +79,8 @@ function generateData(){
 
   if(b) rows=rows.filter(r=>r[15]==b);
   if(d) rows=rows.filter(r=>r[14]==d);
+
+  rows.sort((a,b)=>parseInt(a[15]) - parseInt(b[15]));
 
   const tbody=document.querySelector("#dataTable tbody");
   tbody.innerHTML="";
