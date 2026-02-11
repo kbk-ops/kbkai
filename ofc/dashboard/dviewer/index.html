@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,35 +9,51 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <body>
 
-<div class="app">
-  <h2>Officer Data Viewer</h2>
+  <div class="app">
+    <h2>Officer Data Viewer</h2>
 
-  <div class="filter-container">
-    <select id="barangayFilter"></select>
-    <select id="districtFilter"></select>
-    <button id="generateBtn">Generate Data</button>
-    <button id="pdfBtn">Download to PDF</button>
-  </div>
+    <div class="filter-container">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search ID or Full Name">
+        <button id="searchBtn">🔍</button>
+      </div>
+      <select id="barangayFilter"></select>
+      <select id="districtFilter"></select>
+      <button id="generateBtn">Generate Data</button>
+      <button id="pdfBtn">Download to PDF</button>
 
-  <div class="table-wrapper">
-    <table id="dataTable">
-      <thead>
-        <tr>
-          <th>ID Number</th>
-          <th>Full Name</th>
-          <th>Address</th>
-          <th>Phone Number</th>
-          <th>Barangay</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+      <div class="score-card">
+        <div class="card">
+          <h4>Total Active Members</h4>
+          <span id="totalActive">0</span>
+        </div>
+      </div>
+    </div>
+
+    <canvas id="ageChart"></canvas>
+
+    <div class="table-wrapper">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>ID Number</th>
+            <th>Full Name</th>
+            <th>Address</th>
+            <th>Phone Number</th>
+            <th>Barangay</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
-</div>
 
   <script src="auth.js"></script>
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
+
 </html>
