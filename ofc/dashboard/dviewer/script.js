@@ -123,41 +123,45 @@ function generateData(){
 // Initially hide table
 document.querySelector(".table-wrapper").style.display="none";
 
-function updateAgeChart(rows) {
-  const ageGroups = {};
+function updateAgeChart(rows){
+  const ageGroups={};
 
-  rows.forEach((r) => {
-    const age = r[11];
-    ageGroups[age] = (ageGroups[age] || 0) + 1;
+  rows.forEach(r=>{
+    const age=r[11];
+    ageGroups[age]=(ageGroups[age]||0)+1;
   });
 
-  const labels = Object.keys(ageGroups);
-  const values = Object.values(ageGroups);
-  const total = values.reduce((a, b) => a + b, 0);
-  const percentages = values.map((v) => ((v / total) * 100).toFixed(1));
+  const labels=Object.keys(ageGroups);
+  const values=Object.values(ageGroups);
+  const total=values.reduce((a,b)=>a+b,0);
+  const percentages=values.map(v=>((v/total)*100).toFixed(1));
 
-  if (ageChart) ageChart.destroy();
+  if(ageChart) ageChart.destroy();
 
-  ageChart = new Chart(document.getElementById("ageChart"), {
-    type: "bar",
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: "Age Group %",
-          data: percentages
-        }
-      ]
+  ageChart=new Chart(document.getElementById("ageChart"),{
+    type:"bar",
+    data:{
+      labels:labels,
+      datasets:[{
+        label:"Age Group %",
+        data:percentages,
+        backgroundColor:"#007bff"
+      }]
     },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: (v) => v + "%"
-          }
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      layout:{
+        padding: {top:5, bottom:5, left:0, right:0}
+      },
+      scales:{
+        y:{
+          beginAtZero:true,
+          ticks:{callback:v=>v+"%"}
         }
+      },
+      plugins:{
+        legend:{display:false}
       }
     }
   });
