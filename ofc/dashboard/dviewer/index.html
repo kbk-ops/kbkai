@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Officer Data Viewer</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+<div class="app">
+  <h2>Officer Data Viewer</h2>
+
+  <div class="filter-container">
+    <select id="barangayFilter"></select>
+    <select id="districtFilter"></select>
+    <button id="generateBtn">Generate Data</button>
+    <button id="pdfBtn">Download to PDF</button>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>ID Number</th>
+          <th>Full Name</th>
+          <th>Address</th>
+          <th>Phone Number</th>
+          <th>Barangay</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
