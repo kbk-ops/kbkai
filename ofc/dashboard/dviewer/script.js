@@ -83,26 +83,29 @@ function populateFilters() {
   }
 }
 
-function generateData() {
-  let rows = [...allowedRows];
-  const b = barangayFilter.value;
-  const d = districtFilter.value;
-  const q = searchInput.value.toLowerCase();
+function generateData(){
+  let rows=[...allowedRows];
+  const b=barangayFilter.value;
+  const d=districtFilter.value;
+  const q=searchInput.value.toLowerCase();
 
-  if (b) rows = rows.filter((r) => r[15] == b);
-  if (d) rows = rows.filter((r) => r[14] == d);
-  if (q)
-    rows = rows.filter(
-      (r) => r[0].toLowerCase().includes(q) || r[7].toLowerCase().includes(q)
-    );
+  if(b) rows=rows.filter(r=>r[15]==b);
+  if(d) rows=rows.filter(r=>r[14]==d);
+  if(q) rows=rows.filter(r=>
+    r[0].toLowerCase().includes(q) ||
+    r[7].toLowerCase().includes(q)
+  );
 
-  rows.sort((a, b) => parseInt(a[15]) - parseInt(b[15]));
+  rows.sort((a,b)=>parseInt(a[15]) - parseInt(b[15]));
 
-  const tbody = document.querySelector("#dataTable tbody");
-  tbody.innerHTML = "";
+  const tableWrapper=document.querySelector(".table-wrapper");
+  tableWrapper.style.display="block"; // show table only when generate clicked
 
-  rows.forEach((r) => {
-    tbody.innerHTML += `
+  const tbody=document.querySelector("#dataTable tbody");
+  tbody.innerHTML="";
+
+  rows.forEach(r=>{
+    tbody.innerHTML+=`
     <tr>
       <td>${r[0]}</td>
       <td>${r[7]}</td>
@@ -112,14 +115,13 @@ function generateData() {
     </tr>`;
   });
 
-  currentRows = rows;
+  currentRows=rows;
   updateScoreCard(rows);
   updateAgeChart(rows);
 }
 
-function updateScoreCard(rows) {
-  totalActiveEl.textContent = rows.length;
-}
+// Initially hide table
+document.querySelector(".table-wrapper").style.display="none";
 
 function updateAgeChart(rows) {
   const ageGroups = {};
