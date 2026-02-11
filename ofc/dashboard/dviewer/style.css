@@ -1,14 +1,49 @@
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f5f5f5;
+* {
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
-.app{
-  max-width:1200px;
-  margin:auto;
-  padding:16px;
+
+body {
+  margin: 0;
+  background: #f2f4f7;
 }
+
+body.locked {
+  visibility: hidden;
+}
+
+.hidden {
+  display: none;
+}
+
+.app {
+  width: 100%;
+  max-width: 980px;
+  height: 100dvh;
+  margin: 0 auto;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background: #1e9b43;
+  color: #fff;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-logo {
+  height: 40px;
+}
+
+.logout-icon {
+  height: 26px;
+  cursor: pointer;
+}
+
 h2{text-align:center}
 
 .filter-container{
@@ -29,9 +64,9 @@ select,button{
 }
 button{
   cursor:pointer;
-  background:#007bff;
-  color:#fff;
-  border:none;
+  background: linear-gradient(180deg, #2fae0a 0%, #1e7802 100%);
+  color: #fff;
+  border: none;
 }
 button:hover{opacity:.85}
 
@@ -59,4 +94,66 @@ th{background:#f0f0f0}
   .filter-container{
     flex-direction:column;
   }
+}
+
+/* --- BOTTOM BAR --- */
+.bottombar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  background: #f44336;
+  display: flex;
+  z-index: 1000;
+}
+
+.bottombar div {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.bottombar img {
+  height: 26px;
+}
+
+.center-btn img {
+  height: 60px;
+  margin-top: -30px;
+  background: white;
+  border-radius: 50%;
+  padding: 8px;
+}
+
+.search-box{
+  display:flex;
+  gap:6px;
+  width:100%;
+}
+.search-box input{
+  flex:1;
+  padding:10px;
+  border:1px solid #ccc;
+  border-radius:6px;
+}
+.score-card{
+  width:100%;
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+.card{
+  flex:1;
+  background:#f9f9f9;
+  padding:12px;
+  border-radius:8px;
+  text-align:center;
+  font-weight:bold;
+  box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+#ageChart{
+  margin-top:20px;
+  width:100%;
 }
