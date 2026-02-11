@@ -103,6 +103,10 @@ function generateData(){
   // Show table when generate clicked
   tableWrapper.style.display="block";
 
+   // Hide score card and chart
+  document.querySelector(".score-card").style.display="none";
+  document.getElementById("ageChart").style.display="none";
+
   const tbody=document.querySelector("#dataTable tbody");
   tbody.innerHTML="";
 
@@ -148,7 +152,7 @@ function updateAgeChart(rows){
       datasets:[{
         label:"Age Group %",
         data:percentages,
-        backgroundColor:"#007bff"
+        backgroundColor:"#4bfa68"
       }]
     },
     options:{
@@ -158,9 +162,16 @@ function updateAgeChart(rows){
       scales:{
         y:{beginAtZero:true,ticks:{callback:v=>v+"%"}}
       },
-      plugins:{legend:{display:false}}
+      plugins:{
+        legend:{display:false},
+        title:{display:true,text:"Age Group", font:{size:16}}
+      }
     }
   });
+
+  // show chart and score card on load
+  document.querySelector(".score-card").style.display="flex";
+  document.getElementById("ageChart").style.display="block";
 }
 
 // PDF
