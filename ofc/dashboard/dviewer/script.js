@@ -3,6 +3,7 @@ const SHEET_ID = "1lDzzDvwpPTp4GGhsBQ6kH-tVhAdhuFidP0ujpDTrp9A";
 const SHEET_NAME = "Raw_Data";
 
 const loggedInID = sessionStorage.getItem("memberID");
+const loader = document.getElementById("loader");
 
 let allData = [];
 let allowedRows = [];
@@ -23,11 +24,19 @@ const tableWrapper = document.querySelector(".table-wrapper");
 tableWrapper.style.display = "none";
 
 async function fetchData() {
+  showLoader();
+  try {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
   const res = await fetch(url);
   const data = await res.json();
   allData = data.values.slice(1);
   initAccess();
+} catch (error) {
+    console.error("Error fetching data:", error);
+    alert("Failed to load data.");
+  }
+
+  hideLoader();
 }
 
 function initAccess() {
@@ -108,7 +117,7 @@ function updateStatsOnFilterChange() {
 // Loader
 
 function showLoader() {
-  loader.style.display = "block";
+  loader.style.display = "flex";
   generateBtn.disabled = true;
   pdfBtn.disabled = true;
 }
@@ -120,7 +129,11 @@ function hideLoader() {
 }
 
 function generateData() {
+
   showLoader();
+
+  requestAnimationFrame(() => {
+  
   let rows = [...allowedRows];
   const b = barangayFilter.value;
   const d = districtFilter.value;
@@ -130,11 +143,12 @@ function generateData() {
   if (d) rows = rows.filter((r) => r[14] == d);
   if (q)
     rows = rows.filter(
-      (r) => r[0].toLowerCase().includes(q) || r[7].toLowerCase().includes(q)
-    );
+        (r) =>
+          r[0].toLowerCase().includes(q) ||
+          r[7].toLowerCase().includes(q)
+      );
 
   rows.sort((a, b) => parseInt(a[15]) - parseInt(b[15]));
-  showLoader();
 
   // Show table when generate clicked
   tableWrapper.style.display = "block";
@@ -159,10 +173,10 @@ function generateData() {
 
   currentRows = rows;
   updateScoreCard(rows);
-}
 
 hideLoader();
-
+  });
+}
 // Score card
 function updateScoreCard(rows) {
   totalActiveEl.textContent = rows.length;
