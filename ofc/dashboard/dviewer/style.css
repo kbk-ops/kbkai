@@ -124,10 +124,11 @@ button:disabled {
 
 /* ---- Table Design ----  */
 .table-wrapper {
-  flex: 1;
+   flex: 1;
   overflow-y: auto;
-  padding-bottom: 20px; /* bottom padding */
-  margin-bottom: 70px; /* space for bottom bar */
+  padding-bottom: 20px;
+  margin-bottom: 50px;
+  width: 100%;
 }
 
 /* Sticky header */
@@ -136,12 +137,33 @@ button:disabled {
   top: 0;
   z-index: 20;
   background: #1e9b43;
+  color: #ffffff; /* white text */
 }
 
 /* ---- Ensure proper scrolling ----- */
 #dataTable {
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
+  table-layout: auto;
+}
+
+/* Cell borders */
+#dataTable th,
+#dataTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+/* Mobile fit */
+@media (max-width: 600px) {
+  #dataTable th,
+  #dataTable td {
+    font-size: 11px;
+  }
 }
 
 /* Optional smoother scroll */
