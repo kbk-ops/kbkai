@@ -229,3 +229,25 @@ button:disabled {
   width: 100%;
   max-height: 250px; /* limit height */
 }
+
+/* Page Table */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 15px 0;
+}
+.pagination button {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
+.pagination button.active {
+  background: #1e9b43;
+  color: #fff;
+  font-weight: bold;
+}
+.pagination span {
+  padding: 6px 10px;
+}
