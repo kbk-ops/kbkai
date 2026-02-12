@@ -122,60 +122,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* ---- Table Design ----  */
-.table-wrapper {
-   flex: 1;
-  overflow-y: auto;
-  padding-bottom: 20px;
-  margin-bottom: 50px;
-  width: 100%;
-}
-
-/* Table header */
-#dataTable thead th {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: #1e9b43;
-  color: #ffffff;
-  text-align: center;
-}
-
-/* ---- data table scrolling ----- */
-#dataTable {
-  width: 100%;
-  max-width: 100%;
-  border-collapse: collapse;
-  table-layout: auto;
-}
-
-/* smoother scroll */
-.table-wrapper::-webkit-scrollbar {
-  width: 6px;
-}
-.table-wrapper::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
-}
-
-/* Cell borders */
-#dataTable th,
-#dataTable td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-  word-wrap: break-word;
-  white-space: normal;
-}
-
-/* Mobile fit */
-@media (max-width: 600px) {
-  #dataTable th,
-  #dataTable td {
-    font-size: 11px;
-  }
-}
-
 /* --- BOTTOM BAR --- */
 .bottombar {
   position: fixed;
