@@ -131,21 +131,31 @@ button:disabled {
   width: 100%;
 }
 
-/* Sticky header */
+/* Table header */
 #dataTable thead th {
   position: sticky;
   top: 0;
   z-index: 20;
   background: #1e9b43;
-  color: #ffffff; /* white text */
+  color: #ffffff;
+  text-align: center;
 }
 
-/* ---- Ensure proper scrolling ----- */
+/* ---- data table scrolling ----- */
 #dataTable {
   width: 100%;
   max-width: 100%;
   border-collapse: collapse;
   table-layout: auto;
+}
+
+/* smoother scroll */
+.table-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
 }
 
 /* Cell borders */
@@ -164,15 +174,6 @@ button:disabled {
   #dataTable td {
     font-size: 11px;
   }
-}
-
-/* Optional smoother scroll */
-.table-wrapper::-webkit-scrollbar {
-  width: 6px;
-}
-.table-wrapper::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
 }
 
 /* --- BOTTOM BAR --- */
