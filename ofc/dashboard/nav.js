@@ -1,40 +1,55 @@
-// ----------- BOTTOM BAR + TABS -----------
-/**
- * Show a tab by ID and handle dashboard logic
- * Keeps your filters, totals, etc.
- */
-function showTab(tabId) {
-  // Hide all tabs
-  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
-  
-  // Show selected tab
-  const target = document.getElementById(tabId);
-  if (!target) return;
-  target.classList.add("active");
-
-  // If it's a tab that needs reset
-  if (tabId === "homeTab" || tabId === "aboutTab") {
-    if (typeof refreshFilterUI === "function") refreshFilterUI();
-    const contriBody = document.getElementById("contriBody");
-    if (contriBody) contriBody.innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
-    const totalAmt = document.getElementById("totalAmt");
-    if (totalAmt) totalAmt.textContent = "0";
-  }
-
-  // Highlight active bottom button
-  document.querySelectorAll(".bottombar div").forEach(b => b.classList.remove("active"));
-  const btnMap = {
-    homeTab: 0,
-    contributionTab: 1,
-    aboutTab: 2
-  };
-  const btn = document.querySelectorAll(".bottombar div")[btnMap[tabId]];
-  if (btn) btn.classList.add("active");
+function goDashboard(tab = "homeTab") {
+  sessionStorage.setItem("activeTab", tab);
+  window.location.replace("https://kbk-ops.github.io/kbkai/ofc/dashboard");
 }
 
 /**
- * Initialize bottom bar click events
+ * Initialize tabs on dashboard page based on sessionStorage
+ * @param {function} showTabCallback - function that shows a tab by ID
  */
+function initDashboardTabs(showTabCallback) {
+  if (!showTabCallback) return;
+
+  const tab = sessionStorage.getItem("activeTab");
+  if (tab) {
+    showTabCallback(tab); // call the dashboard function to show the correct tab
+    sessionStorage.removeItem("activeTab");
+  }
+}
+
+/**
+ * Show a tab immediately on dashboard (or any page with tabs)
+ * @param {string} tabId - ID of the tab to show
+ */
+function showTab(tabId) {
+  const tabs = document.querySelectorAll(".tab-content");
+  tabs.forEach(t => t.classList.remove("active"));
+
+  const target = document.getElementById(tabId);
+  if (target) target.classList.add("active");
+}
+
+/**
+ * Optional: Initialize bottom bar button highlighting
+ * Call this on dashboard after DOMContentLoaded
+ */
+function initBottomBarHighlight() {
+  const buttons = document.querySelectorAll(".bottombar div");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+}
+
+// For dashboard page: run this on page load
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.querySelector(".tab-content")) {
+    initDashboardTabs(showTab);
+    initBottomBarHighlight();
+  }
+}); */
 function initBottomBar() {
   const buttons = document.querySelectorAll(".bottombar div");
   const tabMap = ["homeTab", "contributionTab", "aboutTab"];
