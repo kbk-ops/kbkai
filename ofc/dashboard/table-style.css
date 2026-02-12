@@ -3,7 +3,7 @@
   flex: 1;
   overflow-y: auto;
   padding-bottom: 20px; /* space at bottom */
-  margin-bottom: 70px;  /* space for bottom bar */
+  margin-bottom: 50px;  /* space for bottom bar */
   width: 100%;
   background: #fff;
   border-radius: 8px;
@@ -25,7 +25,7 @@ thead th {
   z-index: 20;
   background: #1e9b43;
   color: #ffffff;
-  text-align: left;
+  text-align: center;
   padding: 8px;
   border: 1px solid #ddd;
 }
@@ -40,7 +40,7 @@ td {
   white-space: normal;
 }
 
-/* ===== SCROLLBAR STYLE (OPTIONAL) ===== */
+/* ===== SCROLLBAR STYLE ===== */
 .table-wrapper::-webkit-scrollbar {
   width: 6px;
 }
