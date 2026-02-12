@@ -96,6 +96,11 @@ body.locked {
   transform: scale(1.02);
 }
 
+button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
 /* --- BOTTOM BAR --- */
 .bottombar {
   position: sticky;
