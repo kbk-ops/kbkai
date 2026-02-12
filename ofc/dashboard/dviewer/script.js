@@ -93,19 +93,34 @@ function populateFilters() {
 barangayFilter.addEventListener("change", updateStatsOnFilterChange);
 districtFilter.addEventListener("change", updateStatsOnFilterChange);
 
-function updateStatsOnFilterChange(){
+function updateStatsOnFilterChange() {
   let rows = [...allowedRows];
   const b = barangayFilter.value;
   const d = districtFilter.value;
 
-  if(b) rows = rows.filter(r => r[15] == b);
-  if(d) rows = rows.filter(r => r[14] == d);
+  if (b) rows = rows.filter((r) => r[15] == b);
+  if (d) rows = rows.filter((r) => r[14] == d);
 
   updateScoreCard(rows);
   updateAgeChart(rows);
 }
 
+// Loader
+
+function showLoader() {
+  loader.style.display = "block";
+  generateBtn.disabled = true;
+  pdfBtn.disabled = true;
+}
+
+function hideLoader() {
+  loader.style.display = "none";
+  generateBtn.disabled = false;
+  pdfBtn.disabled = false;
+}
+
 function generateData() {
+  showLoader();
   let rows = [...allowedRows];
   const b = barangayFilter.value;
   const d = districtFilter.value;
@@ -119,6 +134,7 @@ function generateData() {
     );
 
   rows.sort((a, b) => parseInt(a[15]) - parseInt(b[15]));
+  showLoader();
 
   // Show table when generate clicked
   tableWrapper.style.display = "block";
@@ -144,6 +160,8 @@ function generateData() {
   currentRows = rows;
   updateScoreCard(rows);
 }
+
+hideLoader();
 
 // Score card
 function updateScoreCard(rows) {
