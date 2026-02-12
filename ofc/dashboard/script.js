@@ -77,14 +77,23 @@ function refreshFilterUI() {
 function fillSelect(id, data, defaultValue) {
   const sel = document.getElementById(id);
   if (!sel) return;
-  sel.innerHTML = '<option value="all">All</option>';
+
+  sel.innerHTML = ""; // clear everything
+
+  // Only include the default selection or unique allowed values
   const uniqueValues = [...new Set(data)].sort();
+
   uniqueValues.forEach(v => {
     if (v) {
       const selected = (v === defaultValue) ? 'selected' : '';
       sel.innerHTML += `<option value="${v}" ${selected}>${v}</option>`;
     }
   });
+
+  // If default is "all", include "All" option
+  if (defaultValue === "all") {
+    sel.insertAdjacentHTML('afterbegin', `<option value="all" selected>All</option>`);
+  }
 }
 
 function loadContributions() {
