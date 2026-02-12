@@ -49,7 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
     initDashboardTabs(showTab);
     initBottomBarHighlight();
   }
-}); */
+});
+
 function initBottomBar() {
   const buttons = document.querySelectorAll(".bottombar div");
   const tabMap = ["homeTab", "contributionTab", "aboutTab"];
