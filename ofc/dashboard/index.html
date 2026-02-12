@@ -41,12 +41,12 @@
 
     <div id="contributionTab" class="tab-content">
 
+      <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search ID...">
+      <button id="searchBtn">🔍</button>
+    </div>
+      
       <div class="filter-container">
-        <div class="filter-group">
-          <label>ID Number</label>
-          <input id="fID" placeholder="Search ID...">
-        </div>
-
         <div class="filter-group">
           <label>Barangay</label>
           <select id="fBrgy"></select>
@@ -78,7 +78,8 @@
         </div>
       </div>
 
-      <table>
+    <div class="table-wrapper">
+      <table id="dataTable">
         <thead>
           <tr>
             <th>ID</th>
