@@ -1,85 +1,204 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
   <meta charset="UTF-8">
-  <title>Data Viewer</title>
-  <link rel="icon" href="../../Kasangga New Logo Small.png" type="image/x-icon">
-  
+  <title>Officer Dashboard</title>
+  <link rel="icon" href="../../Kasangga New Logo Small.png">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="../table-style.css">
-
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Prevent browser caching -->
   <meta http-equiv="Cache-Control" content="no-store" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
 </head>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body class="locked">
   <div id="app" class="app hidden">
+
     <div class="topbar">
       <img src="https://raw.github.com/kbk-ops/kbkai/main/Clips/kbkheader.png" class="top-logo" alt="logo">
       <img src="https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/logout.png" class="logout-icon" onclick="logout()" alt="logout">
     </div>
-    <h2>Data Viewer</h2>
 
-    <div id="loader" class="loader" style="display:none;"></div>
+    <div id="homeTab" class="tab-content active">
+      <div class="greeting">
+        <img id="profilePic" class="profile-pic" alt="profile">
+        <h2 id="greet"></h2>
+      </div>
 
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search ID or Full Name">
-      <button id="searchBtn">🔍</button>
-    </div>
-    <div class="filter-container">
-      <select id="barangayFilter"></select>
-      <select id="districtFilter"></select>
-
-      <button id="generateBtn">Generate Data</button>
-      <button id="pdfBtn">Download to PDF</button>
-    </div>
-
-    <div class="score-card">
-      <div class="card">
-
-        <h3>Total Active Members</h3>
-        <span id="totalActive">0</span>
+      <div class="grid">
+        <div class="card" onclick="go('https://kbk-ops.github.io/kbkai/ofc/dashboard/mdues')">Monthly Dues</div>
+        <div class="card" onclick="go('https://kbk-ops.github.io/kbkai/ofc/dashboard/dviewer')">Membership Data</div>
+        <div class="card" onclick="go('https://kbk-ops.github.io/kbkai/ofc/dashboard/soon1')">Soon</div>
+        <div class="card" onclick="go('https://kbk-ops.github.io/kbkai/ofc/dashboard/soon2')">Soon</div>
       </div>
     </div>
-    <canvas id="ageChart"></canvas>
-    <div class="table-wrapper">
-      <table id="dataTable">
+
+    <div id="contributionTab" class="tab-content">
+
+      <div class="filters">
+        <div class="filter-group">
+          <label>ID Number</label>
+          <input id="fID" placeholder="Search ID...">
+        </div>
+
+        <div class="filter-group">
+          <label>Barangay</label>
+          <select id="fBrgy"></select>
+        </div>
+
+        <div class="filter-group">
+          <label>District</label>
+          <select id="fDistrict"></select>
+        </div>
+
+        <div class="filter-group">
+          <label>Month</label>
+          <select id="fMonth"></select>
+        </div>
+
+        <div class="filter-group">
+          <label>Year</label>
+          <select id="fYear"></select>
+        </div>
+
+        <div class="filter-group">
+          <label>Received By</label>
+          <select id="fReceived"></select>
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn-filter" onclick="loadContributions()">Generate</button>
+          <button class="btn-download" onclick="downloadPDF()">Download</button>
+        </div>
+      </div>
+
+      <table>
         <thead>
           <tr>
-            <th>ID Number</th>
+            <th>ID</th>
             <th>Full Name</th>
-            <th>Address</th>
-            <th>Phone Number</th>
-            <th>Barangay</th>
+            <th>Month</th>
+            <th>Year</th>
+            <th>Amount</th>
+            <th>Posted</th>
+            <th>Received By</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="contriBody"></tbody>
+        <tfoot>
+          <tr>
+            <th colspan="4">Total</th>
+            <th id="totalAmt"></th>
+            <th colspan="2"></th>
+          </tr>
+        </tfoot>
       </table>
     </div>
+
+    <div id="aboutTab" class="tab-content">
+      <h1>Introduction</h1>
+      <p style="text-align: justify; font-size: 18px;">
+        <strong>Kasangga ng Batang Kankaloo Association Incorporated (KBKai)</strong> s a duly registered, non-profit, non-stock organization recognized by the Securities and Exchange Commission (SEC). Established to serve as a catalyst for positive change, the Association is committed to empowering individuals and families through inclusive, participatory, and sustainable community development initiatives.
+      </p>
+
+      <p style="text-align: justify; font-size: 18px;">
+        The Association seeks to uplift the quality of life of its members by implementing livelihood programs, educational assistance, skills training, and community-based activities that promote self-reliance, resilience, and overall well-being. Through collective action and mutual support, KBKai creates opportunities that enable members to become productive, confident, and socially responsible individuals.
+      </p>
+
+      <p style="text-align: justify; font-size: 18px;">
+        In pursuit of its goals, the Association actively collaborates with private institutions, non-government organizations, and local government units to ensure that programs are responsive to the real needs of the community. Guided by the spirit of bayanihan, Kasangga ng Batang Kankaloo Association Incorporated continues to advocate for inclusive growth, social development, and a better future for all its beneficiaries.
+      </p>
+
+      <div class="line">
+        <h2 style="text-align: center;">TABLE OF CONTENTS</h2>
+
+        <ol style="font-size: 18px; padding-left: 20px; width: fit-content;">
+          <li><a href="#vision">Vision</a></li>
+          <li><a href="#mission">Mission</a></li>
+          <li><a href="#core-values">Core Values</a></li>
+          <li><a href="#coi">Certificate of Incorporation</a></li>
+          <li><a href="#dist3">KBKai District III</a></li>
+        </ol>
+      </div>
+
+      <div class="line">
+        <h2 id="vision" ; style="text-align: center;">VISION</h2>
+        <p style="text-align: justify; font-size: 18px;">
+          A self-reliant, empowered, and compassionate community where every member enjoys an improved quality of life through education, sustainable livelihood, and collective community development.
+        </p>
+
+        <h2 id="mission" ; style="text-align: center;">MISSION</h2>
+        <p style="text-align: justify; font-size: 18px;">
+          To uplift the lives of our members by providing accessible livelihood opportunities, educational assistance, skills training, and community development programs, while fostering unity, cooperation, and partnerships with private entities and local government units to promote sustainable growth and holistic well-being.
+        </p>
+      </div>
+
+      <div class="line">
+        <h2 id="core-values" ; style="text-align: center;">CORE VALUES</h2>
+        <h3>Bayanihan (Unity and Cooperation)</h3>
+        <p style="text-align: justify; font-size: 15px;">
+          We uphold the spirit of mutual help and collective responsibility, believing that meaningful progress is achieved when members work together toward shared goals.
+        </p>
+
+        <h3>Integrity and Accountability</h3>
+        <p style="text-align: justify; font-size: 15px;">
+          We commit to transparency, ethical conduct, and responsible stewardship of resources entrusted to the organization for the benefit of the community.
+        </p>
+
+        <h3>Empowerment and Self-Reliance</h3>
+        <p style="text-align: justify; font-size: 15px;">
+          We strive to equip members with knowledge, skills, and opportunities that enable them to become self-sufficient and confident contributors to society.
+        </p>
+
+        <h3>Inclusivity and Compassion</h3>
+        <p style="text-align: justify; font-size: 15px;">
+          We respect diversity and ensure that our programs are accessible, fair, and responsive to the needs of all members, especially the marginalized and vulnerable.
+        </p>
+
+        <h3>Partnership and Collaboration</h3>
+        <p style="text-align: justify; font-size: 15px;">
+          We value strong partnerships with private institutions, local government units, and other organizations to strengthen our impact and expand opportunities for community development.
+        </p>
+
+        <h3>Service and Social Responsibility</h3>
+        <p style="text-align: justify; font-size: 15px;">
+          We are dedicated to serving the community with sincerity and commitment, promoting social development and improving the overall well-being of our members.
+        </p>
+      </div>
+
+      <div class="line">
+        <h3 id="coi" ; style="text-align: center;">CERTIFICATE OF INCORPORATION</h3>
+        <img src="https://raw.github.com/kbk-ops/kbkai/main/Clips/SEC_COR.jpg" class="clips" alt="clips">
+      </div>
+
+      <div class="line">
+        <h3 id="dist3" ; style="text-align: center;">KBKai DISTRICT III</h3>
+        <img src="https://raw.github.com/kbk-ops/kbkai/main/Clips/KBKD3.jpg" class="clips" alt="clips">
+      </div>
+    </div>
+
     <div class="bottombar">
-      <div onclick="goDashboard('homeTab')">
+      <div onclick="showTab('homeTab')">
         <img src="https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/home.png" alt="home">
       </div>
-      <div class="center-btn" onclick="goDashboard('contributionTab')">
+      <div class="center-btn" onclick="showTab('contributionTab')">
         <img src="https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/contribution.png" alt="contri">
       </div>
-      <div onclick="goDashboard('aboutTab')">
+      <div onclick="showTab('aboutTab')">
         <img src="https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/about.png" alt="about">
       </div>
     </div>
+
   </div>
 
-  <script src="../auth.js"></script>
-  <script src="../nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="auth.js"></script>
+  <script src="nav.js"></script>
   <script src="script.js"></script>
 </body>
 
