@@ -11,6 +11,11 @@ let officerInfo = {};
 let currentRows = [];
 let ageChart = null;
 
+// ------- Table Page -------
+let currentPage = 1;
+const rowsPerPage = 300;
+let paginatedRows = [];
+
 const barangayFilter = document.getElementById("barangayFilter");
 const districtFilter = document.getElementById("districtFilter");
 const generateBtn = document.getElementById("generateBtn");
