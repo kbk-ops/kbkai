@@ -122,9 +122,11 @@ button:disabled {
 }
 
 .table-wrapper {
+  max-height: 70vh;
   overflow-x: auto;
   background: #fff;
   border-radius: 8px;
+  padding-bottom: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -144,6 +146,7 @@ td {
 }
 
 thead {
+  position: sticky;
   color: #fff;
 }
 
