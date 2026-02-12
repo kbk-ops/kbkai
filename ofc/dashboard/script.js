@@ -65,26 +65,13 @@ async function initDashboard() {
   }
 }
 
-function fillSelect(id, data, defaultValue) {
-  const sel = document.getElementById(id);
-  if (!sel) return;
-
-  sel.innerHTML = ""; // clear everything
-
-  // Only include the default selection or unique allowed values
-  const uniqueValues = [...new Set(data)].sort();
-
-  uniqueValues.forEach(v => {
-    if (v) {
-      const selected = (v === defaultValue) ? 'selected' : '';
-      sel.innerHTML += `<option value="${v}" ${selected}>${v}</option>`;
-    }
-  });
-
-  // If default is "all", include "All" option
-  if (defaultValue === "all") {
-    sel.insertAdjacentHTML('afterbegin', `<option value="all" selected>All</option>`);
-  }
+function refreshFilterUI() {
+  fillSelect("fBrgy", allowedRows.map(r => r[3]), defaultSelections.brgy);
+  fillSelect("fDistrict", allowedRows.map(r => r[4]), defaultSelections.dist);
+  fillSelect("fMonth", allowedRows.map(r => r[6]), "all");
+  fillSelect("fYear", allowedRows.map(r => r[5]), "all");
+  fillSelect("fReceived", allowedRows.map(r => r[9]), "all");
+  document.getElementById("fID").value = "";
 }
 
 function fillSelect(id, data, defaultValue) {
