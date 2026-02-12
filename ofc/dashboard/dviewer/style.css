@@ -146,7 +146,7 @@ td {
 }
 
 thead {
-  position: sticky;
+  background: #1e9b43;
   color: #fff;
 }
 
@@ -161,6 +161,11 @@ th {
   .filter-container {
     flex-direction: column;
   }
+}
+
+tfoot {
+  background: #eee;
+  font-weight: bold;
 }
 
 /* --- BOTTOM BAR --- */
