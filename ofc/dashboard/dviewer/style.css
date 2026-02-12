@@ -100,6 +100,7 @@ button:hover {
   opacity: 0.85;
 }
 
+/* Loader */
 .loader {
   width: 40px;
   height: 40px;
@@ -121,51 +122,35 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* ---- Table Design ----  */
 .table-wrapper {
-  max-height: 70vh;
-  overflow-x: auto;
-  background: #fff;
-  border-radius: 8px;
-  padding-bottom: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 20px; /* bottom padding */
+  margin-bottom: 70px; /* space for bottom bar */
 }
 
-table {
+/* Sticky header */
+#dataTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #1e9b43;
+}
+
+/* ---- Ensure proper scrolling ----- */
+#dataTable {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
 }
 
-th,
-td {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
-  word-wrap: break-word;
-  white-space: normal;
+/* Optional smoother scroll */
+.table-wrapper::-webkit-scrollbar {
+  width: 6px;
 }
-
-thead {
-  background: #1e9b43;
-  color: #fff;
-}
-
-th {
-  background: #1e9b43;
-}
-@media (max-width: 600px) {
-  th,
-  td {
-    font-size: 11px;
-  }
-  .filter-container {
-    flex-direction: column;
-  }
-}
-
-tfoot {
-  background: #eee;
-  font-weight: bold;
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
 }
 
 /* --- BOTTOM BAR --- */
