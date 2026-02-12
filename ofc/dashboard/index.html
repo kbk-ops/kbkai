@@ -7,8 +7,7 @@
   <link rel="icon" href="../../Kasangga New Logo Small.png">
   
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="table-style.css">
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Prevent browser caching -->
@@ -41,12 +40,12 @@
 
     <div id="contributionTab" class="tab-content">
 
-      <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search ID...">
-      <button id="searchBtn">🔍</button>
-    </div>
-      
-      <div class="filter-container">
+      <div class="filters">
+        <div class="filter-group">
+          <label>ID Number</label>
+          <input id="fID" placeholder="Search ID...">
+        </div>
+
         <div class="filter-group">
           <label>Barangay</label>
           <select id="fBrgy"></select>
@@ -72,14 +71,13 @@
           <select id="fReceived"></select>
         </div>
 
-        <div class="btn-wrap">
+        <div class="filter-actions">
           <button class="btn-filter" onclick="loadContributions()">Generate</button>
           <button class="btn-download" onclick="downloadPDF()">Download</button>
         </div>
       </div>
 
-    <div class="table-wrapper">
-      <table id="dataTable">
+      <table>
         <thead>
           <tr>
             <th>ID</th>
@@ -101,7 +99,6 @@
         </tfoot>
       </table>
     </div>
-  </div>
 
     <div id="aboutTab" class="tab-content">
       <h1>Introduction</h1>
