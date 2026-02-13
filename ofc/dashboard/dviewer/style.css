@@ -240,6 +240,7 @@ button:disabled {
   padding: 6px 10px;
   border: 1px solid #ccc;
   background: #fff;
+  color: #000;
   cursor: pointer;
 }
 .pagination button.active {
