@@ -6,6 +6,7 @@
 body {
   margin: 0;
   background: #f2f4f7;
+  overflow: hidden;
 }
 
 body.locked {
@@ -98,6 +99,7 @@ body.locked {
 
 /* --- FILTER SECTION --- */
 .filters {
+  flex-shrink: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
@@ -156,29 +158,44 @@ body.locked {
 }
 
 /* --- TABLE SECTION --- */
+.table-container {
+  flex: 1; /* takes remaining space */
+  overflow-y: auto; /* only this scrolls */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 11px;
-  table-layout: fixed; /* key */
 }
 
 th, td {
   border: 1px solid #ddd;
   padding: 10px;
   text-align: center;
-  word-wrap: break-word;
   white-space: normal;
 }
 
 thead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   background: #1e9b43;
-  color: #fff;
+  color: #ffffff;
 }
 
 tfoot {
   background: #eee;
   font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  #dataTable th,
+  #dataTable td {
+    font-size: 11px;
+  }
 }
 
 /* --- BOTTOM BAR --- */
