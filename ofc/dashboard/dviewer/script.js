@@ -26,6 +26,7 @@ const searchBtn = document.getElementById("searchBtn");
 const totalActiveEl = document.getElementById("totalActive");
 const tableWrapper = document.querySelector(".table-wrapper");
 
+// Hide table on load
 tableWrapper.style.display = "none";
 
 // ---------------- FETCH DATA ----------------
@@ -38,6 +39,7 @@ async function fetchData() {
     allData = data.values.slice(1);
     initAccess();
   } catch (error) {
+    console.error("Error fetching data:", error);
     alert("Failed to load data.");
   }
   hideLoader();
@@ -45,22 +47,16 @@ async function fetchData() {
 
 // ---------------- ACCESS ----------------
 function initAccess() {
-  officerInfo = allData.find(
-    (r) => String(r[0]).trim() === String(loggedInID).trim()
-  );
-  if (!officerInfo) return alert("Officer not found");
-
+  officerInfo = allData.find((r) => r[0] == loggedInID);
   const special = officerInfo[23];
 
-  if (special === "All") {
-    allowedRows = allData.filter((r) => r[21] === "Active");
+  if (special == "All") {
+    allowedRows = allData.filter((r) => r[21] == "Active");
   } else {
-    allowedRows = allData.filter(
-      (r) => r[15] === special && r[21] === "Active"
-    );
-    if (allowedRows.length === 0) {
+    allowedRows = allData.filter((r) => r[15] == special && r[21] == "Active");
+    if (allowedRows.length == 0) {
       allowedRows = allData.filter(
-        (r) => r[14] === special && r[21] === "Active"
+        (r) => r[14] == special && r[21] == "Active"
       );
     }
   }
@@ -84,13 +80,17 @@ function populateFilters() {
   if (distSet.length > 1)
     districtFilter.innerHTML = "<option value=''>All District</option>";
 
-  brgySet.sort().forEach((b) => {
-    barangayFilter.innerHTML += `<option>${b}</option>`;
-  });
+  brgySet
+    .sort((a, b) => parseInt(a) - parseInt(b))
+    .forEach((b) => {
+      barangayFilter.innerHTML += `<option>${b}</option>`;
+    });
 
-  distSet.sort().forEach((d) => {
-    districtFilter.innerHTML += `<option>${d}</option>`;
-  });
+  distSet
+    .sort((a, b) => parseInt(a) - parseInt(b))
+    .forEach((d) => {
+      districtFilter.innerHTML += `<option>${d}</option>`;
+    });
 
   if (special === "All") {
     barangayFilter.value = "";
@@ -111,9 +111,9 @@ districtFilter.addEventListener("change", updateStatsOnFilterChange);
 function updateStatsOnFilterChange() {
   let rows = [...allowedRows];
   if (barangayFilter.value)
-    rows = rows.filter((r) => r[15] === barangayFilter.value);
+    rows = rows.filter((r) => r[15] == barangayFilter.value);
   if (districtFilter.value)
-    rows = rows.filter((r) => r[14] === districtFilter.value);
+    rows = rows.filter((r) => r[14] == districtFilter.value);
   updateScoreCard(rows);
   updateAgeChart(rows);
 }
@@ -140,15 +140,15 @@ function generateData() {
     const q = searchInput.value.toLowerCase();
 
     if (barangayFilter.value)
-      rows = rows.filter((r) => r[15] === barangayFilter.value);
+      rows = rows.filter((r) => r[15] == barangayFilter.value);
     if (districtFilter.value)
-      rows = rows.filter((r) => r[14] === districtFilter.value);
+      rows = rows.filter((r) => r[14] == districtFilter.value);
     if (q)
       rows = rows.filter(
-        (r) =>
-          String(r[0]).toLowerCase().includes(q) ||
-          String(r[7]).toLowerCase().includes(q)
+        (r) => r[0].toLowerCase().includes(q) || r[7].toLowerCase().includes(q)
       );
+
+    rows.sort((a, b) => parseInt(a[15]) - parseInt(b[15]));
 
     paginatedRows = rows;
     currentPage = 1;
@@ -159,6 +159,7 @@ function generateData() {
 
     renderPage();
     renderPagination();
+
     hideLoader();
   }, 300);
 }
@@ -191,16 +192,10 @@ function renderPagination() {
   const totalPages = Math.ceil(paginatedRows.length / rowsPerPage);
   let html = "";
 
-  if (totalPages <= 1) {
-    document.getElementById("pagination").innerHTML = "";
-    return;
-  }
+  if (totalPages <= 1) return;
 
   html += `<button onclick="goPage(1)">«</button>`;
-  html += `<button onclick="goPage(${Math.max(
-    1,
-    currentPage - 1
-  )})">‹</button>`;
+  html += `<button onclick="goPage(${currentPage - 1})">‹</button>`;
 
   let start = Math.max(1, currentPage - 1);
   let end = Math.min(totalPages, currentPage + 1);
@@ -211,10 +206,9 @@ function renderPagination() {
     }" onclick="goPage(${i})">${i}</button>`;
   }
 
-  html += `<button onclick="goPage(${Math.min(
-    totalPages,
-    currentPage + 1
-  )})">›</button>`;
+  if (end < totalPages) html += `<span>...</span>`;
+
+  html += `<button onclick="goPage(${currentPage + 1})">›</button>`;
   html += `<button onclick="goPage(${totalPages})">»</button>`;
 
   document.getElementById("pagination").innerHTML = html;
@@ -287,14 +281,7 @@ function downloadPDF() {
   doc.text(`Barangay: ${barangayFilter.value || "All"}`, 14, 35);
   doc.text(`District: ${districtFilter.value || "All"}`, 14, 45);
 
-  const tableData = paginatedRows.map((r) => [
-    r[0],
-    r[7],
-    r[8],
-    r[13],
-    r[15]
-  ]);
-
+  const tableData = paginatedRows.map(r=>[r[0],r[7],r[8],r[13],r[15]]);
   doc.autoTable({
     startY: 55,
     head: [["ID", "Full Name", "Address", "Phone", "Barangay"]],
