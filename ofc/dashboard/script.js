@@ -5,17 +5,11 @@ const OFFICERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/
 const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Monthly_Dues!A:J?key=${API_KEY}`;
 
 const loggedInID = sessionStorage.getItem("memberID"); 
-const loader = document.getElementById("loader");
 
 let allowedRows = [];
-let filteredRows = [];
 let currentOfficer = {};
 let defaultSelections = { brgy: "all", dist: "all" };
 
-let currentPage = 1;
-const rowsPerPage = 300;
-
-// ---------------- INIT ----------------
 async function initDashboard() {
   try {
     const offRes = await fetch(OFFICERS_URL);
@@ -33,9 +27,8 @@ async function initDashboard() {
       access: officerRow[5] 
     };
 
-    document.getElementById("greet").textContent =
-      `Hello ${currentOfficer.firstName}! (${loggedInID})`;
-
+    // UI Greeting & Profile
+    document.getElementById("greet").textContent = `Hello ${currentOfficer.firstName}!`;
     const pic = document.getElementById("profilePic");
     if (pic) pic.src = "https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/profileicon.png";
 
@@ -48,12 +41,16 @@ async function initDashboard() {
     if (accessValue === "All") {
       allowedRows = allDuesRows;
     } else {
+      // 1. Try to match by Barangay (Column D / Index 3)
       const brgyMatches = allDuesRows.filter(row => row[3] === accessValue);
+      
       if (brgyMatches.length > 0) {
         allowedRows = brgyMatches;
         defaultSelections.brgy = accessValue;
+        // Logic fix: Also pre-select the District this Barangay belongs to
         defaultSelections.dist = brgyMatches[0][4]; 
       } else {
+        // 2. If no Barangay match, try District (Column E / Index 4)
         const distMatches = allDuesRows.filter(row => row[4] === accessValue);
         allowedRows = distMatches;
         defaultSelections.dist = accessValue;
@@ -61,15 +58,13 @@ async function initDashboard() {
     }
 
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML =
-      '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
 
   } catch (err) {
     console.error("Initialization error:", err);
   }
 }
 
-// ---------------- FILTERS ----------------
 function refreshFilterUI() {
   fillSelect("fBrgy", allowedRows.map(r => r[3]), defaultSelections.brgy);
   fillSelect("fDistrict", allowedRows.map(r => r[4]), defaultSelections.dist);
@@ -83,8 +78,9 @@ function fillSelect(id, data, defaultValue) {
   const sel = document.getElementById(id);
   if (!sel) return;
 
-  sel.innerHTML = "";
+  sel.innerHTML = ""; // clear everything
 
+  // Only include the default selection or unique allowed values
   const uniqueValues = [...new Set(data)].sort();
 
   uniqueValues.forEach(v => {
@@ -94,60 +90,33 @@ function fillSelect(id, data, defaultValue) {
     }
   });
 
+  // If default is "all", include "All" option
   if (defaultValue === "all") {
     sel.insertAdjacentHTML('afterbegin', `<option value="all" selected>All</option>`);
   }
 }
 
-// ---------------- LOADER ----------------
-function showLoader() {
-  loader.style.display = "flex";
-}
-
-function hideLoader() {
-  loader.style.display = "none";
-}
-
-// ---------------- GENERATE + PAGINATION ----------------
 function loadContributions() {
-  showLoader();
-
-  setTimeout(() => {
-    const fID = document.getElementById("fID").value.toLowerCase();
-    const fBrgy = document.getElementById("fBrgy").value;
-    const fDistrict = document.getElementById("fDistrict").value;
-    const fMonth = document.getElementById("fMonth").value;
-    const fYear = document.getElementById("fYear").value;
-    const fReceived = document.getElementById("fReceived").value;
-
-    filteredRows = allowedRows.filter(r => {
-      if (fID && !r[1].toLowerCase().includes(fID)) return false;
-      if (fBrgy !== "all" && r[3] !== fBrgy) return false;
-      if (fDistrict !== "all" && r[4] !== fDistrict) return false;
-      if (fMonth !== "all" && r[6] !== fMonth) return false;
-      if (fYear !== "all" && r[5] !== fYear) return false;
-      if (fReceived !== "all" && r[9] !== fReceived) return false;
-      return true;
-    });
-
-    currentPage = 1;
-    renderPage();
-    renderPagination();
-    hideLoader();
-  }, 300);
-}
-
-// ---------------- RENDER PAGE ----------------
-function renderPage() {
-  const start = (currentPage - 1) * rowsPerPage;
-  const end = start + rowsPerPage;
-  const pageRows = filteredRows.slice(start, end);
+  const fID = document.getElementById("fID").value.toLowerCase();
+  const fBrgy = document.getElementById("fBrgy").value;
+  const fDistrict = document.getElementById("fDistrict").value;
+  const fMonth = document.getElementById("fMonth").value;
+  const fYear = document.getElementById("fYear").value;
+  const fReceived = document.getElementById("fReceived").value;
 
   let html = "";
   let total = 0;
 
-  pageRows.forEach(r => {
+  allowedRows.forEach(r => {
+    if (fID && !r[1].toLowerCase().includes(fID)) return;
+    if (fBrgy !== "all" && r[3] !== fBrgy) return;
+    if (fDistrict !== "all" && r[4] !== fDistrict) return;
+    if (fMonth !== "all" && r[6] !== fMonth) return;
+    if (fYear !== "all" && r[5] !== fYear) return;
+    if (fReceived !== "all" && r[9] !== fReceived) return;
+
     total += Number(r[7] || 0);
+
     html += `<tr>
       <td>${r[1]}</td>
       <td>${r[2]}</td>
@@ -159,76 +128,53 @@ function renderPage() {
     </tr>`;
   });
 
-  document.getElementById("contriBody").innerHTML =
-    html || '<tr><td colspan="7">No records found.</td></tr>';
+  document.getElementById("contriBody").innerHTML = html || '<tr><td colspan="7">No records found.</td></tr>';
   document.getElementById("totalAmt").textContent = total.toLocaleString();
 }
 
-// ---------------- PAGINATION UI ----------------
-function renderPagination() {
-  const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-  const container = document.getElementById("pagination");
-  if (!container) return;
-
-  let html = "";
-
-  if (currentPage > 1)
-    html += `<button onclick="gotoPage(${currentPage-1})">&laquo;</button>`;
-
-  let start = Math.max(1, currentPage - 1);
-  let end = Math.min(totalPages, start + 2);
-
-  for (let i = start; i <= end; i++) {
-    html += `<button class="${i===currentPage?"active":""}"
-      onclick="gotoPage(${i})">${i}</button>`;
-  }
-
-  if (end < totalPages)
-    html += `<span>...</span><button onclick="gotoPage(${totalPages})">${totalPages}</button>`;
-
-  if (currentPage < totalPages)
-    html += `<button onclick="gotoPage(${currentPage+1})">&raquo;</button>`;
-
-  container.innerHTML = html;
-}
-
-function gotoPage(p) {
-  currentPage = p;
-  renderPage();
-  renderPagination();
-}
-
-// ---------------- PDF (FULL DATA) ----------------
 function downloadPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("p", "mm", "a4");
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF("p", "mm", "a4");
 
-  doc.setFontSize(16);
-  doc.text("KBKAI Monthly Dues", 14, 15);
-  doc.setFontSize(10);
-  doc.text(`Requested by: ${currentOfficer.fullName}`, 14, 25);
-  doc.text(`Barangay: ${document.getElementById("fBrgy").value || "All"}`, 14, 32);
+    const tableRows = document.querySelectorAll("#contriBody tr");
+    if (tableRows.length === 0 || tableRows[0].cells.length < 2) {
+      alert("Please generate data before downloading.");
+      return;
+    }
 
-  const tableData = filteredRows.map(r => [
-    r[1], r[2], r[6], r[5],
-    Number(r[7]).toLocaleString(), r[0], r[9]
-  ]);
+    doc.setFontSize(16);
+    doc.text("Monthly Dues Report", 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Requested by: ${currentOfficer.fullName || "Officer"}`, 14, 22);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 27);
 
-  doc.autoTable({
-    startY: 40,
-    head: [["ID","Full Name","Month","Year","Amount","Posted","Received"]],
-    body: tableData
-  });
+    const tableData = [];
+    tableRows.forEach(tr => {
+      const cols = tr.querySelectorAll("td");
+      if (cols.length > 1) tableData.push(Array.from(cols).map(td => td.innerText));
+    });
 
-  doc.save("KBKAI_Dues_Report.pdf");
+    doc.autoTable({
+      startY: 35,
+      head: [["ID", "Full Name", "Month", "Year", "Amount", "Posted", "Received By"]],
+      body: tableData,
+      headStyles: { fillColor: [30, 155, 67] }
+    });
+
+    const finalY = doc.lastAutoTable.finalY || 40;
+    doc.text(`Total: PHP ${document.getElementById("totalAmt").textContent}`, 14, finalY + 10);
+    doc.save(`Dues_Report_${Date.now()}.pdf`);
+  } catch (err) {
+    console.error("PDF Error:", err);
+    alert("Error generating PDF.");
+  }
 }
 
-// ---------------- NAV ----------------
 function showTab(id) {
   if (id === 'homeTab' || id === 'aboutTab') {
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML =
-      '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
     document.getElementById("totalAmt").textContent = "0";
   }
   document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
@@ -242,9 +188,5 @@ function logout() {
   sessionStorage.clear(); 
   window.location.replace("https://kbk-ops.github.io/kbkai"); 
 }
-
-// ---------------- EVENTS ----------------
-document.getElementById("generateBtn").addEventListener("click", loadContributions);
-document.getElementById("pdfBtn").addEventListener("click", downloadPDF);
 
 initDashboard();
