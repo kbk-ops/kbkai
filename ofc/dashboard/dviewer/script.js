@@ -282,10 +282,17 @@ function downloadPDF() {
   doc.text(`District: ${districtFilter.value || "All"}`, 14, 45);
 
   const tableData = paginatedRows.map(r=>[r[0],r[7],r[8],r[13],r[15]]);
+
   doc.autoTable({
     startY: 55,
     head: [["ID", "Full Name", "Address", "Phone", "Barangay"]],
-    body: tableData
+    body: tableData,
+
+    headStyles: {
+      fillColor: [2, 163, 2],  // Green background
+      textColor: 255,         // White text
+      fontStyle: 'bold'
+    }
   });
 
   doc.save("KBKAI_Membership_Data.pdf");
