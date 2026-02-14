@@ -13,6 +13,12 @@ let allowedRows = [];
 let currentOfficer = {};
 let defaultSelections = { brgy: "all", dist: "all" };
 
+// ---------------- PAGE TABLE ----------------
+let currentPage = 1;
+const rowsPerPage = 20; // adjust as needed
+let paginatedRows = [];
+
+// ---------------- INITIALIZED DASHBOARD ----------------
 async function initDashboard() {
   try {
     const offRes = await fetch(OFFICERS_URL);
@@ -113,12 +119,12 @@ function fillSelect(id, data, defaultValue) {
   }
 }
 
+// ---------------- LOAD CONTRIBUTION ----------------
 function loadContributions() {
   showLoader();
 
   setTimeout(() => {
     try {
-
       const fID = document.getElementById("fID").value.toLowerCase();
       const fBrgy = document.getElementById("fBrgy").value;
       const fDistrict = document.getElementById("fDistrict").value;
@@ -126,44 +132,94 @@ function loadContributions() {
       const fYear = document.getElementById("fYear").value;
       const fReceived = document.getElementById("fReceived").value;
 
-      let html = "";
-      let total = 0;
-
-      allowedRows.forEach(r => {
-        if (fID && !r[1]?.toLowerCase().includes(fID)) return;
-        if (fBrgy !== "all" && r[3] !== fBrgy) return;
-        if (fDistrict !== "all" && r[4] !== fDistrict) return;
-        if (fMonth !== "all" && r[6] !== fMonth) return;
-        if (fYear !== "all" && r[5] !== fYear) return;
-        if (fReceived !== "all" && r[9] !== fReceived) return;
-
-        total += Number(r[7] || 0);
-
-        html += `<tr>
-          <td>${r[1] || ""}</td>
-          <td>${r[2] || ""}</td>
-          <td>${r[6] || ""}</td>
-          <td>${r[5] || ""}</td>
-          <td>${Number(r[7] || 0).toLocaleString()}</td>
-          <td>${r[0] || ""}</td>
-          <td>${r[9] || ""}</td>
-          <td>${r[3] || ""}</td>
-        </tr>`;
+      // Filter rows
+      let rows = allowedRows.filter(r => {
+        if (fID && !r[1]?.toLowerCase().includes(fID)) return false;
+        if (fBrgy !== "all" && r[3] !== fBrgy) return false;
+        if (fDistrict !== "all" && r[4] !== fDistrict) return false;
+        if (fMonth !== "all" && r[6] !== fMonth) return false;
+        if (fYear !== "all" && r[5] !== fYear) return false;
+        if (fReceived !== "all" && r[9] !== fReceived) return false;
+        return true;
       });
 
-      document.getElementById("contriBody").innerHTML =
-        html || '<tr><td colspan="7">No records found.</td></tr>';
+      paginatedRows = rows;
+      currentPage = 1;
 
-      document.getElementById("totalAmt").textContent =
-        total.toLocaleString();
+      renderPage();
+      renderPagination();
 
     } catch (err) {
       console.error("Load error:", err);
     } finally {
       hideLoader();
     }
-
   }, 300);
+}
+
+// ---------------- RENDER PAGE ----------------
+function renderPage() {
+  const tbody = document.getElementById("contriBody");
+  tbody.innerHTML = "";
+
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const pageRows = paginatedRows.slice(start, end);
+
+  let total = 0;
+  pageRows.forEach(r => {
+    total += Number(r[7] || 0);
+    tbody.innerHTML += `<tr>
+      <td>${r[1] || ""}</td>
+      <td>${r[2] || ""}</td>
+      <td>${r[6] || ""}</td>
+      <td>${r[5] || ""}</td>
+      <td>${Number(r[7] || 0).toLocaleString()}</td>
+      <td>${r[0] || ""}</td>
+      <td>${r[9] || ""}</td>
+      <td>${r[3] || ""}</td>
+    </tr>`;
+  });
+
+  document.getElementById("totalAmt").textContent = total.toLocaleString();
+}
+
+// ---------------- RENDER PAGINATION ----------------
+function renderPagination() {
+  const totalPages = Math.ceil(paginatedRows.length / rowsPerPage);
+  const container = document.getElementById("pagination");
+  if (!container) return;
+  let html = "";
+
+  if (totalPages <= 1) {
+    container.innerHTML = "";
+    return;
+  }
+
+  html += `<button onclick="goPage(1)">«</button>`;
+  html += `<button onclick="goPage(${currentPage - 1})">‹</button>`;
+
+  let start = Math.max(1, currentPage - 1);
+  let end = Math.min(totalPages, currentPage + 1);
+
+  for (let i = start; i <= end; i++) {
+    html += `<button class="${i === currentPage ? "active" : ""}" onclick="goPage(${i})">${i}</button>`;
+  }
+
+  if (end < totalPages) html += `<span>...</span>`;
+
+  html += `<button onclick="goPage(${currentPage + 1})">›</button>`;
+  html += `<button onclick="goPage(${totalPages})">»</button>`;
+
+  container.innerHTML = html;
+}
+
+function goPage(page) {
+  const totalPages = Math.ceil(paginatedRows.length / rowsPerPage);
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  renderPage();
+  renderPagination();
 }
 
 // ---------------- DOWNLOAD PDF ----------------
