@@ -5,6 +5,8 @@ const OFFICERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/
 const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Monthly_Dues!A:J?key=${API_KEY}`;
 
 const loggedInID = sessionStorage.getItem("memberID");
+const generateBtn = document.getElementById("generateBtn");
+const pdfBtn = document.getElementById("pdfBtn");
 const loader = document.getElementById("loader");
 
 let allowedRows = [];
@@ -69,14 +71,14 @@ async function initDashboard() {
 // ---------------- LOADER ----------------
 function showLoader() {
   loader.style.display = "flex";
-  generateBtn.disabled = true;
-  pdfBtn.disabled = true;
+  if (generateBtn) generateBtn.disabled = true;
+  if (pdfBtn) pdfBtn.disabled = true;
 }
 
 function hideLoader() {
   loader.style.display = "none";
-  generateBtn.disabled = false;
-  pdfBtn.disabled = false;
+  if (generateBtn) generateBtn.disabled = false;
+  if (pdfBtn) pdfBtn.disabled = false;
 }
 
 // ---------------- Filter ----------------
@@ -115,43 +117,52 @@ function loadContributions() {
   showLoader();
 
   setTimeout(() => {
-  const fID = document.getElementById("fID").value.toLowerCase();
-  const fBrgy = document.getElementById("fBrgy").value;
-  const fDistrict = document.getElementById("fDistrict").value;
-  const fMonth = document.getElementById("fMonth").value;
-  const fYear = document.getElementById("fYear").value;
-  const fReceived = document.getElementById("fReceived").value;
+    try {
 
-  let html = "";
-  let total = 0;
+      const fID = document.getElementById("fID").value.toLowerCase();
+      const fBrgy = document.getElementById("fBrgy").value;
+      const fDistrict = document.getElementById("fDistrict").value;
+      const fMonth = document.getElementById("fMonth").value;
+      const fYear = document.getElementById("fYear").value;
+      const fReceived = document.getElementById("fReceived").value;
 
-  allowedRows.forEach(r => {
-    if (fID && !r[1].toLowerCase().includes(fID)) return;
-    if (fBrgy !== "all" && r[3] !== fBrgy) return;
-    if (fDistrict !== "all" && r[4] !== fDistrict) return;
-    if (fMonth !== "all" && r[6] !== fMonth) return;
-    if (fYear !== "all" && r[5] !== fYear) return;
-    if (fReceived !== "all" && r[9] !== fReceived) return;
+      let html = "";
+      let total = 0;
 
-    total += Number(r[7] || 0);
+      allowedRows.forEach(r => {
+        if (fID && !r[1]?.toLowerCase().includes(fID)) return;
+        if (fBrgy !== "all" && r[3] !== fBrgy) return;
+        if (fDistrict !== "all" && r[4] !== fDistrict) return;
+        if (fMonth !== "all" && r[6] !== fMonth) return;
+        if (fYear !== "all" && r[5] !== fYear) return;
+        if (fReceived !== "all" && r[9] !== fReceived) return;
 
-    html += `<tr>
-      <td>${r[1]}</td>
-      <td>${r[2]}</td>
-      <td>${r[6]}</td>
-      <td>${r[5]}</td>
-      <td>${Number(r[7]).toLocaleString()}</td>
-      <td>${r[0]}</td>
-      <td>${r[9]}</td>
-    </tr>`;
-  });
+        total += Number(r[7] || 0);
 
-  document.getElementById("contriBody").innerHTML = html || '<tr><td colspan="7">No records found.</td></tr>';
-  document.getElementById("totalAmt").textContent = total.toLocaleString();
+        html += `<tr>
+          <td>${r[1] || ""}</td>
+          <td>${r[2] || ""}</td>
+          <td>${r[6] || ""}</td>
+          <td>${r[5] || ""}</td>
+          <td>${Number(r[7] || 0).toLocaleString()}</td>
+          <td>${r[0] || ""}</td>
+          <td>${r[9] || ""}</td>
+        </tr>`;
+      });
 
-   hideLoader();
+      document.getElementById("contriBody").innerHTML =
+        html || '<tr><td colspan="7">No records found.</td></tr>';
 
-  }, 300); 
+      document.getElementById("totalAmt").textContent =
+        total.toLocaleString();
+
+    } catch (err) {
+      console.error("Load error:", err);
+    } finally {
+      hideLoader();  // ALWAYS runs
+    }
+
+  }, 300);
 }
 
 function downloadPDF() {
