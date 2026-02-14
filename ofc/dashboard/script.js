@@ -182,9 +182,9 @@ function downloadPDF() {
     doc.text("Monthly Dues Report", 14, 15);
     doc.setFontSize(11);
     doc.text(`Requested by: ${currentOfficer.fullName || "Officer"}`, 14, 22);
-    doc.text(`Barangay: ${barangayFilter.value || "All"}`, 14, 27);
-    doc.text(`District: ${districtFilter.value || "All"}`, 14, 27);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 27);
+    doc.text(`Barangay: ${fBrgy.value || "All"}`, 14, 27);
+    doc.text(`District: ${fDistrict.value || "All"}`, 14, 34);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 41);
 
     const tableData = [];
     tableRows.forEach(tr => {
