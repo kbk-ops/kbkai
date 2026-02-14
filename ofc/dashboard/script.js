@@ -137,7 +137,7 @@ function loadContributions() {
         if (fYear !== "all" && r[5] !== fYear) return;
         if (fReceived !== "all" && r[9] !== fReceived) return;
 
-        total += Number(r[7] || 0);
+        total += Number(r[8] || 0);
 
         html += `<tr>
           <td>${r[1] || ""}</td>
