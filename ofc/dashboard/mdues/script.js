@@ -1,6 +1,3 @@
-// ============================
-// CONFIG
-// ============================
 const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
 const SHEET_ID = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
 const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Members!A:E?key=${API_KEY}`;
@@ -9,12 +6,10 @@ const WEBAPP_URL =
 const loader = document.getElementById("loader");
 const submitBtn = document.getElementById("submitBtn");
 
-// Officer ID from login session
+// ----- Officer ID from login session -----
 const collectorID = sessionStorage.getItem("memberID");
 
-// ============================
-// HELPER: CLEAR FIELDS
-// ============================
+// ----- HELPER: CLEAR FIELDS -----
 function clearFields() {
   document.getElementById("idNumber").value = "";
   document.getElementById("fullName").value = "";
