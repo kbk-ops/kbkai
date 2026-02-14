@@ -279,9 +279,10 @@ function downloadPDF() {
   doc.setFontSize(16);
   doc.text("Kasangga ng Batang Kankaloo Association Inc.", 14, 15);
   doc.setFontSize(11);
-  doc.text(`Requested by: ${officerInfo[7]}`, 14, 15);
-  doc.text(`Barangay: ${barangayFilter.value || "All"}`, 14, 15);
-  doc.text(`District: ${districtFilter.value || "All"}`, 14, 15);
+  doc.text(`Requested by: ${officerInfo[7]}`, 14, 22);
+  doc.text(`Barangay: ${barangayFilter.value || "All"}`, 14, 36);
+  doc.text(`District: ${districtFilter.value || "All"}`, 14, 43);
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 50);
 
   const tableData = paginatedRows.map(r=>[r[0],r[7],r[8],r[13],r[15]]);
 
