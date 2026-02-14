@@ -276,7 +276,7 @@ function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
-  doc.text("Active Kasangga ng Batang Kankaloo Association Inc.", 14, 15);
+  doc.text("Kasangga ng Batang Kankaloo Association Inc.", 14, 15);
   doc.text(`Requested by: ${officerInfo[7]}`, 14, 25);
   doc.text(`Barangay: ${barangayFilter.value || "All"}`, 14, 35);
   doc.text(`District: ${districtFilter.value || "All"}`, 14, 45);
@@ -288,7 +288,7 @@ function downloadPDF() {
     body: tableData
   });
 
-  doc.save("kasangga_report.pdf");
+  doc.save("KBKAI_Membership_Data.pdf");
 }
 
 // ---------------- EVENTS ----------------
