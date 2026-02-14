@@ -57,6 +57,17 @@ body.locked {
   display: block;
 }
 
+/* ----- CONTRIBUTION TAB LAYOUT FIX ----- */
+#contributionTab {
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#contributionTab.active {
+  display: flex;
+}
+
 .greeting {
   display: flex;
   align-items: center;
@@ -180,9 +191,9 @@ button:disabled {
 }
 
 /* --- TABLE SECTION --- */
-.table-container {
-  flex: 1; /* takes remaining space */
-  overflow-y: auto; /* only this scrolls */
+#contributionTab .table-container {
+  flex: 1;
+  overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 10px;
 }
@@ -200,12 +211,12 @@ th, td {
   white-space: normal;
 }
 
-thead {
+#contributionTab thead th {
   position: sticky;
   top: 0;
-  z-index: 20;
   background: #1e9b43;
   color: #ffffff;
+  z-index: 5;
 }
 
 tfoot {
