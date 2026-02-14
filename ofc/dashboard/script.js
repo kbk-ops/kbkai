@@ -14,7 +14,7 @@ let currentOfficer = {};
 let defaultSelections = { brgy: "all", dist: "all" };
 
 let currentPage = 1;
-const rowsPerPage = 300;
+const rowsPerPage = 10;
 
 // ---------------- LOADER ----------------
 function showLoader() {
