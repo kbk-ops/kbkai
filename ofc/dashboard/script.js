@@ -4,19 +4,18 @@ const SHEET_ID = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
 const OFFICERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Officers!A:F?key=${API_KEY}`;
 const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Monthly_Dues!A:J?key=${API_KEY}`;
 
-const loggedInID = sessionStorage.getItem("memberID");
+const loggedInID = sessionStorage.getItem("memberID"); 
 const loader = document.getElementById("loader");
 
 let allowedRows = [];
-let filteredRows = []; // TABLE PAGE
+let filteredRows = [];
 let currentOfficer = {};
 let defaultSelections = { brgy: "all", dist: "all" };
 
-// ----- TABLE PAGE -----
 let currentPage = 1;
-const rowsPerPage = 10;
+const rowsPerPage = 300;
 
-// ---------------- INITIALIZED DASHBOARD ----------------
+// ---------------- INIT ----------------
 async function initDashboard() {
   try {
     const offRes = await fetch(OFFICERS_URL);
@@ -34,8 +33,7 @@ async function initDashboard() {
       access: officerRow[5] 
     };
 
-    // ----- UI Greeting & Profile -----
-    ocument.getElementById("greet").textContent =
+    document.getElementById("greet").textContent =
       `Hello ${currentOfficer.firstName}! (${loggedInID})`;
 
     const pic = document.getElementById("profilePic");
@@ -50,16 +48,12 @@ async function initDashboard() {
     if (accessValue === "All") {
       allowedRows = allDuesRows;
     } else {
-      // 1. Try to match by Barangay (Column D / Index 3)
       const brgyMatches = allDuesRows.filter(row => row[3] === accessValue);
-      
       if (brgyMatches.length > 0) {
         allowedRows = brgyMatches;
         defaultSelections.brgy = accessValue;
-        // Logic fix: Also pre-select the District this Barangay belongs to
         defaultSelections.dist = brgyMatches[0][4]; 
       } else {
-        // 2. If no Barangay match, try District (Column E / Index 4)
         const distMatches = allDuesRows.filter(row => row[4] === accessValue);
         allowedRows = distMatches;
         defaultSelections.dist = accessValue;
@@ -67,7 +61,8 @@ async function initDashboard() {
     }
 
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML =
+      '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
 
   } catch (err) {
     console.error("Initialization error:", err);
@@ -88,9 +83,8 @@ function fillSelect(id, data, defaultValue) {
   const sel = document.getElementById(id);
   if (!sel) return;
 
-  sel.innerHTML = ""; // clear everything
+  sel.innerHTML = "";
 
-  // Only include the default selection or unique allowed values
   const uniqueValues = [...new Set(data)].sort();
 
   uniqueValues.forEach(v => {
@@ -100,7 +94,6 @@ function fillSelect(id, data, defaultValue) {
     }
   });
 
-  // If default is "all", include "All" option
   if (defaultValue === "all") {
     sel.insertAdjacentHTML('afterbegin', `<option value="all" selected>All</option>`);
   }
@@ -227,10 +220,10 @@ function downloadPDF() {
     body: tableData
   });
 
-  doc.save("Monthly_Dues_Report.pdf");
+  doc.save("KBKAI_Dues_Report.pdf");
 }
 
-// ---------------- BOTTOM BAR NAVIGATION ----------------
+// ---------------- NAV ----------------
 function showTab(id) {
   if (id === 'homeTab' || id === 'aboutTab') {
     refreshFilterUI();
@@ -250,7 +243,7 @@ function logout() {
   window.location.replace("https://kbk-ops.github.io/kbkai"); 
 }
 
-// ---------------- BUTTON EVENTS ----------------
+// ---------------- EVENTS ----------------
 document.getElementById("generateBtn").addEventListener("click", loadContributions);
 document.getElementById("pdfBtn").addEventListener("click", downloadPDF);
 
