@@ -193,7 +193,7 @@ function downloadPDF() {
     });
 
     doc.autoTable({
-      startY: 35,
+      startY: 42,
       head: [["ID", "Full Name", "Month", "Year", "Amount", "Posted", "Received By", "Barangay"]],
       body: tableData,
       headStyles: { 
