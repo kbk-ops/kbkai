@@ -45,10 +45,6 @@ body.locked {
   cursor: pointer;
 }
 
-h2 {
-  text-align: center;
-}
-
 .tab-content {
   flex: 1;
   overflow-y: auto;
