@@ -27,7 +27,7 @@ function hideLoader() {
   document.querySelectorAll("button").forEach(b => b.disabled = false);
 }
 
-// ---------------- INIT ----------------
+// ---------------- INITIALIZED ----------------
 async function initDashboard() {
   showLoader();
   try {
