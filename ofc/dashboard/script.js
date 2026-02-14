@@ -183,8 +183,8 @@ function downloadPDF() {
     doc.setFontSize(11);
     doc.text(`Requested by: ${currentOfficer.fullName || "Officer"}`, 14, 22);
     doc.text(`Barangay: ${fBrgy.value || "All"}`, 14, 27);
-    doc.text(`District: ${fDistrict.value || "All"}`, 14, 34);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 41);
+    doc.text(`District: ${fDistrict.value || "All"}`, 14, 32);
+    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 37);
 
     const tableData = [];
     tableRows.forEach(tr => {
