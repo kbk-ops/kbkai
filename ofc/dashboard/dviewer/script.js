@@ -291,7 +291,8 @@ function downloadPDF() {
     headStyles: {
       fillColor: [2, 163, 2],  // Green background
       textColor: 255,         // White text
-      fontStyle: 'bold'
+      fontStyle: 'bold',
+      halign: 'center'
     }
   });
 
