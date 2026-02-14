@@ -15,7 +15,7 @@ let defaultSelections = { brgy: "all", dist: "all" };
 
 // ---------------- PAGE TABLE ----------------
 let currentPage = 1;
-const rowsPerPage = 20; // adjust as needed
+const rowsPerPage = 30;
 let paginatedRows = [];
 
 // ---------------- INITIALIZED DASHBOARD ----------------
@@ -184,7 +184,7 @@ function renderPage() {
   document.getElementById("totalAmt").textContent = total.toLocaleString();
 }
 
-// ---------------- RENDER PAGINATION ----------------
+// ---------------- PAGE UI ----------------
 function renderPagination() {
   const totalPages = Math.ceil(paginatedRows.length / rowsPerPage);
   const container = document.getElementById("pagination");
@@ -214,6 +214,7 @@ function renderPagination() {
   container.innerHTML = html;
 }
 
+// ---------------- PAGE NAVIGATION ----------------
 function goPage(page) {
   const totalPages = Math.ceil(paginatedRows.length / rowsPerPage);
   if (page < 1 || page > totalPages) return;
@@ -242,11 +243,7 @@ function downloadPDF() {
     doc.text(`District: ${fDistrict.value || "All"}`, 14, 32);
     doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 37);
 
-    const tableData = [];
-    tableRows.forEach(tr => {
-      const cols = tr.querySelectorAll("td");
-      if (cols.length > 1) tableData.push(Array.from(cols).map(td => td.innerText));
-    });
+    const tableData = paginatedRows.map(r=>[r[1],r[2],r[6],r[5],r[7],r[0],r[9],r[3]]);
 
     doc.autoTable({
       startY: 40,
