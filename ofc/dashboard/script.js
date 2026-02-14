@@ -4,7 +4,8 @@ const SHEET_ID = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
 const OFFICERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Officers!A:F?key=${API_KEY}`;
 const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Monthly_Dues!A:J?key=${API_KEY}`;
 
-const loggedInID = sessionStorage.getItem("memberID"); 
+const loggedInID = sessionStorage.getItem("memberID");
+const loader = document.getElementById("loader");
 
 let allowedRows = [];
 let currentOfficer = {};
@@ -65,6 +66,20 @@ async function initDashboard() {
   }
 }
 
+// ---------------- LOADER ----------------
+function showLoader() {
+  loader.style.display = "flex";
+  generateBtn.disabled = true;
+  pdfBtn.disabled = true;
+}
+
+function hideLoader() {
+  loader.style.display = "none";
+  generateBtn.disabled = false;
+  pdfBtn.disabled = false;
+}
+
+// ---------------- Filter ----------------
 function refreshFilterUI() {
   fillSelect("fBrgy", allowedRows.map(r => r[3]), defaultSelections.brgy);
   fillSelect("fDistrict", allowedRows.map(r => r[4]), defaultSelections.dist);
@@ -97,6 +112,9 @@ function fillSelect(id, data, defaultValue) {
 }
 
 function loadContributions() {
+  showLoader();
+
+  setTimeout(() => {
   const fID = document.getElementById("fID").value.toLowerCase();
   const fBrgy = document.getElementById("fBrgy").value;
   const fDistrict = document.getElementById("fDistrict").value;
@@ -130,6 +148,10 @@ function loadContributions() {
 
   document.getElementById("contriBody").innerHTML = html || '<tr><td colspan="7">No records found.</td></tr>';
   document.getElementById("totalAmt").textContent = total.toLocaleString();
+
+   hideLoader();
+
+  }, 300); 
 }
 
 function downloadPDF() {
