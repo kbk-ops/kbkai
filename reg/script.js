@@ -100,7 +100,7 @@ continueBtn.onclick = () => {
   // --------
   // Redirect
   // --------
-  window.location.href = "https://kbk-ops.github.io/kbkai/reg/form";
+  window.location.replace("https://kbk-ops.github.io/kbkai/reg/form");
 };
 
 // ----------------
