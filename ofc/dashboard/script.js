@@ -147,6 +147,7 @@ function loadContributions() {
           <td>${Number(r[7] || 0).toLocaleString()}</td>
           <td>${r[0] || ""}</td>
           <td>${r[9] || ""}</td>
+          <td>${r[3] || ""}</td>
         </tr>`;
       });
 
@@ -159,12 +160,13 @@ function loadContributions() {
     } catch (err) {
       console.error("Load error:", err);
     } finally {
-      hideLoader();  // ALWAYS runs
+      hideLoader();
     }
 
   }, 300);
 }
 
+// ---------------- DOWNLOAD PDF ----------------
 function downloadPDF() {
   try {
     const { jsPDF } = window.jspdf;
@@ -178,8 +180,10 @@ function downloadPDF() {
 
     doc.setFontSize(16);
     doc.text("Monthly Dues Report", 14, 15);
-    doc.setFontSize(10);
+    doc.setFontSize(11);
     doc.text(`Requested by: ${currentOfficer.fullName || "Officer"}`, 14, 22);
+    doc.text(`Barangay: ${barangayFilter.value || "All"}`, 14, 27);
+    doc.text(`District: ${districtFilter.value || "All"}`, 14, 27);
     doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 27);
 
     const tableData = [];
@@ -190,14 +194,19 @@ function downloadPDF() {
 
     doc.autoTable({
       startY: 35,
-      head: [["ID", "Full Name", "Month", "Year", "Amount", "Posted", "Received By"]],
+      head: [["ID", "Full Name", "Month", "Year", "Amount", "Posted", "Received By", "Barangay"]],
       body: tableData,
-      headStyles: { fillColor: [30, 155, 67] }
+      headStyles: { 
+        fillColor: [2, 163, 2],
+        textColor: 255,        
+        fontStyle: 'bold',
+        halign: 'center'
+      }
     });
 
     const finalY = doc.lastAutoTable.finalY || 40;
     doc.text(`Total: PHP ${document.getElementById("totalAmt").textContent}`, 14, finalY + 10);
-    doc.save(`Dues_Report_${Date.now()}.pdf`);
+    doc.save(`Monthly Dues_Report_${Date.now()}.pdf`);
   } catch (err) {
     console.error("PDF Error:", err);
     alert("Error generating PDF.");
