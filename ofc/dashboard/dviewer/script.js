@@ -11,12 +11,11 @@ let officerInfo = {};
 let currentRows = [];
 let ageChart = null;
 
-// pagination
+// ---------------- TABLE PAGE ----------------
 let currentPage = 1;
 const rowsPerPage = 300;
 let paginatedRows = [];
 
-// elements
 const barangayFilter = document.getElementById("barangayFilter");
 const districtFilter = document.getElementById("districtFilter");
 const generateBtn = document.getElementById("generateBtn");
@@ -25,11 +24,96 @@ const searchInput = document.getElementById("searchInput");
 const searchBtn = document.getElementById("searchBtn");
 const totalActiveEl = document.getElementById("totalActive");
 const tableWrapper = document.querySelector(".table-wrapper");
-const paginationEl = document.getElementById("pagination");
 
-// initial UI
+// Hide table on load
 tableWrapper.style.display = "none";
-paginationEl.style.display = "none";
+
+// ---------------- FETCH DATA ----------------
+async function fetchData() {
+  showLoader();
+  try {
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    allData = data.values.slice(1);
+    initAccess();
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    alert("Failed to load data.");
+  }
+  hideLoader();
+}
+
+// ---------------- ACCESS ----------------
+function initAccess() {
+  officerInfo = allData.find((r) => r[0] === loggedInID);
+  if (!officerInfo) {
+    alert("Officer data not found.");
+    return;
+  }
+
+  const special = officerInfo[23];
+
+  if (special === "All") {
+    allowedRows = allData.filter((r) => r[21] === "Active");
+  } else {
+    allowedRows = allData.filter((r) => r[15] === special && r[21] === "Active");
+    if (allowedRows.length === 0) {
+      allowedRows = allData.filter((r) => r[14] === special && r[21] === "Active");
+    }
+  }
+
+  populateFilters();
+  updateScoreCard(allowedRows);
+  updateAgeChart(allowedRows);
+
+  // Show greeting with logged in ID
+  const greetEl = document.getElementById("greet");
+  if (greetEl) greetEl.textContent = `Hello ${officerInfo[7]} (${loggedInID})!`;
+}
+
+// ---------------- FILTERS ----------------
+function populateFilters() {
+  const brgySet = [...new Set(allowedRows.map((r) => r[15]))].sort();
+  const distSet = [...new Set(allowedRows.map((r) => r[14]))].sort();
+  const special = officerInfo[23];
+
+  barangayFilter.innerHTML = "";
+  districtFilter.innerHTML = "";
+
+  if (brgySet.length > 1) barangayFilter.innerHTML = "<option value=''>All Barangay</option>";
+  if (distSet.length > 1) districtFilter.innerHTML = "<option value=''>All District</option>";
+
+  brgySet.forEach((b) => {
+    barangayFilter.innerHTML += `<option value="${b}">${b}</option>`;
+  });
+  distSet.forEach((d) => {
+    districtFilter.innerHTML += `<option value="${d}">${d}</option>`;
+  });
+
+  if (special === "All") {
+    barangayFilter.value = "";
+    districtFilter.value = "";
+  } else if (special.startsWith("Dist.")) {
+    barangayFilter.value = "";
+    districtFilter.value = special;
+  } else {
+    barangayFilter.value = brgySet[0] || "";
+    districtFilter.value = distSet[0] || "";
+  }
+}
+
+// ---------------- live update chart + scorecard ----------------
+barangayFilter.addEventListener("change", updateStatsOnFilterChange);
+districtFilter.addEventListener("change", updateStatsOnFilterChange);
+
+function updateStatsOnFilterChange() {
+  let rows = [...allowedRows];
+  if (barangayFilter.value) rows = rows.filter((r) => r[15] === barangayFilter.value);
+  if (districtFilter.value) rows = rows.filter((r) => r[14] === districtFilter.value);
+  updateScoreCard(rows);
+  updateAgeChart(rows);
+}
 
 // ---------------- LOADER ----------------
 function showLoader() {
@@ -44,84 +128,7 @@ function hideLoader() {
   pdfBtn.disabled = false;
 }
 
-// ---------------- FETCH ----------------
-async function fetchData() {
-  showLoader();
-  try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    allData = data.values.slice(1);
-    initAccess();
-  } catch (err) {
-    alert("Failed to load data");
-  }
-  hideLoader();
-}
-
-// ---------------- ACCESS ----------------
-function initAccess() {
-  officerInfo = allData.find(r => r[0] == loggedInID);
-  const special = officerInfo[23];
-
-  if (special === "All") {
-    allowedRows = allData.filter(r => r[21] === "Active");
-  } else {
-    allowedRows = allData.filter(r => r[15] === special && r[21] === "Active");
-    if (allowedRows.length === 0) {
-      allowedRows = allData.filter(r => r[14] === special && r[21] === "Active");
-    }
-  }
-
-  populateFilters();
-  updateScoreCard(allowedRows);
-  updateAgeChart(allowedRows);
-}
-
-// ---------------- FILTERS ----------------
-function populateFilters() {
-  const brgySet = [...new Set(allowedRows.map(r => r[15]))];
-  const distSet = [...new Set(allowedRows.map(r => r[14]))];
-  const special = officerInfo[23];
-
-  barangayFilter.innerHTML = "";
-  districtFilter.innerHTML = "";
-
-  barangayFilter.innerHTML = "<option value=''>All Barangay</option>";
-  districtFilter.innerHTML = "<option value=''>All District</option>";
-
-  brgySet.sort().forEach(b => {
-    barangayFilter.innerHTML += `<option value="${b}">${b}</option>`;
-  });
-
-  distSet.sort().forEach(d => {
-    districtFilter.innerHTML += `<option value="${d}">${d}</option>`;
-  });
-
-  if (special === "All") {
-    barangayFilter.value = "";
-    districtFilter.value = "";
-  } else if (special.startsWith("Dist.")) {
-    barangayFilter.value = "";
-    districtFilter.value = special;
-  } else {
-    barangayFilter.value = special;
-  }
-}
-
-// live update
-barangayFilter.addEventListener("change", updateStatsOnFilterChange);
-districtFilter.addEventListener("change", updateStatsOnFilterChange);
-
-function updateStatsOnFilterChange() {
-  let rows = [...allowedRows];
-  if (barangayFilter.value) rows = rows.filter(r => r[15] === barangayFilter.value);
-  if (districtFilter.value) rows = rows.filter(r => r[14] === districtFilter.value);
-  updateScoreCard(rows);
-  updateAgeChart(rows);
-}
-
-// ---------------- GENERATE TABLE ----------------
+// ---------------- GENERATE ----------------
 function generateData() {
   showLoader();
 
@@ -129,26 +136,21 @@ function generateData() {
     let rows = [...allowedRows];
     const q = searchInput.value.toLowerCase();
 
-    if (barangayFilter.value) rows = rows.filter(r => r[15] === barangayFilter.value);
-    if (districtFilter.value) rows = rows.filter(r => r[14] === districtFilter.value);
-    if (q) rows = rows.filter(r =>
-      r[0].toLowerCase().includes(q) ||
-      r[7].toLowerCase().includes(q)
-    );
+    if (barangayFilter.value) rows = rows.filter((r) => r[15] === barangayFilter.value);
+    if (districtFilter.value) rows = rows.filter((r) => r[14] === districtFilter.value);
+    if (q) rows = rows.filter((r) => r[0].toLowerCase().includes(q) || r[7].toLowerCase().includes(q));
+
+    rows.sort((a, b) => parseInt(a[15]) - parseInt(b[15]));
 
     paginatedRows = rows;
     currentPage = 1;
 
     tableWrapper.style.display = "block";
-    paginationEl.style.display = "flex";
-    document.querySelector(".score-card").style.display = "none";
-    document.getElementById("ageChart").style.display = "none";
-
     renderPage();
     renderPagination();
 
     hideLoader();
-  }, 200);
+  }, 300);
 }
 
 // ---------------- RENDER PAGE ----------------
@@ -160,7 +162,7 @@ function renderPage() {
   const end = start + rowsPerPage;
   const pageRows = paginatedRows.slice(start, end);
 
-  pageRows.forEach(r => {
+  pageRows.forEach((r) => {
     tbody.innerHTML += `
       <tr>
         <td>${r[0]}</td>
@@ -174,17 +176,12 @@ function renderPage() {
   currentRows = pageRows;
 }
 
-// ---------------- PAGINATION UI ----------------
+// ---------------- PAGE UI ----------------
 function renderPagination() {
   const totalPages = Math.ceil(paginatedRows.length / rowsPerPage);
-  let html = "";
+  if (totalPages <= 1) return;
 
-  if (totalPages <= 1) {
-    paginationEl.innerHTML = "";
-    return;
-  }
-
-  html += `<button onclick="goPage(1)">«</button>`;
+  let html = `<button onclick="goPage(1)">«</button>`;
   html += `<button onclick="goPage(${currentPage - 1})">‹</button>`;
 
   let start = Math.max(1, currentPage - 1);
@@ -199,9 +196,10 @@ function renderPagination() {
   html += `<button onclick="goPage(${currentPage + 1})">›</button>`;
   html += `<button onclick="goPage(${totalPages})">»</button>`;
 
-  paginationEl.innerHTML = html;
+  document.getElementById("pagination").innerHTML = html;
 }
 
+// ---------------- PAGE NAVIGATION ----------------
 function goPage(page) {
   const totalPages = Math.ceil(paginatedRows.length / rowsPerPage);
   if (page < 1 || page > totalPages) return;
@@ -215,18 +213,18 @@ function updateScoreCard(rows) {
   totalActiveEl.textContent = rows.length;
 }
 
-// ---------------- AGE CHART ----------------
+// ---------------- CHART ----------------
 function updateAgeChart(rows) {
   const ageGroups = {};
-  rows.forEach(r => {
+  rows.forEach((r) => {
     const age = r[11];
     ageGroups[age] = (ageGroups[age] || 0) + 1;
   });
 
   const labels = Object.keys(ageGroups);
   const values = Object.values(ageGroups);
-  const total = values.reduce((a,b)=>a+b,0);
-  const percentages = values.map(v=>((v/total)*100).toFixed(1));
+  const total = values.reduce((a, b) => a + b, 0);
+  const percentages = values.map((v) => ((v / total) * 100).toFixed(1));
 
   if (ageChart) ageChart.destroy();
 
@@ -234,21 +232,16 @@ function updateAgeChart(rows) {
     type: "bar",
     data: {
       labels,
-      datasets: [{
-        data: percentages,
-        backgroundColor: "#4bfa68"
-      }]
+      datasets: [{ data: percentages, backgroundColor: "#4bfa68" }]
     },
     options: {
-      responsive:true,
-      maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        title:{display:true,text:"Age Group"}
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: "Age Group" }
       },
-      scales:{
-        y:{beginAtZero:true,ticks:{callback:v=>v+"%"}}
-      }
+      scales: { y: { beginAtZero: true, ticks: { callback: (v) => v + "%" } } }
     }
   });
 
@@ -256,30 +249,32 @@ function updateAgeChart(rows) {
   document.getElementById("ageChart").style.display = "block";
 }
 
-// ---------------- PDF ----------------
+// ---------------- DOWNLOAD PDF ----------------
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
   doc.text("KBKAI Monthly Dues", 14, 15);
   doc.text(`Requested by: ${officerInfo[7]}`, 14, 25);
-  doc.text(`Barangay: ${barangayFilter.value || "All"}`, 14, 35);
+  doc.text(`Barangay: ${officerInfo[15] || "All"}`, 14, 35);
 
-  const tableData = paginatedRows.map(r => [r[0], r[7], r[8], r[13], r[15]]);
+  const tableData = allowedRows.map((r) => [r[0], r[7], r[8], r[13], r[15]]);
   doc.autoTable({
     startY: 45,
-    head: [["ID","Full Name","Address","Phone","Barangay"]],
+    head: [["ID", "Full Name", "Address", "Phone", "Barangay"]],
     body: tableData
   });
 
-  doc.save("kbkai_dues_report.pdf");
+  doc.save("kasangga_report.pdf");
 }
 
 // ---------------- EVENTS ----------------
 generateBtn.addEventListener("click", generateData);
 searchBtn.addEventListener("click", generateData);
-searchInput.addEventListener("keyup", e => { if(e.key==="Enter") generateData(); });
+searchInput.addEventListener("keyup", (e) => {
+  if (e.key === "Enter") generateData();
+});
 pdfBtn.addEventListener("click", downloadPDF);
 
-// ---------------- INIT ----------------
+// ---------------- INITIALIZE ----------------
 fetchData();
