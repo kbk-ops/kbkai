@@ -258,7 +258,17 @@ function downloadPDF() {
     });
 
     const finalY = doc.lastAutoTable.finalY || 40;
-    doc.text(`Total: PHP ${document.getElementById("totalAmt").textContent}`, 14, finalY + 10);
+    // Compute GRAND TOTAL
+const grandTotal = paginatedRows.reduce((sum, r) => {
+  return sum + (Number(r[7]) || 0);
+}, 0);
+
+doc.text(
+  `Total: PHP ${grandTotal.toLocaleString()}`,
+  14,
+  finalY + 10
+);
+
     doc.save(`Monthly Dues_Report_${Date.now()}.pdf`);
   } catch (err) {
     console.error("PDF Error:", err);
