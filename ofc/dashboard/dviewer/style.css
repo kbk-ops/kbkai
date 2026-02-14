@@ -124,6 +124,7 @@ button:disabled {
 
 /* ---- Table Design ----  */
 .table-wrapper {
+  position: Sticky;
   flex: 1;
   overflow-y: auto;
   padding-bottom: 20px;
@@ -239,7 +240,6 @@ button:disabled {
   margin: 15px 0;
 }
 .pagination button {
-  position: Sticky;
   padding: 6px 10px;
   border: 1px solid #ccc;
   background: #fff;
