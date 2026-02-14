@@ -239,6 +239,7 @@ button:disabled {
   margin: 15px 0;
 }
 .pagination button {
+  position: Sticky;
   padding: 6px 10px;
   border: 1px solid #ccc;
   background: #fff;
