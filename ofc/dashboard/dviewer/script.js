@@ -276,7 +276,9 @@ function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
+  doc.setFontSize(16);
   doc.text("Kasangga ng Batang Kankaloo Association Inc.", 14, 15);
+  doc.setFontSize(11);
   doc.text(`Requested by: ${officerInfo[7]}`, 14, 25);
   doc.text(`Barangay: ${barangayFilter.value || "All"}`, 14, 35);
   doc.text(`District: ${districtFilter.value || "All"}`, 14, 45);
@@ -289,8 +291,8 @@ function downloadPDF() {
     body: tableData,
 
     headStyles: {
-      fillColor: [2, 163, 2],  // Green background
-      textColor: 255,         // White text
+      fillColor: [2, 163, 2],  
+      textColor: 255,        
       fontStyle: 'bold',
       halign: 'center'
     }
