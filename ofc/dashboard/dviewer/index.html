@@ -5,20 +5,20 @@
   <meta charset="UTF-8">
   <title>Data Viewer</title>
   <link rel="icon" href="../../Kasangga New Logo Small.png" type="image/x-icon">
-
+  
   <link rel="stylesheet" href="style.css">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Prevent browser caching -->
   <meta http-equiv="Cache-Control" content="no-store" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
 </head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body class="locked">
   <div id="app" class="app hidden">
@@ -32,14 +32,14 @@
 
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="Search ID or Full Name">
-      <div onclick="generateData()">🔍</div>
+      <button id="searchBtn">🔍</button>
     </div>
     <div class="filter-container">
       <select id="barangayFilter"></select>
       <select id="districtFilter"></select>
 
       <button id="generateBtn">Generate Data</button>
-      <button id="pdfBtn">Download</button>
+      <button id="pdfBtn">Download to PDF</button>
     </div>
 
     <div class="score-card">
@@ -49,7 +49,6 @@
         <span id="totalActive">0</span>
       </div>
     </div>
-
     <canvas id="ageChart"></canvas>
     <div class="table-wrapper">
       <table id="dataTable">
@@ -64,9 +63,6 @@
         </thead>
         <tbody></tbody>
       </table>
-
-      <!-- Table Page -->
-      <div id="pagination" class="pagination"></div>
     </div>
     <div class="bottombar">
       <div onclick="goDashboard('homeTab')">
