@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Form</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="card">
+
+      <h2>Registration Form</h2>
+
+      <div class="grid">
+
+        <input id="firstName" placeholder="First Name">
+        <input id="middleName" placeholder="Middle Name">
+        <input id="lastName" placeholder="Last Name">
+        <input id="suffix" placeholder="Suffix">
+
+        <input id="address" placeholder="Address">
+        <input type="date" id="dob">
+
+        <select id="gender">
+          <option value="">Select Gender</option>
+          <option>Male</option>
+          <option>Female</option>
+        </select>
+
+        <input id="phone" placeholder="Phone Number">
+        <input id="barangay" placeholder="Barangay">
+        <input id="precinct" placeholder="Precinct Number">
+
+        <input id="designation" placeholder="Designation">
+
+      </div>
+
+      <h3>Photo</h3>
+
+      <!-- Mobile Camera -->
+      <div id="mobileSection" class="hidden">
+        <div class="camera-box">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="canvas" class="hidden"></canvas>
+          <img id="preview" class="hidden" alt="preview">
+        </div>
+        <button type="button" id="captureBtn">Capture</button>
+        <button type="button" id="switchBtn" class="secondary">Switch Camera</button>
+      </div>
+
+      <!-- Desktop Upload -->
+      <div id="desktopSection" class="hidden">
+        <input type="file" id="fileInput" accept="image/*">
+        <img id="desktopPreview" class="hidden preview-img" alt="desktpreview">
+      </div>
+
+      <button id="submitBtn">Submit</button>
+      <div id="loader" class="loader">Processing...</div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
