@@ -282,12 +282,12 @@ function downloadPDF() {
   doc.text(`Requested by: ${officerInfo[7]}`, 14, 22);
   doc.text(`Barangay: ${barangayFilter.value || "All"}`, 14, 27);
   doc.text(`District: ${districtFilter.value || "All"}`, 14, 32);
-  doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 39);
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 37);
 
   const tableData = paginatedRows.map(r=>[r[0],r[7],r[8],r[13],r[15]]);
 
   doc.autoTable({
-    startY: 55,
+    startY: 40,
     head: [["ID", "Full Name", "Address", "Phone", "Barangay"]],
     body: tableData,
 
