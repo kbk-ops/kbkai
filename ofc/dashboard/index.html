@@ -5,9 +5,13 @@
   <meta charset="UTF-8">
   <title>Officer Dashboard</title>
   <link rel="icon" href="../../Kasangga New Logo Small.png">
+  
   <link rel="stylesheet" href="style.css">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
   <!-- Prevent browser caching -->
   <meta http-equiv="Cache-Control" content="no-store" />
@@ -22,6 +26,9 @@
       <img src="https://raw.github.com/kbk-ops/kbkai/main/Clips/kbkheader.png" class="top-logo" alt="logo">
       <img src="https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/logout.png" class="logout-icon" onclick="logout()" alt="logout">
     </div>
+    <h2>Monthly Dues</h2>
+
+    <div id="loader" class="loader" style="display:none;"></div>
 
     <div id="homeTab" class="tab-content active">
       <div class="greeting">
@@ -98,6 +105,9 @@
           </tr>
         </tfoot>
       </table>
+        
+        <!-- Table Page -->
+      <div id="pagination" class="pagination"></div>
     </div>
       </div>
 
@@ -196,8 +206,6 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <script src="auth.js"></script>
   <script src="nav.js"></script>
   <script src="script.js"></script>
