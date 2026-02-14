@@ -4,32 +4,20 @@ const SHEET_ID = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
 const OFFICERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Officers!A:F?key=${API_KEY}`;
 const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Monthly_Dues!A:J?key=${API_KEY}`;
 
-const loggedInID = sessionStorage.getItem("memberID"); 
+const loggedInID = sessionStorage.getItem("memberID");
 const loader = document.getElementById("loader");
 
 let allowedRows = [];
-let filteredRows = [];
-let paginatedRows = [];
+let filteredRows = []; // TABLE PAGE
 let currentOfficer = {};
 let defaultSelections = { brgy: "all", dist: "all" };
 
+// ----- TABLE PAGE -----
 let currentPage = 1;
 const rowsPerPage = 10;
 
-// ---------------- LOADER ----------------
-function showLoader() {
-  loader.style.display = "flex";
-  document.querySelectorAll("button").forEach(b => b.disabled = true);
-}
-
-function hideLoader() {
-  loader.style.display = "none";
-  document.querySelectorAll("button").forEach(b => b.disabled = false);
-}
-
-// ---------------- INITIALIZED ----------------
+// ---------------- INITIALIZED DASHBOARD ----------------
 async function initDashboard() {
-  showLoader();
   try {
     const offRes = await fetch(OFFICERS_URL);
     const offData = await offRes.json();
@@ -46,6 +34,13 @@ async function initDashboard() {
       access: officerRow[5] 
     };
 
+    // ----- UI Greeting & Profile -----
+    ocument.getElementById("greet").textContent =
+      `Hello ${currentOfficer.firstName}! (${loggedInID})`;
+
+    const pic = document.getElementById("profilePic");
+    if (pic) pic.src = "https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/profileicon.png";
+
     const duesRes = await fetch(DUES_URL);
     const duesData = await duesRes.json();
     const allDuesRows = duesData.values ? duesData.values.slice(1) : [];
@@ -55,12 +50,16 @@ async function initDashboard() {
     if (accessValue === "All") {
       allowedRows = allDuesRows;
     } else {
+      // 1. Try to match by Barangay (Column D / Index 3)
       const brgyMatches = allDuesRows.filter(row => row[3] === accessValue);
+      
       if (brgyMatches.length > 0) {
         allowedRows = brgyMatches;
         defaultSelections.brgy = accessValue;
+        // Logic fix: Also pre-select the District this Barangay belongs to
         defaultSelections.dist = brgyMatches[0][4]; 
       } else {
+        // 2. If no Barangay match, try District (Column E / Index 4)
         const distMatches = allDuesRows.filter(row => row[4] === accessValue);
         allowedRows = distMatches;
         defaultSelections.dist = accessValue;
@@ -68,15 +67,14 @@ async function initDashboard() {
     }
 
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML =
-      '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+
   } catch (err) {
-    console.error(err);
+    console.error("Initialization error:", err);
   }
-  hideLoader();
 }
 
-// ---------------- FILTER UI ----------------
+// ---------------- FILTERS ----------------
 function refreshFilterUI() {
   fillSelect("fBrgy", allowedRows.map(r => r[3]), defaultSelections.brgy);
   fillSelect("fDistrict", allowedRows.map(r => r[4]), defaultSelections.dist);
@@ -88,19 +86,40 @@ function refreshFilterUI() {
 
 function fillSelect(id, data, defaultValue) {
   const sel = document.getElementById(id);
-  sel.innerHTML = "";
+  if (!sel) return;
+
+  sel.innerHTML = ""; // clear everything
+
+  // Only include the default selection or unique allowed values
   const uniqueValues = [...new Set(data)].sort();
-  if (defaultValue === "all") sel.innerHTML = `<option value="all">All</option>`;
-  uniqueValues.forEach(v=>{
-    if(v) sel.innerHTML += `<option ${v===defaultValue?"selected":""}>${v}</option>`;
+
+  uniqueValues.forEach(v => {
+    if (v) {
+      const selected = (v === defaultValue) ? 'selected' : '';
+      sel.innerHTML += `<option value="${v}" ${selected}>${v}</option>`;
+    }
   });
+
+  // If default is "all", include "All" option
+  if (defaultValue === "all") {
+    sel.insertAdjacentHTML('afterbegin', `<option value="all" selected>All</option>`);
+  }
 }
 
-// ---------------- GENERATE ----------------
+// ---------------- LOADER ----------------
+function showLoader() {
+  loader.style.display = "flex";
+}
+
+function hideLoader() {
+  loader.style.display = "none";
+}
+
+// ---------------- GENERATE + PAGINATION ----------------
 function loadContributions() {
   showLoader();
 
-  setTimeout(()=>{
+  setTimeout(() => {
     const fID = document.getElementById("fID").value.toLowerCase();
     const fBrgy = document.getElementById("fBrgy").value;
     const fDistrict = document.getElementById("fDistrict").value;
@@ -108,7 +127,7 @@ function loadContributions() {
     const fYear = document.getElementById("fYear").value;
     const fReceived = document.getElementById("fReceived").value;
 
-    filteredRows = allowedRows.filter(r=>{
+    filteredRows = allowedRows.filter(r => {
       if (fID && !r[1].toLowerCase().includes(fID)) return false;
       if (fBrgy !== "all" && r[3] !== fBrgy) return false;
       if (fDistrict !== "all" && r[4] !== fDistrict) return false;
@@ -119,64 +138,68 @@ function loadContributions() {
     });
 
     currentPage = 1;
-    paginatedRows = filteredRows;
     renderPage();
     renderPagination();
     hideLoader();
-  },300);
+  }, 300);
 }
 
-// ---------------- PAGINATION ----------------
+// ---------------- RENDER PAGE ----------------
 function renderPage() {
   const start = (currentPage - 1) * rowsPerPage;
   const end = start + rowsPerPage;
-  const pageRows = paginatedRows.slice(start, end);
+  const pageRows = filteredRows.slice(start, end);
 
   let html = "";
   let total = 0;
 
-  pageRows.forEach(r=>{
+  pageRows.forEach(r => {
     total += Number(r[7] || 0);
-    html += `
-      <tr>
-        <td>${r[1]}</td>
-        <td>${r[2]}</td>
-        <td>${r[6]}</td>
-        <td>${r[5]}</td>
-        <td>${Number(r[7]).toLocaleString()}</td>
-        <td>${r[0]}</td>
-        <td>${r[9]}</td>
-      </tr>`;
+    html += `<tr>
+      <td>${r[1]}</td>
+      <td>${r[2]}</td>
+      <td>${r[6]}</td>
+      <td>${r[5]}</td>
+      <td>${Number(r[7]).toLocaleString()}</td>
+      <td>${r[0]}</td>
+      <td>${r[9]}</td>
+    </tr>`;
   });
 
-  document.getElementById("contriBody").innerHTML = html || 
-    '<tr><td colspan="7">No records found.</td></tr>';
+  document.getElementById("contriBody").innerHTML =
+    html || '<tr><td colspan="7">No records found.</td></tr>';
   document.getElementById("totalAmt").textContent = total.toLocaleString();
 }
 
+// ---------------- PAGINATION UI ----------------
 function renderPagination() {
-  const totalPages = Math.ceil(paginatedRows.length / rowsPerPage);
+  const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
   const container = document.getElementById("pagination");
   if (!container) return;
 
   let html = "";
 
-  if (currentPage > 1) html += `<button onclick="gotoPage(${currentPage-1})">&laquo;</button>`;
+  if (currentPage > 1)
+    html += `<button onclick="gotoPage(${currentPage-1})">&laquo;</button>`;
 
-  let start = Math.max(1, currentPage-1);
-  let end = Math.min(totalPages, start+2);
+  let start = Math.max(1, currentPage - 1);
+  let end = Math.min(totalPages, start + 2);
 
-  for(let i=start;i<=end;i++){
-    html += `<button class="${i===currentPage?"active":""}" onclick="gotoPage(${i})">${i}</button>`;
+  for (let i = start; i <= end; i++) {
+    html += `<button class="${i===currentPage?"active":""}"
+      onclick="gotoPage(${i})">${i}</button>`;
   }
 
-  if (end < totalPages) html += `<span>...</span><button onclick="gotoPage(${totalPages})">${totalPages}</button>`;
-  if (currentPage < totalPages) html += `<button onclick="gotoPage(${currentPage+1})">&raquo;</button>`;
+  if (end < totalPages)
+    html += `<span>...</span><button onclick="gotoPage(${totalPages})">${totalPages}</button>`;
+
+  if (currentPage < totalPages)
+    html += `<button onclick="gotoPage(${currentPage+1})">&raquo;</button>`;
 
   container.innerHTML = html;
 }
 
-function gotoPage(p){
+function gotoPage(p) {
   currentPage = p;
   renderPage();
   renderPagination();
@@ -185,25 +208,49 @@ function gotoPage(p){
 // ---------------- PDF (FULL DATA) ----------------
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("p","mm","a4");
+  const doc = new jsPDF("p", "mm", "a4");
 
-  const tableData = paginatedRows.map(r=>[
-    r[1],r[2],r[6],r[5],Number(r[7]).toLocaleString(),r[0],r[9]
+  doc.setFontSize(16);
+  doc.text("KBKAI Monthly Dues", 14, 15);
+  doc.setFontSize(10);
+  doc.text(`Requested by: ${currentOfficer.fullName}`, 14, 25);
+  doc.text(`Barangay: ${document.getElementById("fBrgy").value || "All"}`, 14, 32);
+
+  const tableData = filteredRows.map(r => [
+    r[1], r[2], r[6], r[5],
+    Number(r[7]).toLocaleString(), r[0], r[9]
   ]);
 
-  doc.text("Monthly Dues Report",14,15);
-  doc.text(`Requested by: ${currentOfficer.fullName}`,14,25);
-
   doc.autoTable({
-    startY:35,
-    head:[["ID","Full Name","Month","Year","Amount","Posted","Received"]],
-    body:tableData
+    startY: 40,
+    head: [["ID","Full Name","Month","Year","Amount","Posted","Received"]],
+    body: tableData
   });
 
   doc.save("Monthly_Dues_Report.pdf");
 }
 
-// ---------------- EVENTS ----------------
+// ---------------- BOTTOM BAR NAVIGATION ----------------
+function showTab(id) {
+  if (id === 'homeTab' || id === 'aboutTab') {
+    refreshFilterUI();
+    document.getElementById("contriBody").innerHTML =
+      '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("totalAmt").textContent = "0";
+  }
+  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+  const target = document.getElementById(id);
+  if (target) target.classList.add("active");
+}
+
+function go(url) { window.location.replace(url); }
+
+function logout() { 
+  sessionStorage.clear(); 
+  window.location.replace("https://kbk-ops.github.io/kbkai"); 
+}
+
+// ---------------- BUTTON EVENTS ----------------
 document.getElementById("generateBtn").addEventListener("click", loadContributions);
 document.getElementById("pdfBtn").addEventListener("click", downloadPDF);
 
