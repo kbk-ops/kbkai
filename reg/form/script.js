@@ -55,35 +55,28 @@ let useFront = true;
 let imageBlob = null;
 
 async function startCamera() {
-  stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: useFront ? "user" : "environment" }
-  });
-  video.srcObject = stream;
-}
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("Camera not supported on this device");
+      return;
+    }
 
-if (captureBtn) {
-  captureBtn.onclick = () => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d").drawImage(video, 0, 0);
-
-    canvas.toBlob(
-      (blob) => {
-        imageBlob = blob;
-        preview.src = URL.createObjectURL(blob);
-        preview.classList.remove("hidden");
-        video.classList.add("hidden");
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: useFront ? "user" : "environment"
       },
-      "image/jpeg",
-      0.9
-    );
-  };
+      audio: false
+    });
 
-  switchBtn.onclick = () => {
-    useFront = !useFront;
-    stream.getTracks().forEach((t) => t.stop());
-    startCamera();
-  };
+    video.srcObject = stream;
+    await video.play();
+
+    console.log("Camera started successfully");
+
+  } catch (err) {
+    console.error("Camera error:", err);
+    alert("Camera error: " + err.message);
+  }
 }
 
 // ===== DESKTOP UPLOAD =====
