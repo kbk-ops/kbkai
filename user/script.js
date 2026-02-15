@@ -75,13 +75,16 @@ loginBtn.onclick = async () => {
 
  if (!pinExists) {
   await fetch(WEBAPP_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      id: currentID,
-      pin: pin
-    })
-  });
+  method: "POST",
+  mode: "no-cors",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    id: currentID,
+    pin: pin
+  })
+});
 }
 
   sessionStorage.setItem("memberID", currentID);
