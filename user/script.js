@@ -26,7 +26,7 @@ let pinExists = false;
 nextBtn.onclick = async () => {
   errorEl.textContent = "";
   const id = idNumberInput.value.trim();
-  if (!id) return errorEl.textContent = "ID required";
+  if (!id) return (errorEl.textContent = "ID required");
 
   nextBtn.disabled = true;
   loader.style.display = "block";
@@ -56,7 +56,7 @@ nextBtn.onclick = async () => {
 loginBtn.onclick = async () => {
   errorEl.textContent = "";
   const pin = pinInput.value.trim();
-  if (!/^\d{6}$/.test(pin)) return errorEl.textContent = "6 digits only";
+  if (!/^\d{6}$/.test(pin)) return (errorEl.textContent = "6 digits only");
 
   loginBtn.disabled = true;
   loader.style.display = "block";
