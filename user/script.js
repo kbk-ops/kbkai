@@ -5,7 +5,8 @@ const SHEET_NAMEMEMBER = "Members";
 
 const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_MEMBER}/values/${SHEET_NAMEMEMBER}!A:F?key=${API_KEY}`;
 
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyx6nI-1sF4nT0_8ICo8giRaDFKKPBBCqB9ld2MPdhxLnu8nGU8obYp0OTxUR_iSD_oBA/exec";
+const WEBAPP_URL =
+  "https://script.google.com/macros/s/AKfycbyx6nI-1sF4nT0_8ICo8giRaDFKKPBBCqB9ld2MPdhxLnu8nGU8obYp0OTxUR_iSD_oBA/exec";
 
 const step1 = document.getElementById("step1");
 const step2 = document.getElementById("step2");
@@ -26,7 +27,7 @@ let pinExists = false;
 nextBtn.onclick = async () => {
   errorEl.textContent = "";
   const id = idNumberInput.value.trim();
-  if (!id) return errorEl.textContent = "ID required";
+  if (!id) return (errorEl.textContent = "ID required");
 
   nextBtn.disabled = true;
   loader.style.display = "block";
@@ -34,7 +35,7 @@ nextBtn.onclick = async () => {
   const res = await fetch(MEMBERS_URL);
   const data = await res.json();
   const rows = data.values.slice(1);
-  const member = rows.find(r => r[0] == id);
+  const member = rows.find((r) => r[0] == id);
 
   loader.style.display = "none";
 
@@ -56,7 +57,7 @@ nextBtn.onclick = async () => {
 loginBtn.onclick = async () => {
   errorEl.textContent = "";
   const pin = pinInput.value.trim();
-  if (!/^\d{6}$/.test(pin)) return errorEl.textContent = "6 digits only";
+  if (!/^\d{6}$/.test(pin)) return (errorEl.textContent = "6 digits only");
 
   loginBtn.disabled = true;
   loader.style.display = "block";
@@ -64,7 +65,7 @@ loginBtn.onclick = async () => {
   const res = await fetch(MEMBERS_URL);
   const data = await res.json();
   const rows = data.values.slice(1);
-  const member = rows.find(r => r[0] == currentID);
+  const member = rows.find((r) => r[0] == currentID);
 
   if (pinExists && member[5] !== pin) {
     errorEl.textContent = "Wrong PIN";
