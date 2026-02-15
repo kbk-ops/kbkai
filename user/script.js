@@ -73,15 +73,16 @@ loginBtn.onclick = async () => {
     return;
   }
 
-  if (!pinExists) {
-    await fetch(WEBAPP_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        id: currentID,
-        pin: pin
-      })
-    });
-  }
+ if (!pinExists) {
+  await fetch(WEBAPP_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id: currentID,
+      pin: pin
+    })
+  });
+}
 
   sessionStorage.setItem("memberID", currentID);
   sessionStorage.setItem("auth", "true");
