@@ -25,18 +25,12 @@ let pinExists = false;
 async function callAPI(payload) {
   try {
     const response = await fetch(WEBAPP_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) throw new Error("Network error");
-
-    return await response.json();
-  } catch (err) {
-    console.error(err);
-    throw new Error("Connection failed");
-  }
-}
+  method: "POST",
+  headers: {
+    "Content-Type": "text/plain;charset=utf-8"
+  },
+  body: JSON.stringify(payload)
+});
 
 // ==============================
 // STEP 1: CHECK ID
