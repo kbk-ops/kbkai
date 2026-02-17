@@ -1,69 +1,119 @@
-const URL = "https://script.google.com/macros/s/AKfycbwAI7gXqEs_AqzPIs-L-ksTYRH9t2EWK7dMiY4OHil6pfbcMvqoypqVBmVjy0cu7_fcdg/exec";
-const email = sessionStorage.getItem("registerEmail");
-const referrerID = sessionStorage.getItem("referrerID");
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwaZVaYhTjCkpl4en1Pb1jN72DevneqpYUr2c9P5tISTfm6ojBaHueznI22hGpDaKn4QQ/exec";
 
-const cap = s => s.replace(/\w\S*/g,t=>t[0].toUpperCase()+t.substr(1).toLowerCase());
+// Load Session
+const referrerID = sessionStorage.getItem("referrerID") || "Unknown";
+const registerEmail = sessionStorage.getItem("registerEmail") || "";
 
-const validBrgy = v =>
-  /^(?:[1-9]|[1-9][0-9]|1[0-6][0-9]|17[0-5]|17[7-9]|18[0-8]|176-[A-F])$/.test(v);
+const titleCase = (str) =>
+  str.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 
-const age15 = d => (new Date().getFullYear() - new Date(d).getFullYear()) >= 15;
+// Input Logic
+["firstName", "middleName", "lastName"].forEach((id) => {
+  document
+    .getElementById(id)
+    .addEventListener(
+      "input",
+      (e) => (e.target.value = titleCase(e.target.value))
+    );
+});
 
-const posAll = [
- "Barangay Manager","Asst. Barangay Manager","Secretary","Asst. Secretary",
- "Youth Coordinator","Asst. Youth Coordinator","Youth Secretary","Asst. Youth Secretary"
-];
+document.getElementById("address").addEventListener("blur", (e) => {
+  let val = e.target.value.toLowerCase();
+  val = val.replace(/caloocan|kalookan|city/gi, "").trim();
+  e.target.value = titleCase(val) + " Caloocan City";
+});
 
-async function loadPositions(){
- const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/1lDzzDvwpPTp4GGhsBQ6kH-tVhAdhuFidP0ujpDTrp9A/values/Raw_Data!P:T?key=AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY`);
- const data = await res.json();
- const brgy = document.getElementById("brgy").value;
- const taken = data.values.filter(r=>r[0]==brgy).map(r=>r[4]);
- let available = posAll.filter(p=>!taken.includes(p));
- if(available.length==0) available=["Team Leader","Family Member"];
- document.getElementById("position").innerHTML =
-  available.map(p=>`<option>${p}</option>`).join("");
-}
+document.getElementById("phone").addEventListener("input", (e) => {
+  e.target.value = e.target.value.replace(/[^0-9]/g, "");
+  if (e.target.value && e.target.value[0] !== "0") e.target.value = "0";
+});
 
-document.getElementById("brgy").onblur = loadPositions;
+document
+  .getElementById("precinct")
+  .addEventListener(
+    "input",
+    (e) => (e.target.value = e.target.value.toUpperCase())
+  );
 
-pic.onchange = e=>{
- const f = e.target.files[0];
- preview.src = URL.createObjectURL(f);
-};
+let base64Image = "";
+document.getElementById("photoInput").addEventListener("change", (e) => {
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    base64Image = event.target.result;
+    document.getElementById(
+      "previewArea"
+    ).innerHTML = `<img src="${base64Image}">`;
+  };
+  reader.readAsDataURL(e.target.files[0]);
+});
 
-form.onsubmit = async e=>{
- e.preventDefault();
+document.getElementById("barangay").addEventListener("change", async (e) => {
+  const val = e.target.value.toUpperCase();
+  const posSel = document.getElementById("position");
+  posSel.disabled = true;
+  posSel.innerHTML = "<option>Loading...</option>";
 
- if(!/^0\d{10}$/.test(phone.value)) return;
- if(!validBrgy(brgy.value)) return;
- if(!age15(dob.value)) return;
+  try {
+    const res = await fetch(
+      `${SCRIPT_URL}?action=getPositions&barangay=${val}`
+    );
+    const data = await res.json();
+    posSel.innerHTML = data
+      .map((p) => `<option value="${p}">${p}</option>`)
+      .join("");
+    posSel.disabled = false;
+  } catch {
+    alert("Error loading positions");
+  }
+});
 
- let addr = cap(address.value);
- if(/caloocan|kalookan|city/i.test(addr))
-   addr = addr.replace(/caloocan|kalookan|city/ig,"") + " Caloocan City";
+document.getElementById("memberForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
- const reader = new FileReader();
- reader.onload = async ()=>{
-  await fetch(URL,{
-   method:"POST",
-   body: JSON.stringify({
-    email,
-    first_name: cap(fname.value),
-    middle_name: cap(mname.value),
-    last_name: cap(lname.value),
-    suffix: suffix.value,
-    address: addr.trim(),
-    birth_date: dob.value,
-    gender: gender.value,
-    phone_number: phone.value,
-    barangay: brgy.value,
-    precint_no: precinct.value.toUpperCase(),
-    referrerID,
-    designation: position.value,
-    picture: reader.result
-   })
-  });
- };
- reader.readAsDataURL(pic.files[0]);
-};
+  const dob = document.getElementById("dob").value;
+  const age = Math.floor((new Date() - new Date(dob)) / 31557600000);
+  if (age < 15) return alert("Must be 15 years old or above");
+  if (!base64Image) return alert("Photo is required");
+  if (document.getElementById("phone").value.length !== 11)
+    return alert("Phone must be 11 digits");
+
+  document.getElementById("loadingOverlay").style.display = "flex";
+
+  const payload = {
+    email: registerEmail,
+    firstName: document.getElementById("firstName").value,
+    middleName: document.getElementById("middleName").value,
+    lastName: document.getElementById("lastName").value,
+    suffix: document.getElementById("suffix").value,
+    address: document.getElementById("address").value,
+    dob: dob.split("-").reverse().join("/"), // Convert to DD/MM/YYYY or adjust to your sheet preference
+    gender: document.getElementById("gender").value,
+    phone: document.getElementById("phone").value,
+    barangay: document.getElementById("barangay").value,
+    precinct: document.getElementById("precinct").value,
+    position: document.getElementById("position").value,
+    referrer: referrerID,
+    image: base64Image,
+    mimeType: "image/png"
+  };
+
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    document.getElementById("spinner").style.display = "none";
+    if (result.result === "success") {
+      document.getElementById("overlayTitle").innerText = "Success!";
+      document.getElementById("overlayText").innerText =
+        "Data Successfully submitted please check your email within the day for the confirmation";
+    } else {
+      document.getElementById("overlayTitle").innerText = "Notice";
+      document.getElementById("overlayText").innerText = result.message;
+    }
+    document.getElementById("closeBtn").style.display = "block";
+  } catch {
+    alert("Submission failed. Check connection.");
+  }
+});
