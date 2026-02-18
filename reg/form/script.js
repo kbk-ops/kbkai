@@ -1,4 +1,5 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwaZVaYhTjCkpl4en1Pb1jN72DevneqpYUr2c9P5tISTfm6ojBaHueznI22hGpDaKn4QQ/exec";
+const SCRIPT_URL =
+  "https://script.google.com/macros/s/AKfycbwaZVaYhTjCkpl4en1Pb1jN72DevneqpYUr2c9P5tISTfm6ojBaHueznI22hGpDaKn4QQ/exec";
 
 // Load Session
 const referrerID = sessionStorage.getItem("referrerID") || "Unknown";
@@ -15,6 +16,27 @@ const titleCase = (str) =>
       "input",
       (e) => (e.target.value = titleCase(e.target.value))
     );
+});
+
+// PASTE THE DOB FORMATTER HERE:
+document.getElementById("dob").addEventListener("input", function (e) {
+  let v = e.target.value.replace(/\D/g, "");
+  let finalValue = "";
+  if (v.length > 0) {
+    let month = v.slice(0, 2);
+    if (month.length === 2 && parseInt(month) > 12) month = "12";
+    finalValue = month;
+    if (v.length > 2) {
+      let day = v.slice(2, 4);
+      if (day.length === 2 && parseInt(day) > 31) day = "31";
+      finalValue += "/" + day;
+      if (v.length > 4) {
+        let year = v.slice(4, 8);
+        finalValue += "/" + year;
+      }
+    }
+  }
+  e.target.value = finalValue;
 });
 
 document.getElementById("address").addEventListener("blur", (e) => {
@@ -37,14 +59,68 @@ document
 
 let base64Image = "";
 document.getElementById("photoInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Show a "Processing" message in the preview area
+  const preview = document.getElementById("previewArea");
+  preview.innerHTML = "<span>Processing...</span>";
+
+  // Disable the submit button temporarily
+  const submitBtn = document.querySelector(".btn-submit");
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Processing Photo...";
+
   const reader = new FileReader();
   reader.onload = (event) => {
-    base64Image = event.target.result;
-    document.getElementById(
-      "previewArea"
-    ).innerHTML = `<img src="${base64Image}">`;
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // Set square size (500x500 is perfect for ID photos)
+      const size = 500;
+      canvas.width = size;
+      canvas.height = size;
+
+      // Math to find the center square
+      let sourceX, sourceY, sourceWidth, sourceHeight;
+      if (img.width > img.height) {
+        sourceWidth = img.height;
+        sourceHeight = img.height;
+        sourceX = (img.width - img.height) / 2;
+        sourceY = 0;
+      } else {
+        sourceWidth = img.width;
+        sourceHeight = img.width;
+        sourceX = 0;
+        sourceY = (img.height - img.width) / 2;
+      }
+
+      // Draw the crop
+      ctx.drawImage(
+        img,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        0,
+        0,
+        size,
+        size
+      );
+
+      // Save the result
+      base64Image = canvas.toDataURL("image/png");
+
+      // Show the preview and re-enable the form
+      preview.innerHTML = `<img src="${base64Image}" style="width:100%; height:100%; object-fit:cover;">`;
+      submitBtn.disabled = false;
+      submitBtn.innerText = "Submit Registration";
+    };
+    img.src = event.target.result;
   };
-  reader.readAsDataURL(e.target.files[0]);
+  reader.readAsDataURL(file);
 });
 
 document.getElementById("barangay").addEventListener("change", async (e) => {
@@ -86,7 +162,7 @@ document.getElementById("memberForm").addEventListener("submit", async (e) => {
     lastName: document.getElementById("lastName").value,
     suffix: document.getElementById("suffix").value,
     address: document.getElementById("address").value,
-    dob: dob.split("-").reverse().join("/"), // Convert to DD/MM/YYYY or adjust to your sheet preference
+    dob: document.getElementById("dob").value,
     gender: document.getElementById("gender").value,
     phone: document.getElementById("phone").value,
     barangay: document.getElementById("barangay").value,
@@ -117,3 +193,14 @@ document.getElementById("memberForm").addEventListener("submit", async (e) => {
     alert("Submission failed. Check connection.");
   }
 });
+
+function showTab(id) {
+  // Remove active from all tabs
+  document
+    .querySelectorAll(".tab-content")
+    .forEach((t) => t.classList.remove("active"));
+
+  // Show selected tab
+  const target = document.getElementById(id);
+  if (target) target.classList.add("active");
+}
