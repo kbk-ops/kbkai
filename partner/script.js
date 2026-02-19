@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxZau2YMqBX4aWpx4xnJlPxVBk-69dDjsXMkYFrcenfBsDMQC74E-n_4TMyJlNxFGBz/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyD_7CU1eSOk9Rtf7BALw-VhWt9CQo3iEPpVsUfZtJOHRJyrdufiFQv8sGcvd8P_fnwKg/exec";
 
 const step1 = document.getElementById('step1');
 const step2 = document.getElementById('step2');
@@ -7,18 +7,27 @@ const errorMsg = document.getElementById('error');
 
 let currentUsername = "";
 
-// Helper to show/hide loader
+// Show/hide loader
 function toggleLoading(isLoading) {
     loader.style.display = isLoading ? 'block' : 'none';
-    errorMsg.innerText = "";
+}
+
+// Display error message
+function showError(message) {
+    errorMsg.style.color = "red";
+    errorMsg.innerText = message;
 }
 
 // STEP 1: Check Username
 document.getElementById('nextBtn').addEventListener('click', async () => {
     const idNum = document.getElementById('idNumber').value.trim();
-    if (!idNum) return;
+    if (!idNum) {
+        showError("Please enter your username.");
+        return;
+    }
 
     toggleLoading(true);
+    errorMsg.innerText = "";
 
     try {
         const response = await fetch(API_URL, {
@@ -33,10 +42,10 @@ document.getElementById('nextBtn').addEventListener('click', async () => {
             step2.style.display = 'block';
             document.getElementById('pinLabel').innerText = result.hasPin ? "Enter PIN" : "Create 6-digit PIN";
         } else {
-            errorMsg.innerText = result.message;
+            showError(result.message || "Username not found.");
         }
     } catch (e) {
-        errorMsg.innerText = "Connection error. Try again.";
+        showError("Connection error. Try again.");
     } finally {
         toggleLoading(false);
     }
@@ -46,11 +55,12 @@ document.getElementById('nextBtn').addEventListener('click', async () => {
 document.getElementById('loginBtn').addEventListener('click', async () => {
     const pinVal = document.getElementById('pin').value.trim();
     if (pinVal.length !== 6) {
-        errorMsg.innerText = "Please enter a 6-digit PIN.";
+        showError("Please enter a 6-digit PIN.");
         return;
     }
 
     toggleLoading(true);
+    errorMsg.innerText = "";
 
     try {
         const response = await fetch(API_URL, {
@@ -60,15 +70,14 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
         const result = await response.json();
 
         if (result.status === "success") {
-            // Set session
             localStorage.setItem('userSession', Date.now());
             localStorage.setItem('username', currentUsername);
             window.location.href = "https://kbk-ops.github.io/kbkai/partner/dashboard";
         } else {
-            errorMsg.innerText = result.message;
+            showError(result.message || "Incorrect PIN.");
         }
     } catch (e) {
-        errorMsg.innerText = "Error processing login.";
+        showError("Error processing login.");
     } finally {
         toggleLoading(false);
     }
