@@ -7,28 +7,30 @@
     const session = localStorage.getItem("userSession");
     const username = localStorage.getItem("username");
 
-    if (!session || !username) {
-      // Not logged in → redirect to login
-      window.location.replace("https://kbk-ops.github.io/kbkai/partner");
-      return false;
-    }
-    return true;
+    return !!(session && username);
   }
 
-  // UI UNLOCK
-  function unlockUI() {
-    if (!checkAuth()) return;
+  // Lock UI
+  function lockUI() {
+    document.body.classList.add("locked");
 
+    const app = document.getElementById("app");
+    if (app) app.classList.add("hidden");
+  }
+
+  // Unlock UI
+  function unlockUI() {
     document.body.classList.remove("locked");
 
     const app = document.getElementById("app");
     if (app) app.classList.remove("hidden");
   }
 
-  // Logout function
+  // Logout
   window.logout = function () {
     localStorage.removeItem("userSession");
     localStorage.removeItem("username");
+    lockUI();
     window.location.replace("https://kbk-ops.github.io/kbkai/partner");
   };
 
@@ -41,16 +43,22 @@
     }, IDLE_LIMIT);
   }
 
-  // Initialize
-  if (checkAuth()) {
-    // Show the app
-    const app = document.getElementById("app");
-    if (app) app.classList.remove("hidden");
+  // Initialize on DOM ready
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!checkAuth()) {
+      lockUI();
+      window.location.replace("https://kbk-ops.github.io/kbkai/partner");
+      return;
+    }
+
+    // Authenticated
+    unlockUI();
 
     // Start idle timer
     ["click", "mousemove", "keypress", "touchstart"].forEach((evt) => {
       document.addEventListener(evt, resetIdleTimer);
     });
+
     resetIdleTimer();
-  }
+  });
 })();
