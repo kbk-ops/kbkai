@@ -63,7 +63,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
             // Set session
             localStorage.setItem('userSession', Date.now());
             localStorage.setItem('username', currentUsername);
-            window.location.href = "https://kbk-ops.github.io/kbkai/user/dashboard";
+            window.location.href = "https://kbk-ops.github.io/kbkai/partner/dashboard";
         } else {
             errorMsg.innerText = result.message;
         }
