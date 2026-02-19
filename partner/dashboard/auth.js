@@ -1,5 +1,5 @@
 (function () {
-  const IDLE_LIMIT = 1 * 60 * 1000;
+  const IDLE_LIMIT = 15 * 60 * 1000;
   let idleTimer;
 
   // Check if user is logged in
