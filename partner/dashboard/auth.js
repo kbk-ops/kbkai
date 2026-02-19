@@ -15,6 +15,16 @@
     return true;
   }
 
+  // UI UNLOCK
+  function unlockUI() {
+    if (!checkAuth()) return;
+
+    document.body.classList.remove("locked");
+
+    const app = document.getElementById("app");
+    if (app) app.classList.remove("hidden");
+  }
+
   // Logout function
   window.logout = function () {
     localStorage.removeItem("userSession");
