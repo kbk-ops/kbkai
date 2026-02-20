@@ -1,6 +1,7 @@
 const WEBAPP_URL =
   "https://script.google.com/macros/s/AKfycbznk2j4jL7XS8CcubM2dOhpN60dMFR_syLmmxa7mYC0C-0K5dxfpdrcGNBCvPGHUx-0FQ/exec";
 
+// DOM
 const step1 = document.getElementById("step1");
 const step2 = document.getElementById("step2");
 const idNumberInput = document.getElementById("idNumber");
@@ -13,10 +14,9 @@ const loginBtn = document.getElementById("loginBtn");
 
 sessionStorage.clear();
 
-let currentID = "";
-let pinExists = false;
+let currentOfficer = null;
 
-// STEP 1 – CHECK ID
+// STEP 1
 nextBtn.onclick = async () => {
   errorEl.textContent = "";
   const id = idNumberInput.value.trim();
@@ -25,34 +25,40 @@ nextBtn.onclick = async () => {
   nextBtn.disabled = true;
   loader.style.display = "block";
 
-  const res = await fetch(WEBAPP_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "getOfficer",
-      id: id
-    })
-  });
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "getOfficer",
+        id: id
+      })
+    });
 
-  const result = await res.json();
+    const data = await res.json();
+    loader.style.display = "none";
 
-  loader.style.display = "none";
-  nextBtn.disabled = false;
+    if (data.status !== "success") {
+      errorEl.textContent = "ID Number not found";
+      nextBtn.disabled = false;
+      return;
+    }
 
-  if (result.status !== "success") {
-    errorEl.textContent = result.message;
-    return;
+    currentOfficer = data.officer;
+
+    pinLabel.textContent = currentOfficer.pin
+      ? "Enter 6-digit PIN"
+      : "Create 6-digit PIN";
+
+    step1.style.display = "none";
+    step2.style.display = "block";
+  } catch (err) {
+    loader.style.display = "none";
+    errorEl.textContent = "Connection failed";
+    nextBtn.disabled = false;
   }
-
-  currentID = id;
-  pinExists = result.officer.pin && result.officer.pin.trim() !== "";
-
-  pinLabel.textContent = pinExists ? "Enter 6-digit PIN" : "Create 6-digit PIN";
-
-  step1.style.display = "none";
-  step2.style.display = "block";
 };
 
-// STEP 2 – VERIFY OR CREATE PIN
+// STEP 2
 loginBtn.onclick = async () => {
   errorEl.textContent = "";
   const pin = pinInput.value.trim();
@@ -62,29 +68,39 @@ loginBtn.onclick = async () => {
   loginBtn.disabled = true;
   loader.style.display = "block";
 
-  const res = await fetch(WEBAPP_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "verifyPin",
-      id: currentID,
-      pin: pin
-    })
-  });
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "verifyPin",
+        id: currentOfficer.id,
+        pin: pin
+      })
+    });
 
-  const result = await res.json();
+    const data = await res.json();
+    loader.style.display = "none";
 
-  loader.style.display = "none";
-  loginBtn.disabled = false;
+    if (data.status !== "success") {
+      errorEl.textContent = data.message;
+      loginBtn.disabled = false;
+      return;
+    }
 
-  if (result.status !== "success") {
-    errorEl.textContent = result.message;
-    return;
+    const officer = data.officer;
+
+    sessionStorage.setItem("memberID", officer.id);
+    sessionStorage.setItem("auth", "true");
+    sessionStorage.setItem("expiry", Date.now() + 3600000);
+    sessionStorage.setItem("officerFirstName", officer.firstName);
+    sessionStorage.setItem("officerFullName", officer.fullName);
+    sessionStorage.setItem("officerBrgy", officer.brgy);
+    sessionStorage.setItem("officerDistrict", officer.district);
+
+    window.location.replace("https://kbk-ops.github.io/kbkai/ofc/dashboard");
+  } catch (err) {
+    loader.style.display = "none";
+    errorEl.textContent = "Connection failed";
+    loginBtn.disabled = false;
   }
-
-  sessionStorage.setItem("memberID", result.officer.id);
-  sessionStorage.setItem("fullName", result.officer.fullName);
-  sessionStorage.setItem("auth", "true");
-  sessionStorage.setItem("expiry", Date.now() + 3600000);
-
-  window.location.replace("https://kbk-ops.github.io/kbkai/user/dashboard");
 };
