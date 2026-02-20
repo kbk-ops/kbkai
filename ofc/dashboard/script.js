@@ -1,8 +1,9 @@
-const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
 const SHEET_ID = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
+const BASE_URL =
+  "https://script.google.com/macros/s/AKfycbz29zHrCPedCnAEaeHnR7AEX-FVUI0SOkpAjrR6De8Mmx8xrhC4RUlIr04xzlbrKuWi/exec";
 
-const OFFICERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Officers!A:F?key=${API_KEY}`;
-const DUES_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Monthly_Dues!A:J?key=${API_KEY}`;
+const OFFICERS_URL = `${BASE_URL}?type=officers`;
+const DUES_URL = `${BASE_URL}?type=dues`;
 
 const loggedInID = sessionStorage.getItem("memberID");
 const generateBtn = document.getElementById("generateBtn");
@@ -18,14 +19,47 @@ let currentPage = 1;
 const rowsPerPage = 30;
 let paginatedRows = [];
 
+// ---------------- IMAGE FORMATTER ----------------
+function formatImage(link) {
+  const defaultProfile =
+    "data:image/svg+xml;utf8," +
+    encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
+        <circle cx='100' cy='100' r='100' fill='#e0e0e0'/>
+        <circle cx='100' cy='80' r='35' fill='#9e9e9e'/>
+        <path d='M40 160c0-30 25-50 60-50s60 20 60 50' fill='#9e9e9e'/>
+      </svg>
+    `);
+
+  if (!link || link.trim() === "") return defaultProfile;
+
+  link = link.trim();
+
+  let match = link.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://lh3.googleusercontent.com/d/${match[1]}=s200`;
+  }
+
+  match = link.match(/id=([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://lh3.googleusercontent.com/d/${match[1]}=s200`;
+  }
+
+  if (link.startsWith("http")) return link;
+
+  return defaultProfile;
+}
+
 // ---------------- INITIALIZED DASHBOARD ----------------
 async function initDashboard() {
+  showLoaderd();
+
   try {
-    const offRes = await fetch(OFFICERS_URL);
+    const offRes = await fetch(OFFICERS_URL, { cache: "no-store" });
     const offData = await offRes.json();
     const officers = offData.values || [];
-    
-    const officerRow = officers.find(row => row[0] === loggedInID);
+
+    const officerRow = officers.find((row) => row[0] === loggedInID);
     if (!officerRow) return;
 
     currentOfficer = {
@@ -33,15 +67,28 @@ async function initDashboard() {
       fullName: officerRow[2],
       barangay: officerRow[3],
       district: officerRow[4],
-      access: officerRow[5] 
+      access: officerRow[5]
     };
 
     // UI Greeting & Profile
-    document.getElementById("greet").textContent = `Hello ${currentOfficer.firstName}!`;
+    document.getElementById(
+      "greet"
+    ).textContent = `Hello ${currentOfficer.firstName}!`;
     const pic = document.getElementById("profilePic");
-    if (pic) pic.src = "https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/profileicon.png";
 
-    const duesRes = await fetch(DUES_URL);
+    try {
+      const profileRes = await fetch(
+        `${BASE_URL}?type=profile&id=${loggedInID}`,
+        { cache: "no-store" }
+      );
+      const profileData = await profileRes.json();
+      pic.src = formatImage(profileData.picture);
+    } catch {
+      pic.src = formatImage("");
+    }
+
+    // -------- Fetch Monthly Dues --------
+    const duesRes = await fetch(DUES_URL, { cache: "no-store" });
     const duesData = await duesRes.json();
     const allDuesRows = duesData.values ? duesData.values.slice(1) : [];
 
@@ -51,27 +98,38 @@ async function initDashboard() {
       allowedRows = allDuesRows;
     } else {
       // 1. Try to match by Barangay (Column D / Index 3)
-      const brgyMatches = allDuesRows.filter(row => row[3] === accessValue);
-      
+      const brgyMatches = allDuesRows.filter((row) => row[3] === accessValue);
+
       if (brgyMatches.length > 0) {
         allowedRows = brgyMatches;
         defaultSelections.brgy = accessValue;
         // Logic fix: Also pre-select the District this Barangay belongs to
-        defaultSelections.dist = brgyMatches[0][4]; 
+        defaultSelections.dist = brgyMatches[0][4];
       } else {
         // 2. If no Barangay match, try District (Column E / Index 4)
-        const distMatches = allDuesRows.filter(row => row[4] === accessValue);
+        const distMatches = allDuesRows.filter((row) => row[4] === accessValue);
         allowedRows = distMatches;
         defaultSelections.dist = accessValue;
       }
     }
 
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
-
+    document.getElementById("contriBody").innerHTML =
+      '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
   } catch (err) {
     console.error("Initialization error:", err);
+  } finally {
+    hideLoaderd();
   }
+}
+
+/* ------------------ DASHBOARD LOADER ------------------ */
+function showLoaderd() {
+  document.getElementById("loaderd").style.display = "flex";
+}
+
+function hideLoaderd() {
+  document.getElementById("loaderd").style.display = "none";
 }
 
 // ---------------- LOADER ----------------
@@ -87,13 +145,45 @@ function hideLoader() {
   if (pdfBtn) pdfBtn.disabled = false;
 }
 
+// ---------------- Barangay Option ----------------
+function updateBarangayOptions() {
+  const selectedDist = document.getElementById("fDistrict").value;
+  let filteredBrgys = [];
+
+  if (selectedDist === "all") {
+    filteredBrgys = allowedRows.map((r) => r[3]);
+  } else {
+    filteredBrgys = allowedRows
+      .filter((r) => r[4] === selectedDist)
+      .map((r) => r[3]);
+  }
+
+  fillSelect("fBrgy", filteredBrgys, defaultSelections.brgy);
+}
+
 // ---------------- Filter ----------------
 function refreshFilterUI() {
-  fillSelect("fBrgy", allowedRows.map(r => r[3]), defaultSelections.brgy);
-  fillSelect("fDistrict", allowedRows.map(r => r[4]), defaultSelections.dist);
-  fillSelect("fMonth", allowedRows.map(r => r[6]), "all");
-  fillSelect("fYear", allowedRows.map(r => r[5]), "all");
-  fillSelect("fReceived", allowedRows.map(r => r[9]), "all");
+  fillSelect(
+    "fDistrict",
+    allowedRows.map((r) => r[4]),
+    defaultSelections.dist
+  );
+  updateBarangayOptions();
+  fillSelect(
+    "fMonth",
+    allowedRows.map((r) => r[6]),
+    "all"
+  );
+  fillSelect(
+    "fYear",
+    allowedRows.map((r) => r[5]),
+    "all"
+  );
+  fillSelect(
+    "fReceived",
+    allowedRows.map((r) => r[9]),
+    "all"
+  );
   document.getElementById("fID").value = "";
 }
 
@@ -101,24 +191,28 @@ function fillSelect(id, data, defaultValue) {
   const sel = document.getElementById(id);
   if (!sel) return;
 
-  sel.innerHTML = ""; // clear everything
+  sel.innerHTML = "";
 
-  // Only include the default selection or unique allowed values
   const uniqueValues = [...new Set(data)].sort();
 
-  uniqueValues.forEach(v => {
+  uniqueValues.forEach((v) => {
     if (v) {
-      const selected = (v === defaultValue) ? 'selected' : '';
+      const selected = v === defaultValue ? "selected" : "";
       sel.innerHTML += `<option value="${v}" ${selected}>${v}</option>`;
     }
   });
 
-  // If default is "all", include "All" option
   if (defaultValue === "all") {
-    sel.insertAdjacentHTML('afterbegin', `<option value="all" selected>All</option>`);
+    sel.insertAdjacentHTML(
+      "afterbegin",
+      `<option value="all" selected>All</option>`
+    );
   }
 }
 
+document
+  .getElementById("fDistrict")
+  .addEventListener("change", updateBarangayOptions);
 // ---------------- LOAD CONTRIBUTION ----------------
 function loadContributions() {
   showLoader();
@@ -133,13 +227,18 @@ function loadContributions() {
       const fReceived = document.getElementById("fReceived").value;
 
       // Filter rows
-      let rows = allowedRows.filter(r => {
+      let rows = allowedRows.filter((r) => {
         if (fID && !r[1]?.toLowerCase().includes(fID)) return false;
-        if (fBrgy !== "all" && r[3] !== fBrgy) return false;
-        if (fDistrict !== "all" && r[4] !== fDistrict) return false;
-        if (fMonth !== "all" && r[6] !== fMonth) return false;
-        if (fYear !== "all" && r[5] !== fYear) return false;
-        if (fReceived !== "all" && r[9] !== fReceived) return false;
+        if (fBrgy !== "all" && r[3]?.toString().trim() !== fBrgy.trim())
+          return false;
+        if (fDistrict !== "all" && r[4]?.toString().trim() !== fDistrict.trim())
+          return false;
+        if (fMonth !== "all" && r[6]?.toString().trim() !== fMonth.trim())
+          return false;
+        if (fYear !== "all" && r[5]?.toString().trim() !== fYear.trim())
+          return false;
+        if (fReceived !== "all" && r[9]?.toString().trim() !== fReceived.trim())
+          return false;
         return true;
       });
 
@@ -148,7 +247,6 @@ function loadContributions() {
 
       renderPage();
       renderPagination();
-
     } catch (err) {
       console.error("Load error:", err);
     } finally {
@@ -167,7 +265,7 @@ function renderPage() {
   const pageRows = paginatedRows.slice(start, end);
 
   let total = 0;
-  pageRows.forEach(r => {
+  pageRows.forEach((r) => {
     total += Number(r[7] || 0);
     tbody.innerHTML += `<tr>
       <td>${r[1] || ""}</td>
@@ -203,7 +301,9 @@ function renderPagination() {
   let end = Math.min(totalPages, currentPage + 1);
 
   for (let i = start; i <= end; i++) {
-    html += `<button class="${i === currentPage ? "active" : ""}" onclick="goPage(${i})">${i}</button>`;
+    html += `<button class="${
+      i === currentPage ? "active" : ""
+    }" onclick="goPage(${i})">${i}</button>`;
   }
 
   if (end < totalPages) html += `<span>...</span>`;
@@ -243,31 +343,47 @@ function downloadPDF() {
     doc.text(`District: ${fDistrict.value || "All"}`, 14, 32);
     doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 37);
 
-    const tableData = paginatedRows.map(r=>[r[1],r[2],r[6],r[5],r[7],r[0],r[9],r[3]]);
+    const tableData = paginatedRows.map((r) => [
+      r[1],
+      r[2],
+      r[6],
+      r[5],
+      r[7],
+      r[0],
+      r[9],
+      r[3]
+    ]);
 
     doc.autoTable({
       startY: 40,
-      head: [["ID", "Full Name", "Month", "Year", "Amount", "Posted", "Received By", "Barangay"]],
+      head: [
+        [
+          "ID",
+          "Full Name",
+          "Month",
+          "Year",
+          "Amount",
+          "Posted",
+          "Received By",
+          "Barangay"
+        ]
+      ],
       body: tableData,
-      headStyles: { 
+      headStyles: {
         fillColor: [2, 163, 2],
-        textColor: 255,        
-        fontStyle: 'bold',
-        halign: 'center'
+        textColor: 255,
+        fontStyle: "bold",
+        halign: "center"
       }
     });
 
     const finalY = doc.lastAutoTable.finalY || 40;
     // Compute GRAND TOTAL
-const grandTotal = paginatedRows.reduce((sum, r) => {
-  return sum + (Number(r[7]) || 0);
-}, 0);
+    const grandTotal = paginatedRows.reduce((sum, r) => {
+      return sum + (Number(r[7]) || 0);
+    }, 0);
 
-doc.text(
-  `Total: PHP ${grandTotal.toLocaleString()}`,
-  14,
-  finalY + 10
-);
+    doc.text(`Total: PHP ${grandTotal.toLocaleString()}`, 14, finalY + 10);
 
     doc.save(`Monthly Dues_Report_${Date.now()}.pdf`);
   } catch (err) {
@@ -277,21 +393,26 @@ doc.text(
 }
 
 function showTab(id) {
-  if (id === 'homeTab' || id === 'aboutTab') {
+  if (id === "homeTab" || id === "aboutTab") {
     refreshFilterUI();
-    document.getElementById("contriBody").innerHTML = '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
+    document.getElementById("contriBody").innerHTML =
+      '<tr><td colspan="7">Adjust filters and click "Generate" to view data.</td></tr>';
     document.getElementById("totalAmt").textContent = "0";
   }
-  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+  document
+    .querySelectorAll(".tab-content")
+    .forEach((t) => t.classList.remove("active"));
   const target = document.getElementById(id);
   if (target) target.classList.add("active");
 }
 
-function go(url) { window.location.replace(url); }
+function go(url) {
+  window.location.replace(url);
+}
 
-function logout() { 
-  sessionStorage.clear(); 
-  window.location.replace("https://kbk-ops.github.io/kbkai"); 
+function logout() {
+  sessionStorage.clear();
+  window.location.replace("https://kbk-ops.github.io/kbkai");
 }
 
 initDashboard();
