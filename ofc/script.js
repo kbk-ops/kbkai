@@ -1,14 +1,6 @@
-const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyuMiYft2uAgLAlPDgP2vXGTrW6IYwHKj-awf2c_ZI6LcFaoHZxs-BvZWYfN8aCoGaoPg/exec";
 
-const SHEET_MEMBER = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
-const SHEET_NAMEMEMBER = "Officers";
-
-const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_MEMBER}/values/${SHEET_NAMEMEMBER}!A:G?key=${API_KEY}`;
-
-const WEBAPP_URL =
-  "https://script.google.com/macros/s/AKfycbyx6nI-1sF4nT0_8ICo8giRaDFKKPBBCqB9ld2MPdhxLnu8nGU8obYp0OTxUR_iSD_oBA/exec";
-
-// DOM Elements
+// DOM
 const step1 = document.getElementById("step1");
 const step2 = document.getElementById("step2");
 const idNumberInput = document.getElementById("idNumber");
@@ -19,15 +11,11 @@ const loader = document.getElementById("loader");
 const nextBtn = document.getElementById("nextBtn");
 const loginBtn = document.getElementById("loginBtn");
 
-// Clear previous session
 sessionStorage.clear();
 
-let currentID = "";
-let pinExists = false;
+let currentOfficer = null;
 
-// --------------------
-// STEP 1: Enter ID
-// --------------------
+// STEP 1
 nextBtn.onclick = async () => {
   errorEl.textContent = "";
   const id = idNumberInput.value.trim();
@@ -37,89 +25,84 @@ nextBtn.onclick = async () => {
   loader.style.display = "block";
 
   try {
-    const res = await fetch(MEMBERS_URL);
-    const data = await res.json();
-    const rows = data.values.slice(1);
-    const member = rows.find((r) => r[0] == id);
+    const res = await fetch(WEBAPP_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "getOfficer",
+        id: id
+      })
+    });
 
+    const data = await res.json();
     loader.style.display = "none";
 
-    if (!member) {
-      errorEl.textContent = "ID not found";
+    if (data.status !== "success") {
+      errorEl.textContent = "ID Number not found";
       nextBtn.disabled = false;
       return;
     }
 
-    currentID = id;
-    pinExists = member[6] && member[6].trim() !== "";
-    pinLabel.textContent = pinExists ? "Enter 6-digit PIN" : "Create 6-digit PIN";
+    currentOfficer = data.officer;
+
+    pinLabel.textContent = currentOfficer.pin
+      ? "Enter 6-digit PIN"
+      : "Create 6-digit PIN";
 
     step1.style.display = "none";
     step2.style.display = "block";
 
   } catch (err) {
-    console.error(err);
     loader.style.display = "none";
-    errorEl.textContent = "Failed to fetch officer data.";
+    errorEl.textContent = "Connection failed";
     nextBtn.disabled = false;
   }
 };
 
-// --------------------
-// STEP 2: Enter PIN
-// --------------------
+// STEP 2
 loginBtn.onclick = async () => {
   errorEl.textContent = "";
   const pin = pinInput.value.trim();
 
-  if (!/^\d{6}$/.test(pin)) return (errorEl.textContent = "6 digits only");
+  if (!/^\d{6}$/.test(pin))
+    return (errorEl.textContent = "6 digits only");
 
   loginBtn.disabled = true;
   loader.style.display = "block";
 
   try {
-    const res = await fetch(MEMBERS_URL);
+    const res = await fetch(WEBAPP_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "verifyPin",
+        id: currentOfficer.id,
+        pin: pin
+      })
+    });
+    
     const data = await res.json();
-    const rows = data.values.slice(1);
-    const member = rows.find((r) => r[0] == currentID);
+    loader.style.display = "none";
 
-    if (pinExists && member[6] !== pin) {
-      errorEl.textContent = "Wrong PIN";
+    if (data.status !== "success") {
+      errorEl.textContent = data.message;
       loginBtn.disabled = false;
-      loader.style.display = "none";
       return;
     }
 
-    // If creating PIN for first time
-    if (!pinExists) {
-      await fetch(WEBAPP_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          id: currentID,
-          pin: pin
-        })
-      });
-    }
+    const officer = data.officer;
 
-    // ------------------------------
-    // STORE OFFICER INFO IN SESSION
-    // ------------------------------
-    sessionStorage.setItem("memberID", currentID);
+    sessionStorage.setItem("memberID", officer.id);
     sessionStorage.setItem("auth", "true");
     sessionStorage.setItem("expiry", Date.now() + 3600000);
+    sessionStorage.setItem("officerFirstName", officer.firstName);
+    sessionStorage.setItem("officerFullName", officer.fullName);
+    sessionStorage.setItem("officerBrgy", officer.brgy);
+    sessionStorage.setItem("officerDistrict", officer.district);
 
-    sessionStorage.setItem("officerFirstName", member[1]); // Column B = first name
-    sessionStorage.setItem("officerFullName", member[2]);  // Column C = full name
-    sessionStorage.setItem("officerBrgy", member[3]);      // Column D = barangay
-    sessionStorage.setItem("officerDistrict", member[4]);  // Column E = district
-
-    // Redirect to dashboard
     window.location.replace("https://kbk-ops.github.io/kbkai/ofc/dashboard");
 
   } catch (err) {
-    console.error(err);
     loader.style.display = "none";
-    errorEl.textContent = "Failed to fetch officer data.";
+    errorEl.textContent = "Connection failed";
     loginBtn.disabled = false;
   }
 };
