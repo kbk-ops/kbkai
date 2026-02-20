@@ -14,7 +14,7 @@ const loginBtn = document.getElementById("loginBtn");
 
 sessionStorage.clear();
 
-let currentOfficer = null;
+let currentMember = null;
 
 // STEP 1
 nextBtn.onclick = async () => {
@@ -29,7 +29,7 @@ nextBtn.onclick = async () => {
     const res = await fetch(WEBAPP_URL, {
       method: "POST",
       body: JSON.stringify({
-        action: "getOfficer",
+        action: "getMember",
         id: id
       })
     });
@@ -43,9 +43,9 @@ nextBtn.onclick = async () => {
       return;
     }
 
-    currentOfficer = data.officer;
+    currentMember = data.member;
 
-    pinLabel.textContent = currentOfficer.pin
+    pinLabel.textContent = currentMember.pin
       ? "Enter 6-digit PIN"
       : "Create 6-digit PIN";
 
@@ -73,7 +73,7 @@ loginBtn.onclick = async () => {
       method: "POST",
       body: JSON.stringify({
         action: "verifyPin",
-        id: currentOfficer.id,
+        id: currentMember.id,
         pin: pin
       })
     });
@@ -87,17 +87,17 @@ loginBtn.onclick = async () => {
       return;
     }
 
-    const officer = data.officer;
+    const member = data.member;
 
-    sessionStorage.setItem("memberID", officer.id);
+    sessionStorage.setItem("memberID", member.id);
     sessionStorage.setItem("auth", "true");
     sessionStorage.setItem("expiry", Date.now() + 3600000);
-    sessionStorage.setItem("officerFirstName", officer.firstName);
-    sessionStorage.setItem("officerFullName", officer.fullName);
-    sessionStorage.setItem("officerBrgy", officer.brgy);
-    sessionStorage.setItem("officerDistrict", officer.district);
+    sessionStorage.setItem("FirstName", member.firstName);
+    sessionStorage.setItem("FullName", member.fullName);
+    sessionStorage.setItem("Brgy", member.brgy);
+    sessionStorage.setItem("District", member.district);
 
-    window.location.replace("https://kbk-ops.github.io/kbkai/ofc/dashboard");
+    window.location.replace("https://kbk-ops.github.io/kbkai/user/dashboard");
   } catch (err) {
     loader.style.display = "none";
     errorEl.textContent = "Connection failed";
