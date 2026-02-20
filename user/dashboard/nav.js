@@ -1,6 +1,6 @@
 function goDashboard(tab = "homeTab") {
   sessionStorage.setItem("activeTab", tab);
-  window.location.href = "../index.html";
+  window.location.replace("../index.html");
 }
 
 function initDashboardTabs() {
