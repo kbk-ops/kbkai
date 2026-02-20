@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <title>Officer Dashboard</title>
   <link rel="icon" href="../../Kasangga New Logo Small.png">
-  
+
   <link rel="stylesheet" href="style.css">
-  
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -27,11 +27,15 @@
       <img src="https://raw.githubusercontent.com/kbk-ops/kbkai/main/Icons/logout.png" class="logout-icon" onclick="logout()" alt="logout">
     </div>
 
+    <div id="loaderd" class="loader-overlay">
+      <div class="spinner"></div>
+    </div>
     <div id="loader" class="loader" style="display:none;"></div>
 
     <div id="homeTab" class="tab-content active">
+
       <div class="greeting">
-        <img id="profilePic" class="profile-pic" alt="profile">
+        <img id="profilePic" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><circle cx='100' cy='100' r='100' fill='%23e0e0e0'/><circle cx='100' cy='80' r='35' fill='%239e9e9e'/><path d='M40 160c0-30 25-50 60-50s60 20 60 50' fill='%239e9e9e'/></svg>" alt="Profile Picture" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 200 200&quot;><circle cx=&quot;100&quot; cy=&quot;100&quot; r=&quot;100&quot; fill=&quot;%23e0e0e0&quot;/><circle cx=&quot;100&quot; cy=&quot;80&quot; r=&quot;35&quot; fill=&quot;%239e9e9e&quot;/><path d=&quot;M40 160c0-30 25-50 60-50s60 20 60 50&quot; fill=&quot;%239e9e9e&quot;/></svg>'" width="60" height="60" class="profile-pic" />
         <h2 id="greet"></h2>
       </div>
 
@@ -83,33 +87,33 @@
       </div>
 
       <div class="table-container">
-      <table id="dataTable">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Full Name</th>
-            <th>Month</th>
-            <th>Year</th>
-            <th>Amount</th>
-            <th>Posted</th>
-            <th>Received By</th>
-            <th>Barangay</th>
-          </tr>
-        </thead>
-        <tbody id="contriBody"></tbody>
-        <tfoot>
-          <tr>
-            <th colspan="4">Total</th>
-            <th id="totalAmt"></th>
-            <th colspan="3"></th>
-          </tr>
-        </tfoot>
-      </table>
-        
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Month</th>
+              <th>Year</th>
+              <th>Amount</th>
+              <th>Posted</th>
+              <th>Received By</th>
+              <th>Barangay</th>
+            </tr>
+          </thead>
+          <tbody id="contriBody"></tbody>
+          <tfoot>
+            <tr>
+              <th colspan="4">Total</th>
+              <th id="totalAmt"></th>
+              <th colspan="3"></th>
+            </tr>
+          </tfoot>
+        </table>
+
         <!-- Table Page -->
-      <div id="pagination" class="pagination"></div>
-    </div>
+        <div id="pagination" class="pagination"></div>
       </div>
+    </div>
 
     <div id="aboutTab" class="tab-content">
       <h1>Introduction</h1>
