@@ -1,9 +1,4 @@
-const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
-
-const SHEET_ID = "1lDzzDvwpPTp4GGhsBQ6kH-tVhAdhuFidP0ujpDTrp9A";
-const SHEET_NAME = "Raw_Data";
-
-const SHEET_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!A:Z?key=${API_KEY}`;
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbxzG2npIDjdgeqYdnULAq7OTBR_HJngClU-8ag8h4sShw6jQYbs6o_8d7wND-QcFU-Eeg/exec";
 
 // DOM Elements
 const step1 = document.getElementById("step1");
@@ -37,7 +32,7 @@ nextBtn.onclick = async () => {
   loader.style.display = "block";
 
   try {
-    const res = await fetch(SHEET_URL);
+    const res = await fetch(PROXY_URL);
     const data = await res.json();
     sheetRows = data.values.slice(1);
 
@@ -59,6 +54,7 @@ nextBtn.onclick = async () => {
     }
 
     currentReferrer = id;
+    currentReferrerFullName = member[7];
 
     step1.style.display = "none";
     step2.style.display = "block";
@@ -95,6 +91,7 @@ continueBtn.onclick = () => {
   // Save to session
   // ---------------
   sessionStorage.setItem("referrerID", currentReferrer);
+   sessionStorage.setItem("referrerFullName", currentReferrerFullName);
   sessionStorage.setItem("registerEmail", email);
 
   // --------
