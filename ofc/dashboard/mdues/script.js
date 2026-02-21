@@ -1,22 +1,28 @@
-const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
-const SHEET_ID = "1uTqiPjXSExPlf69unDi7Z1_deJCqvPIGvU3eh08qyoU";
-const MEMBERS_URL = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Members!A:E?key=${API_KEY}`;
 const WEBAPP_URL =
-  "https://script.google.com/macros/s/AKfycbxKd8f5PBv7_mKTUe03iIrxt3RAkU35b-9oXN-4cr9aUsXFwhb74rq6499TRdrHku-o/exec";
+  "https://script.google.com/macros/s/AKfycby1yoiBk6Hryg7chjKjA-f0Bzvskd5vBH30vNod7G0nzPAZPEb2SwYzAWMiGkq5afIl/exec";
+
 const loader = document.getElementById("loader");
 const submitBtn = document.getElementById("submitBtn");
 
-// ----- Officer ID from login session -----
+// ============================
+// OFFICER LOGIN STORAGE
+// ============================
 const collectorID = sessionStorage.getItem("memberID");
+const officerFullname = sessionStorage.getItem("officerFullName");
 
-// ----- HELPER: CLEAR FIELDS -----
-function clearFields() {
-  document.getElementById("idNumber").value = "";
+// ============================
+// CLEAR FIELDS
+// ============================
+function clearFields(keepId = false) {
+  if (!keepId) {
+    document.getElementById("idNumber").value = "";
+  }
   document.getElementById("fullName").value = "";
   document.getElementById("brgy").value = "";
   document.getElementById("dist").value = "";
-  document.getElementById("year").value = "2026";
   document.getElementById("month").value = "";
+  // Keep year and amount as defaults
+  document.getElementById("year").value = "2026";
   document.getElementById("amount").value = "30";
 }
 
@@ -37,9 +43,6 @@ toggleBtn.onclick = async function () {
         document.getElementById("idNumber").value = qr;
         loadMember();
         navigator.vibrate(200);
-        new Audio(
-          "https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
-        ).play();
         html5Qr.stop();
         cameraOn = false;
         toggleBtn.textContent = "Scan";
@@ -55,44 +58,65 @@ toggleBtn.onclick = async function () {
 };
 
 // ============================
-// LOAD MEMBER INFO
+// LOAD MEMBER
 // ============================
-document.getElementById("idNumber").addEventListener("change", loadMember);
+document.getElementById("idNumber").addEventListener("input", function () {
+  const id = this.value.trim();
+  // Only trigger if the ID is a certain length to avoid spamming the server
+  if (id.length >= 5) {
+    loadMember();
+  }
+});
 
 async function loadMember() {
   const id = document.getElementById("idNumber").value.trim();
+  const statusEl = document.getElementById("idStatus"); // The new message element
 
-  // If ID is empty, clear all fields
+  // 1. Reset state
+  statusEl.textContent = "";
   if (!id) {
     clearFields();
     return;
   }
 
+  // ============================
+  // CLEAR DATA ON ID CHANGE
+  // ============================
+  document.getElementById("fullName").value = "";
+  document.getElementById("brgy").value = "";
+  document.getElementById("dist").value = "";
+
+  if (id.length < 12) return;
+
+  showLoader();
+
   try {
-    const res = await fetch(MEMBERS_URL);
+    const res = await fetch(
+      WEBAPP_URL + "?action=getMember&id=" + encodeURIComponent(id)
+    );
     const data = await res.json();
 
-    // Columns: A=ID, C=Name, D=Barangay, E=District
-    const row = data.values.find((r) => r[0] == id);
-
-    if (row) {
-      document.getElementById("fullName").value = row[2] || ""; // Name
-      document.getElementById("brgy").value = row[3] || ""; // Barangay
-      document.getElementById("dist").value = row[4] || ""; // District
+    if (data.status === "success") {
+      // FOUND: Fill fields and ensure message is empty
+      document.getElementById("fullName").value = data.member.name || "";
+      document.getElementById("brgy").value = data.member.brgy || "";
+      document.getElementById("dist").value = data.member.dist || "";
+      statusEl.textContent = "";
     } else {
-      clearFields();
-      alert("ID not found");
+      // NOT FOUND: Show the error message
+      statusEl.style.color = "red";
+      statusEl.textContent = "❌ Member not found";
     }
   } catch (err) {
-    console.error(err);
-    alert("Error fetching member data");
+    statusEl.textContent = "⚠️ Connection error";
+  } finally {
+    hideLoader();
   }
 }
 
 // ============================
-// Loader
+// LOADER
 // ============================
-
 function showLoader() {
   loader.style.display = "block";
   submitBtn.disabled = true;
@@ -104,22 +128,23 @@ function hideLoader() {
 }
 
 // ============================
-// SUBMIT DATA
+// SUBMIT DATA (SECURE)
 // ============================
 async function submitData() {
   const errorEl = document.getElementById("error");
   errorEl.textContent = "";
   errorEl.style.color = "red";
 
-  // VALIDATION
   if (!document.getElementById("idNumber").value.trim()) {
     errorEl.textContent = "ID Number is required";
     return;
   }
+
   if (!document.getElementById("fullName").value.trim()) {
     errorEl.textContent = "Name is required";
     return;
   }
+
   if (!document.getElementById("month").value.trim()) {
     errorEl.textContent = "Month is required";
     return;
@@ -128,6 +153,7 @@ async function submitData() {
   if (!confirm("Do you want to submit?")) return;
 
   const payload = {
+    action: "submitDues",
     id: document.getElementById("idNumber").value.trim(),
     name: document.getElementById("fullName").value.trim(),
     brgy: document.getElementById("brgy").value.trim(),
@@ -135,7 +161,7 @@ async function submitData() {
     year: document.getElementById("year").value.trim(),
     month: document.getElementById("month").value.trim(),
     amount: document.getElementById("amount").value.trim(),
-    collector: collectorID
+    collector: officerFullname
   };
 
   showLoader();
@@ -146,29 +172,24 @@ async function submitData() {
       body: JSON.stringify(payload)
     });
 
+    const result = await res.json();
+
     hideLoader();
 
-    if (res.ok) {
+    if (result.status === "success") {
       errorEl.style.color = "green";
       errorEl.textContent = "successfully recorded";
       clearFields();
-
-      setTimeout(() => {
-        errorEl.textContent = "";
-      }, 5000);
+      setTimeout(() => (errorEl.textContent = ""), 5000);
     } else {
       errorEl.textContent = "Failed to record";
     }
   } catch (err) {
     hideLoader();
-    console.error(err);
     errorEl.textContent = "Error connecting to server";
   }
 }
 
-// ============================
-// OPTIONAL: RELOAD PAGE FUNCTION
-// ============================
 function reloadPage() {
   if (confirm("Do you want to reload this page?")) clearFields();
 }
