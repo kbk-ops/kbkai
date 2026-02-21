@@ -168,7 +168,7 @@ document.getElementById("memberForm").addEventListener("submit", async (e) => {
     barangay: document.getElementById("barangay").value,
     precinct: document.getElementById("precinct").value,
     position: document.getElementById("position").value,
-    referrer: referrerID,
+    referrer: referrerFullName,
     image: base64Image,
     mimeType: "image/png"
   };
