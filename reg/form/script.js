@@ -2,6 +2,7 @@ const SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbwaZVaYhTjCkpl4en1Pb1jN72DevneqpYUr2c9P5tISTfm6ojBaHueznI22hGpDaKn4QQ/exec";
 
 // Load Session
+const referrerFullName = sessionStorage.getItem("referrerFullName") || "Unknown";
 const referrerID = sessionStorage.getItem("referrerID") || "Unknown";
 const registerEmail = sessionStorage.getItem("registerEmail") || "";
 
