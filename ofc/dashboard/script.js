@@ -5,7 +5,6 @@ const BASE_URL =
 const OFFICERS_URL = `${BASE_URL}?type=officers`;
 const DUES_URL = `${BASE_URL}?type=dues`;
 
-sessionStorage.setItem("memberID", "BK25-3010645");
 const loggedInID = sessionStorage.getItem("memberID");
 const generateBtn = document.getElementById("generateBtn");
 const pdfBtn = document.getElementById("pdfBtn");
