@@ -1,75 +1,47 @@
-function goDashboard(tab = "homeTab") {
-  sessionStorage.setItem("activeTab", tab);
-  window.location.replace("../index.html");
-}
+(function () {
+  function showTab(id) {
+    document
+      .querySelectorAll(".tab-content")
+      .forEach((t) => t.classList.remove("active"));
 
-/**
- * Initialize tabs on dashboard page based on sessionStorage
- * @param {function} showTabCallback - function that shows a tab by ID
- */
-function initDashboardTabs(showTabCallback) {
-  if (!showTabCallback) return;
+    const el = document.getElementById(id);
+    if (el) el.classList.add("active");
 
-  const tab = sessionStorage.getItem("activeTab");
-  if (tab) {
-    showTabCallback(tab); // call the dashboard function to show the correct tab
-    sessionStorage.removeItem("activeTab");
+    localStorage.setItem("activeTab", id);
   }
-}
 
-/**
- * Show a tab immediately on dashboard (or any page with tabs)
- * @param {string} tabId - ID of the tab to show
- */
-function showTab(tabId) {
-  const tabs = document.querySelectorAll(".tab-content");
-  tabs.forEach(t => t.classList.remove("active"));
+  function bindBottomBar() {
+    const buttons = document.querySelectorAll(".bottombar div");
 
-  const target = document.getElementById(tabId);
-  if (target) target.classList.add("active");
-}
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const target =
+          this.getAttribute("data-tab") ||
+          this.getAttribute("onclick")?.match(/'([^']+)'/)?.[1];
 
-/**
- * Optional: Initialize bottom bar button highlighting
- * Call this on dashboard after DOMContentLoaded
- */
-function initBottomBarHighlight() {
-  const buttons = document.querySelectorAll(".bottombar div");
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      buttons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
+        if (target) showTab(target);
+      });
     });
-  });
-}
-
-// For dashboard page: run this on page load
-document.addEventListener("DOMContentLoaded", () => {
-  if (document.querySelector(".tab-content")) {
-    initDashboardTabs(showTab);
-    initBottomBarHighlight();
   }
-});
 
-function initBottomBar() {
-  const buttons = document.querySelectorAll(".bottombar div");
-  const tabMap = ["homeTab", "contributionTab", "aboutTab"];
+  function restoreActiveTab() {
+    const saved = localStorage.getItem("activeTab");
+    if (saved && document.getElementById(saved)) {
+      showTab(saved);
+    }
+  }
 
-  buttons.forEach((btn, i) => {
-    btn.addEventListener("click", () => {
-      showTab(tabMap[i]);
-    });
+  function go(page) {
+    window.location.replace(index.html);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    bindBottomBar();
+    restoreActiveTab();
   });
 
-  // Set initial active based on currently visible tab
-  const currentTab = document.querySelector(".tab-content.active");
-  if (currentTab) {
-    const index = tabMap.indexOf(currentTab.id);
-    if (index !== -1) buttons[index].classList.add("active");
-  }
-}
-
-// Run on DOM ready
-document.addEventListener("DOMContentLoaded", () => {
-  initBottomBar();
-});
+  window.Nav = {
+    showTab,
+    go,
+  };
+})();
