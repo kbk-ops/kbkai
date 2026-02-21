@@ -1,6 +1,4 @@
-const API_KEY = "AIzaSyBrbhdscfZ1Gwgw_jnur3z5vSKTbFEpguY";
-const SHEET_ID = "1lDzzDvwpPTp4GGhsBQ6kH-tVhAdhuFidP0ujpDTrp9A";
-const SHEET_NAME = "Raw_Data";
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbyhItwXx49crZNH8neyPMuN_jJWjmvxtR3ZsUIVuUI-x-HpFaHSXUlesMQGXKmBcIDsGg/exec";
 
 const loggedInID = sessionStorage.getItem("memberID");
 const loader = document.getElementById("loader");
@@ -33,123 +31,130 @@ tableWrapper.style.display = "none";
 async function fetchData() {
   showLoader();
   try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
-    const res = await fetch(url);
+    const res = await fetch(PROXY_URL);
     const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    
     allData = data.values.slice(1);
     initAccess();
   } catch (error) {
     console.error("Error fetching data:", error);
-    alert("Failed to load data.");
+    alert("Security Error: Could not connect to data proxy.");
   }
   hideLoader();
 }
 
-// ---------------- ACCESS ----------------
+// ---------------- ACCESS CONTROL ----------------
 function initAccess() {
   officerInfo = allData.find((r) => r[0] == loggedInID);
+  
+  if (!officerInfo) {
+    hideLoader();
+    alert("Error: Member ID (" + loggedInID + ") not found.");
+    return;
+  }
+
   const special = officerInfo[23];
 
   if (special == "All") {
     allowedRows = allData.filter((r) => r[21] == "Active");
   } else {
+    // Check if access is for a specific Barangay first
     allowedRows = allData.filter((r) => r[15] == special && r[21] == "Active");
+    // If empty, check if access is for a specific District
     if (allowedRows.length == 0) {
-      allowedRows = allData.filter(
-        (r) => r[14] == special && r[21] == "Active"
-      );
+      allowedRows = allData.filter((r) => r[14] == special && r[21] == "Active");
     }
   }
 
-  populateFilters();
-  updateScoreCard(allowedRows);
-  updateAgeChart(allowedRows);
+  populateDistrictFilter();
+  populateBarangayFilter(); 
+  updateStatsOnFilterChange();
 }
 
 // ---------------- FILTERS ----------------
-function populateFilters() {
-  const brgySet = [...new Set(allowedRows.map((r) => r[15]))];
-  const distSet = [...new Set(allowedRows.map((r) => r[14]))];
-  const special = officerInfo[23];
+function populateDistrictFilter() {
+  const distSet = [...new Set(allowedRows.map((r) => r[14]))].sort();
+  
+  districtFilter.innerHTML = distSet.length > 1 ? "<option value=''>All Districts</option>" : "";
+  distSet.forEach(d => {
+    districtFilter.innerHTML += `<option value="${d}">${d}</option>`;
+  });
 
-  barangayFilter.innerHTML = "";
-  districtFilter.innerHTML = "";
-
-  if (brgySet.length > 1)
-    barangayFilter.innerHTML = "<option value=''>All Barangay</option>";
-  if (distSet.length > 1)
-    districtFilter.innerHTML = "<option value=''>All District</option>";
-
-  brgySet
-    .sort((a, b) => parseInt(a) - parseInt(b))
-    .forEach((b) => {
-      barangayFilter.innerHTML += `<option>${b}</option>`;
-    });
-
-  distSet
-    .sort((a, b) => parseInt(a) - parseInt(b))
-    .forEach((d) => {
-      districtFilter.innerHTML += `<option>${d}</option>`;
-    });
-
-  if (special === "All") {
-    barangayFilter.value = "";
-    districtFilter.value = "";
-  } else if (special.startsWith("Dist.")) {
-    barangayFilter.value = "";
-    districtFilter.value = special;
+  // If the user only has access to 1 district, lock the dropdown to that district
+  if (distSet.length === 1) {
+    districtFilter.value = distSet[0];
+    districtFilter.disabled = true;
   } else {
-    barangayFilter.value = brgySet[0] || "";
-    districtFilter.value = distSet[0] || "";
+    districtFilter.disabled = false;
+  }
+
+  // Populate barangays based on the initial district setup
+  populateBarangayFilter(); 
+}
+
+function populateBarangayFilter() {
+  const selectedDistrict = districtFilter.value;
+  
+  let filteredForBrgy = allowedRows;
+  if (selectedDistrict) {
+    filteredForBrgy = allowedRows.filter(r => r[14] === selectedDistrict);
+  }
+
+  const brgySet = [...new Set(filteredForBrgy.map((r) => r[15]))].sort((a, b) => parseInt(a) - parseInt(b));
+  
+  barangayFilter.innerHTML = brgySet.length > 1 ? "<option value=''>All Barangays</option>" : "";
+  brgySet.forEach(b => {
+    barangayFilter.innerHTML += `<option value="${b}">${b}</option>`;
+  });
+
+  // If the user only has access to 1 barangay, lock the dropdown to that barangay
+  if (brgySet.length === 1) {
+    barangayFilter.value = brgySet[0];
+    barangayFilter.disabled = true;
+  } else {
+    barangayFilter.disabled = false;
   }
 }
 
-// ---------------- live update chart + scorecard ----------------
+// ---------------- EVENT LISTENERS ----------------
+districtFilter.addEventListener("change", () => {
+  populateBarangayFilter();
+  updateStatsOnFilterChange();
+});
+
 barangayFilter.addEventListener("change", updateStatsOnFilterChange);
 districtFilter.addEventListener("change", updateStatsOnFilterChange);
 
+// ---------------- live update chart + scorecard ----------------
 function updateStatsOnFilterChange() {
   let rows = [...allowedRows];
-  if (barangayFilter.value)
-    rows = rows.filter((r) => r[15] == barangayFilter.value);
-  if (districtFilter.value)
-    rows = rows.filter((r) => r[14] == districtFilter.value);
+  if (districtFilter.value) rows = rows.filter((r) => r[14] == districtFilter.value);
+  if (barangayFilter.value) rows = rows.filter((r) => r[15] == barangayFilter.value);
+  
   updateScoreCard(rows);
   updateAgeChart(rows);
 }
 
 // ---------------- LOADER ----------------
-function showLoader() {
-  loader.style.display = "flex";
-  generateBtn.disabled = true;
-  pdfBtn.disabled = true;
-}
-
-function hideLoader() {
-  loader.style.display = "none";
-  generateBtn.disabled = false;
-  pdfBtn.disabled = false;
-}
+function showLoader() { loader.style.display = "flex"; generateBtn.disabled = true; }
+function hideLoader() { loader.style.display = "none"; generateBtn.disabled = false; }
 
 // ---------------- GENERATE ----------------
 function generateData() {
   showLoader();
-
   setTimeout(() => {
     let rows = [...allowedRows];
     const q = searchInput.value.toLowerCase();
 
-    if (barangayFilter.value)
-      rows = rows.filter((r) => r[15] == barangayFilter.value);
-    if (districtFilter.value)
-      rows = rows.filter((r) => r[14] == districtFilter.value);
-    if (q)
-      rows = rows.filter(
-        (r) => r[0].toLowerCase().includes(q) || r[7].toLowerCase().includes(q)
-      );
+    if (districtFilter.value) rows = rows.filter((r) => r[14] == districtFilter.value);
+    if (barangayFilter.value) rows = rows.filter((r) => r[15] == barangayFilter.value);
+    
+    if (q) {
+      rows = rows.filter(r => r[0].toLowerCase().includes(q) || r[7].toLowerCase().includes(q));
+    }
 
     rows.sort((a, b) => parseInt(a[15]) - parseInt(b[15]));
-
     paginatedRows = rows;
     currentPage = 1;
 
@@ -159,7 +164,6 @@ function generateData() {
 
     renderPage();
     renderPagination();
-
     hideLoader();
   }, 300);
 }
@@ -190,9 +194,14 @@ function renderPage() {
 // ---------------- PAGE UI ----------------
 function renderPagination() {
   const totalPages = Math.ceil(paginatedRows.length / rowsPerPage);
-  let html = "";
+  const paginationEl = document.getElementById("pagination");
 
-  if (totalPages <= 1) return;
+  if (totalPages <= 1) {
+    paginationEl.innerHTML = ""; 
+    return;
+  }
+
+  let html = "";
 
   html += `<button onclick="goPage(1)">«</button>`;
   html += `<button onclick="goPage(${currentPage - 1})">‹</button>`;
@@ -211,7 +220,7 @@ function renderPagination() {
   html += `<button onclick="goPage(${currentPage + 1})">›</button>`;
   html += `<button onclick="goPage(${totalPages})">»</button>`;
 
-  document.getElementById("pagination").innerHTML = html;
+  paginationEl.innerHTML = html;
 }
 
 // ---------------- PAGE NAVIGATION ----------------
