@@ -32,7 +32,7 @@
   }
 
   function go(page) {
-    window.location.replace(../index.html);
+    window.location.replace("index.html");
   }
 
   document.addEventListener("DOMContentLoaded", function () {
