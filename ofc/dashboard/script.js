@@ -5,6 +5,7 @@ const BASE_URL =
 const OFFICERS_URL = `${BASE_URL}?type=officers`;
 const DUES_URL = `${BASE_URL}?type=dues`;
 
+sessionStorage.setItem("memberID", "BK25-3010645");
 const loggedInID = sessionStorage.getItem("memberID");
 const generateBtn = document.getElementById("generateBtn");
 const pdfBtn = document.getElementById("pdfBtn");
@@ -213,6 +214,17 @@ function fillSelect(id, data, defaultValue) {
 document
   .getElementById("fDistrict")
   .addEventListener("change", updateBarangayOptions);
+
+// ---------------- FORMAT DATE ----------------
+function formatDateMMDDYYYY(date) {
+  const d = new Date(date);
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const year = d.getFullYear();
+
+  return `${month}/${day}/${year}`;
+}
+
 // ---------------- LOAD CONTRIBUTION ----------------
 function loadContributions() {
   showLoader();
@@ -237,7 +249,7 @@ function loadContributions() {
           return false;
         if (fYear !== "all" && r[5]?.toString().trim() !== fYear.trim())
           return false;
-        if (fReceived !== "all" && r[9]?.toString().trim() !== fReceived.trim())
+        if (fReceived !== "all" && r[8]?.toString().trim() !== fReceived.trim())
           return false;
         return true;
       });
@@ -273,8 +285,8 @@ function renderPage() {
       <td>${r[6] || ""}</td>
       <td>${r[5] || ""}</td>
       <td>${Number(r[7] || 0).toLocaleString()}</td>
-      <td>${r[0] || ""}</td>
-      <td>${r[9] || ""}</td>
+      <td>${formatDateMMDDYYYY(r[0])}</td>
+      <td>${r[8] || ""}</td>
       <td>${r[3] || ""}</td>
     </tr>`;
   });
@@ -341,16 +353,16 @@ function downloadPDF() {
     doc.text(`Requested by: ${currentOfficer.fullName || "Officer"}`, 14, 22);
     doc.text(`Barangay: ${fBrgy.value || "All"}`, 14, 27);
     doc.text(`District: ${fDistrict.value || "All"}`, 14, 32);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 37);
+    doc.text(`Date: ${formatDateMMDDYYYY(new Date())}`, 14, 37);
 
     const tableData = paginatedRows.map((r) => [
       r[1],
       r[2],
       r[6],
       r[5],
-      r[7],
-      r[0],
-      r[9],
+      Number(r[7] || 0).toLocaleString(),
+      formatDateMMDDYYYY(r[0]),
+      r[8],
       r[3]
     ]);
 
@@ -378,6 +390,7 @@ function downloadPDF() {
     });
 
     const finalY = doc.lastAutoTable.finalY || 40;
+
     // Compute GRAND TOTAL
     const grandTotal = paginatedRows.reduce((sum, r) => {
       return sum + (Number(r[7]) || 0);
